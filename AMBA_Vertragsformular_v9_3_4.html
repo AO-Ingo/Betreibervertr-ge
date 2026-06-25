@@ -1,0 +1,902 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>AMBA – Vertragsgenerator</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#f0efe9;--sur:#fff;--sur2:#f7f6f2;
+  --bdr:#dddbd3;--bdrs:#bfbcb3;
+  --txt:#1a1917;--mut:#6b6860;--hnt:#a09d96;
+  --acc:#1c3d5a;--amid:#2d5f8a;--alit:#e6eff7;
+  --red:#c0392b;--redbg:#fdf0ef;
+  --grn:#1a6e3a;--grnbg:#eaf5ed;--grnbdr:#a3d4b4;
+  --lok:#e8f0f7;--lokbdr:#b5cfe8;--loktxt:#2d5f8a;
+  --dis:#f5f4f1;--disbdr:#dddbd3;--distxt:#a09d96;
+  --r:10px;--rs:6px;
+}
+body{font-family:'Segoe UI',Arial,sans-serif;background:var(--bg);color:var(--txt);min-height:100vh}
+.hdr{background:var(--acc);height:56px;display:flex;align-items:center;padding:0 1.75rem;gap:12px;position:sticky;top:0;z-index:50;box-shadow:0 2px 10px rgba(0,0,0,.2)}
+.hm{background:rgba(255,255,255,.18);width:32px;height:32px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:13px;color:#fff;flex-shrink:0}
+.hi{flex:1}.ht{font-size:14px;font-weight:600;color:#fff}.hs{font-size:11px;color:rgba(255,255,255,.5);margin-top:1px}
+.hc{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);border-radius:20px;font-size:11px;color:rgba(255,255,255,.7);padding:3px 11px}
+.wrap{max-width:800px;margin:0 auto;padding:2.25rem 1.25rem 6rem}
+.ph{margin-bottom:1.75rem}.ph h1{font-size:19px;font-weight:600;margin-bottom:5px}
+.ph p{font-size:13px;color:var(--mut);line-height:1.6}
+
+/* Vertragstyp-Auswahl */
+.vt-select{display:flex;flex-direction:column;gap:6px;margin-bottom:1.5rem;max-width:420px}
+.vt-btn{background:var(--sur);border:2px solid var(--bdr);border-radius:var(--r);padding:10px 14px;cursor:pointer;text-align:left;font-family:inherit;transition:border-color .15s,background .15s;position:relative}
+.vt-btn:hover{border-color:var(--amid);background:var(--alit)}
+.vt-btn.active{border-color:var(--amid);background:var(--alit)}
+.vt-btn.active::after{content:'✓';position:absolute;top:10px;right:13px;font-size:14px;font-weight:700;color:var(--amid)}
+.vt-icon{font-size:20px;margin-bottom:5px}
+.vt-label{font-size:13.5px;font-weight:700;color:var(--txt);margin-bottom:3px}
+.vt-desc{font-size:11.5px;color:var(--mut)}
+
+.word-badge{display:inline-flex;align-items:center;gap:8px;background:#1e4391;color:#fff;border-radius:6px;padding:5px 12px;font-size:12px;font-weight:600;margin-bottom:1.5rem}
+.word-badge svg{width:16px;height:16px;opacity:.9}
+.card{background:var(--sur);border:1px solid var(--bdr);border-radius:var(--r);margin-bottom:1rem;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,.05)}
+.ch{display:flex;align-items:center;gap:9px;padding:12px 17px;border-bottom:1px solid var(--bdr);background:var(--sur2)}
+.ci{width:26px;height:26px;border-radius:6px;background:var(--acc);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.ci svg{width:13px;height:13px}.ci.li{background:var(--lokbdr)}
+.cht{font-size:11.5px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--txt)}
+.chs{font-size:11px;color:var(--hnt);margin-top:1px}
+.lbdg{margin-left:auto;font-size:10px;font-weight:700;background:var(--lok);color:var(--loktxt);border:1px solid var(--lokbdr);border-radius:20px;padding:2px 9px;letter-spacing:.04em}
+.cb{padding:17px}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+.stk{display:flex;flex-direction:column;gap:12px}
+@media(max-width:560px){.g2,.g3,.apr,.vt-select{grid-template-columns:1fr}.aktn-grid{grid-template-columns:1fr!important}}
+.fld{display:flex;flex-direction:column;gap:4px}
+.fld label{font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--mut)}
+.fld label .r{color:var(--red);margin-left:1px}
+.fld input{height:38px;padding:0 10px;border:1px solid var(--bdrs);border-radius:var(--rs);background:#fff;color:var(--txt);font-size:13.5px;font-family:inherit;outline:none;transition:border-color .13s,box-shadow .13s}
+.fld input:focus{border-color:var(--amid);box-shadow:0 0 0 3px rgba(45,95,138,.12)}
+.fld input::placeholder{color:var(--hnt)}
+.fld input.lf{background:var(--lok);border-color:var(--lokbdr);color:var(--loktxt);font-weight:500;cursor:default}
+
+/* Ausgegraut */
+.card.disabled{opacity:.5;pointer-events:none}
+.card.disabled .ch{background:var(--dis)}
+.card.disabled .ci{background:var(--distxt)}
+.dis-note{font-size:11.5px;color:var(--distxt);background:var(--dis);border:1px solid var(--disbdr);border-radius:var(--rs);padding:10px 13px;margin-bottom:4px}
+
+.lok-blk{background:var(--lok);border:1px solid var(--lokbdr);border-radius:var(--rs);padding:12px 14px;color:var(--loktxt);font-size:13.5px;line-height:1.65}
+.lok-blk strong{display:block;font-size:14px;font-weight:700;margin-bottom:2px}
+.lok-blk .ln{font-size:11px;opacity:.6;margin-top:4px}
+.atbl{width:100%;border-collapse:collapse;font-size:13px;margin-top:4px}
+.atbl th{background:var(--sur2);font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--mut);padding:8px 9px;border:1px solid var(--bdr);text-align:left}
+.atbl td{padding:4px 5px;border:1px solid var(--bdr)}
+.atbl td input{width:100%;height:31px;padding:0 7px;border:1px solid transparent;border-radius:4px;background:transparent;color:var(--txt);font-size:13px;font-family:inherit;outline:none;transition:border-color .12s,background .12s}
+.atbl td input:focus{border-color:var(--amid);background:#fff;box-shadow:0 0 0 2px rgba(45,95,138,.1)}
+.atbl td input::placeholder{color:var(--hnt)}
+.btn-add{margin-top:8px;font-size:12px;font-weight:600;color:var(--amid);background:none;border:1.5px dashed var(--lokbdr);border-radius:var(--rs);padding:5px 13px;cursor:pointer;font-family:inherit;transition:background .12s}
+.btn-add:hover{background:var(--alit)}
+.btn-del{background:none;border:none;cursor:pointer;color:var(--hnt);font-size:16px;padding:0 3px;line-height:1;transition:color .12s}
+.btn-del:hover{color:var(--red)}
+.apr{display:grid;grid-template-columns:1fr 1fr;gap:12px;align-items:stretch}
+.apr-new{display:grid;grid-template-columns:1fr 1fr;gap:12px;align-items:stretch}
+.ap-fix{background:var(--lok);border:1px solid var(--lokbdr);border-radius:var(--rs);padding:13px 14px;display:flex;flex-direction:column;justify-content:center}
+.apl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--loktxt);margin-bottom:7px}
+.apn{font-size:13.5px;font-weight:700;color:var(--loktxt);margin-bottom:4px}
+.apd{font-size:12px;color:var(--loktxt);opacity:.8;line-height:1.7}
+.gen-bar{background:var(--grnbg);border:1px solid var(--grnbdr);border-radius:var(--r);padding:17px 18px;margin-bottom:1rem;display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap}
+.gen-bar-txt h3{font-size:13.5px;font-weight:700;color:var(--grn);margin-bottom:3px}
+.gen-bar-txt p{font-size:12px;color:var(--grn);opacity:.8}
+.drop{border:2px dashed var(--bdrs);border-radius:var(--r);padding:1.75rem 1rem;text-align:center;cursor:pointer;background:var(--sur2);transition:border-color .13s,background .13s;position:relative}
+.drop.ov{border-color:var(--amid);background:var(--alit)}
+.drop input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+.drop-ico{font-size:28px;margin-bottom:6px}.drop-t{font-size:13.5px;font-weight:600;color:var(--txt)}.drop-s{font-size:11.5px;color:var(--hnt);margin-top:3px}
+.flist{margin-top:10px;display:flex;flex-direction:column;gap:6px}
+.fi{display:flex;align-items:center;gap:9px;padding:8px 12px;background:var(--sur);border:1px solid var(--bdr);border-radius:var(--rs);cursor:grab}
+.fi:active{cursor:grabbing}.fi.dragging{opacity:.4}.fi.dov{box-shadow:0 0 0 2px var(--amid)}
+.fi-drag{color:var(--hnt);font-size:14px;user-select:none}
+.fi-ico{font-size:9px;font-weight:800;background:#e24b4a;color:#fff;border-radius:3px;padding:2px 5px;flex-shrink:0}
+.fi-n{flex:1;font-size:12.5px;color:var(--txt);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.fi-sz{font-size:11px;color:var(--hnt);flex-shrink:0}
+.fi-del{background:none;border:none;cursor:pointer;color:var(--hnt);font-size:16px;width:21px;height:21px;border-radius:50%;display:flex;align-items:center;justify-content:center;transition:background .1s,color .1s}
+.fi-del:hover{background:var(--redbg);color:var(--red)}
+.ord-hint{font-size:11px;color:var(--hnt);margin-top:4px}
+.sts{display:none;align-items:center;gap:8px;margin-top:10px;padding:9px 13px;border-radius:var(--rs);font-size:12.5px}
+.sts.proc{display:flex;background:var(--alit);color:var(--acc)}
+.sts.ok{display:flex;background:var(--grnbg);color:var(--grn)}
+.sts.err{display:flex;background:var(--redbg);color:var(--red)}
+.spin{width:13px;height:13px;border-radius:50%;border:2px solid currentColor;border-top-color:transparent;animation:sp .6s linear infinite;flex-shrink:0}
+@keyframes sp{to{transform:rotate(360deg)}}
+.prog-w{height:3px;background:var(--bdr);border-radius:2px;overflow:hidden;margin-top:7px;display:none}
+.prog-b{height:100%;background:var(--amid);border-radius:2px;transition:width .3s}
+.acts{display:flex;justify-content:flex-end;gap:9px;margin-top:1.75rem;flex-wrap:wrap}
+.btn{height:39px;padding:0 18px;border-radius:var(--rs);font-size:13.5px;font-weight:600;cursor:pointer;border:1.5px solid var(--bdrs);background:var(--sur);color:var(--txt);font-family:inherit;transition:background .12s;white-space:nowrap}
+.btn:hover{background:var(--sur2)}
+.btn.prim{background:var(--acc);color:#fff;border-color:var(--acc)}.btn.prim:hover{background:var(--amid);border-color:var(--amid)}
+.btn.prim:disabled{opacity:.35;cursor:not-allowed}
+.btn.grn{background:var(--grn);color:#fff;border-color:var(--grn)}.btn.grn:hover{background:#145c30;border-color:#145c30}
+</style>
+</head>
+<body>
+<header class="hdr">
+  <div class="hm">A</div>
+  <div class="hi"><div class="ht">amba operations GmbH</div><div class="hs" id="hdrSubtitle">Vertragsgenerator</div></div>
+  <div class="hc">Vorlage v2.0</div>
+</header>
+<div class="wrap">
+  <div class="ph">
+    <h1>Vertragsgenerator</h1>
+    <p>Vertragstyp auswählen, Felder ausfüllen und als Word-Dokument herunterladen.</p>
+  </div>
+
+  <!-- VERTRAGSTYP -->
+  <div class="vt-select">
+    <button class="vt-btn active" id="btn-betrieb" onclick="setTyp('betrieb')">
+      <div class="vt-label">Technische Betriebsführung AC</div>
+      <div class="vt-desc">AMBA_VertragTechnischeBetriebsfuehrung_Vorlage.docx</div>
+    </button>
+    <button class="vt-btn" id="btn-betrieb-dc" onclick="setTyp('betrieb-dc')">
+      <div class="vt-label">Technische Betriebsführung DC</div>
+      <div class="vt-desc">AMBA_VertragTechBetriebsfuehrung_DC_Vorlage.docx</div>
+    </button>
+    <button class="vt-btn" id="btn-vollbetrieb" onclick="setTyp('vollbetrieb')">
+      <div class="vt-label">Vollbetrieb ohne Strom</div>
+      <div class="vt-desc">AMBA_Vollbetrieb_Vorlage.docx</div>
+    </button>
+    <button class="vt-btn" id="btn-wartung" onclick="setTyp('wartung')">
+      <div class="vt-label">Rahmenwartungsvertrag</div>
+      <div class="vt-desc">AMBA_Wartungsvertrag_Vorlage.docx</div>
+    </button>
+  </div>
+
+  <div class="word-badge" id="wordBadge">
+    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6zm-1 1.5L18.5 9H13V3.5zM6 20V4h5v7h7v9H6z"/></svg>
+    <span id="badgeText">AMBA_VertragTechnischeBetriebsfuehrung_Vorlage.docx &nbsp;·&nbsp; Vorlage wird von GitHub geladen</span>
+  </div>
+
+  <!-- AUFTRAGNEHMER -->
+  <div class="card">
+    <div class="ch">
+      <div class="ci li"><svg viewBox="0 0 16 16" fill="none"><rect x="3" y="7" width="10" height="8" rx="1.5" stroke="#2d5f8a" stroke-width="1.5"/><path d="M5.5 7V5a2.5 2.5 0 0 1 5 0v2" stroke="#2d5f8a" stroke-width="1.5" stroke-linecap="round"/></svg></div>
+      <div><div class="cht">Auftragnehmer</div><div class="chs">Fest hinterlegt – nicht bearbeitbar</div></div>
+      <span class="lbdg">GESPERRT</span>
+    </div>
+    <div class="cb">
+      <div class="lok-blk">
+        <strong>amba operations GmbH</strong>
+        Obere Weidenstraße 2<br>81543 München
+        <div class="ln" id="partnerLabel">(nachstehend „Auftragnehmer")</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- VERTRAGSPARTNER -->
+  <div class="card">
+    <div class="ch">
+      <div class="ci"><svg viewBox="0 0 16 16" fill="none"><rect x="1.5" y="3.5" width="13" height="10" rx="1.5" stroke="white" stroke-width="1.5"/><path d="M5.5 3.5V2.5a1 1 0 0 1 1-1h3a1 1 0 0 1 1 1v1" stroke="white" stroke-width="1.5"/><path d="M1.5 7h13" stroke="white" stroke-width="1.5"/></svg></div>
+      <div><div class="cht" id="agLabel">Auftraggeber</div><div class="chs" id="agSubLabel">Firmendaten des Vertragspartners</div></div>
+    </div>
+    <div class="cb stk">
+      <div class="g2">
+        <div class="fld"><label>Firmenname <span class="r">*</span></label><input id="ag_firma" placeholder="Muster GmbH"/></div>
+        <div class="fld"><label>Straße &amp; Hausnummer <span class="r">*</span></label><input id="ag_strasse" placeholder="Musterstraße 12"/></div>
+      </div>
+      <div class="g2">
+        <div class="fld"><label>PLZ <span class="r">*</span></label><input id="ag_plz" placeholder="80000" maxlength="10"/></div>
+        <div class="fld"><label>Stadt <span class="r">*</span></label><input id="ag_stadt" placeholder="München"/></div>
+      </div>
+      <div id="laufzeitRow" style="display:none;margin-top:10px">
+        <div class="fld"><label>Laufzeit (Jahre) <span class="r">*</span></label><input type="number" id="vb_laufzeit" placeholder="2" min="1" max="10" value="2" style="width:120px"/></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ANHANG / LADEEINRICHTUNGEN -->
+  <div class="card">
+    <div class="ch">
+      <div class="ci"><svg viewBox="0 0 16 16" fill="none"><path d="M8 2v5l3 3" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><circle cx="8" cy="8" r="6" stroke="white" stroke-width="1.5"/></svg></div>
+      <div><div class="cht" id="anhangLabel">Anhang 2 – Ladeeinrichtungen</div><div class="chs">Standorte &amp; technische Spezifikationen</div></div>
+    </div>
+    <div class="cb">
+      <div class="g2" style="margin-bottom:13px">
+        <div class="fld"><label>Stand (Datum)</label><input type="date" id="stand_datum"/></div>
+      </div>
+      <div style="overflow-x:auto">
+        <table class="atbl">
+          <thead><tr>
+            <th style="width:28px">#</th>
+            <th>Standort (Name, Anschrift)</th>
+            <th>Art der Ladeeinrichtung</th>
+            <th style="width:130px">Anzahl Ladepunkte</th>
+            <th style="width:30px"></th>
+          </tr></thead>
+          <tbody id="ladeBody"></tbody>
+        </table>
+      </div>
+      <button class="btn-add" onclick="addRow()">+ Zeile hinzufügen</button>
+    </div>
+  </div>
+
+  <!-- ANGEBOTSNUMMER (nur Vollbetrieb) -->
+    <div class="card" id="apCard">
+    <div class="ch">
+      <div class="ci"><svg viewBox="0 0 16 16" fill="none"><circle cx="8" cy="5.5" r="3" stroke="white" stroke-width="1.5"/><path d="M2.5 14c0-3.038 2.462-5.5 5.5-5.5s5.5 2.462 5.5 5.5" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg></div>
+      <div><div class="cht">Anhang 3 – Ansprechpartner</div><div class="chs">Kontaktpersonen beider Parteien</div></div>
+    </div>
+    <div class="cb" id="apCardBody">
+      <div class="apr-new">
+        <div class="ap-fix">
+          <div class="apl">Für amba operations GmbH</div>
+          <div class="apn">Ingo Vogt-Luffer</div>
+          <div class="apd">i.vogt@amba-operations.com<br>+49 176 13613032</div>
+        </div>
+        <div class="stk">
+          <div class="apl" style="color:var(--mut)">Für Kunden</div>
+          <div id="apTechRow" style="display:none">
+            <div class="fld"><label>Kaufm. Ansprechpartner</label><input id="ap_tech_name" placeholder="Max Mustermann"/></div>
+            <div class="g2" style="margin-bottom:12px">
+              <div class="fld"><label>E-Mail</label><input type="email" id="ap_tech_email" placeholder="max@firma.de"/></div>
+              <div class="fld"><label>Telefon</label><input type="tel" id="ap_tech_tel" placeholder="+49 89 123456"/></div>
+            </div>
+          </div>
+          <div class="fld"><label id="apNameLabel">Ansprechpartner</label><input id="ap_name" placeholder="Max Mustermann"/></div>
+          <div class="g2">
+            <div class="fld"><label>E-Mail</label><input type="email" id="ap_email" placeholder="max@firma.de"/></div>
+            <div class="fld"><label>Telefon</label><input type="tel" id="ap_tel" placeholder="+49 89 123456"/></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ARTIKEL -->
+  <div class="card" id="artikelCard">
+    <div class="ch">
+      <div class="ci"><svg viewBox="0 0 16 16" fill="none"><path d="M2.5 3.5h11M2.5 6.5h7M2.5 9.5h9M2.5 12.5h5" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg></div>
+      <div><div class="cht">Artikel</div><div class="chs">Zoho-Artikel für diesen Vertragstyp</div></div>
+    </div>
+    <div class="cb">
+      <div class="g2">
+        <div class="fld">
+          <label>Artikelname</label>
+          <input id="artikel_name" class="lf" readonly/>
+        </div>
+        <div class="fld">
+          <label>Anzahl (∑ Ladepunkte)</label>
+          <input id="artikel_anzahl" type="number" min="1" placeholder="–" class="lf" readonly/>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- AKTIONEN -->
+  <div class="aktn-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px">
+    <div class="gen-bar" style="margin-bottom:0">
+      <div class="gen-bar-txt">
+        <h3>✦ Word herunterladen</h3>
+        <p>Vorlage mit Ihren Angaben befüllt.</p>
+      </div>
+      <button class="btn grn" id="genBtn" onclick="generateDocx()">Generieren</button>
+    </div>
+    <div class="gen-bar" style="background:var(--alit);border-color:var(--lokbdr);margin-bottom:0">
+      <div class="gen-bar-txt">
+        <h3 style="color:var(--acc)">📤 Zoho-Angebot</h3>
+        <p style="color:var(--acc);opacity:.8">Daten per Webhook an Make senden.</p>
+      </div>
+      <button class="btn prim" id="sendenBtn" onclick="sendenAnMake()">Senden</button>
+    </div>
+  </div>
+  <button class="btn" id="beideBtn" onclick="generateDocx();sendenAnMake()" style="width:100%;height:44px;font-size:14px;font-weight:700;background:var(--acc);color:#fff;border-color:var(--acc);border-radius:var(--rs);display:flex;align-items:center;justify-content:center;gap:9px">
+    <svg width="15" height="15" viewBox="0 0 16 16" fill="none"><path d="M2 8.5 6 12.5 14 4" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    Vertrag generieren &amp; an Make senden
+  </button>
+  <div class="sts" id="sendSts" style="margin-top:8px;margin-bottom:1rem"></div>
+
+  <!-- PDF MERGE -->
+  <div class="card" id="vbPdfCard" style="display:none">
+    <div class="ch">
+      <div class="ci"><svg viewBox="0 0 16 16" fill="none"><path d="M9 1.5H4a1.5 1.5 0 0 0-1.5 1.5v10A1.5 1.5 0 0 0 4 14.5h8a1.5 1.5 0 0 0 1.5-1.5V6L9 1.5Z" stroke="white" stroke-width="1.5"/><path d="M9 1.5V6H13.5" stroke="white" stroke-width="1.5" stroke-linejoin="round"/></svg></div>
+      <div><div class="cht">Vollbetrieb – Angebots-PDF hochladen</div><div class="chs">Dateiname = Angebotsnummer → Vertrag generieren</div></div>
+    </div>
+    <div class="cb">
+      <p style="font-size:12.5px;color:var(--mut);margin-bottom:10px">Zoho-Angebot als PDF exportieren, Dateiname = Angebotsnummer. Dann hochladen und Vertrag generieren.</p>
+      <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+        <div class="stk" style="flex:1;min-width:200px">
+          <input type="file" id="vbAngebotPdf" accept=".pdf" style="font-size:13px;font-family:inherit" onchange="initVbPdfUpload();updateMergeBtn();"/>
+          <input type="hidden" id="vb_angebotsnr" value=""/>
+          <div id="vbPdfHint" style="font-size:12px;color:var(--hnt);margin-top:4px">Noch kein PDF hochgeladen</div>
+        </div>
+        <button class="btn grn" id="vbGenBtn" onclick="generateDocx()" disabled style="white-space:nowrap;height:39px">Vertrag generieren</button>
+      </div>
+    </div>
+  </div>
+
+
+  <div id="dlLinkBar" style="display:none;margin-bottom:10px;padding:12px 16px;background:var(--alit);border:1px solid var(--lokbdr);border-radius:8px;align-items:center;gap:12px">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:20px;height:20px;flex-shrink:0;color:#2a9d8f"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+    <span style="flex:1;font-size:.9rem">Vertragsentwurf erstellt:</span>
+    <a id="dlLinkAnchor" href="#" style="font-weight:600;color:#2a9d8f;text-decoration:none;font-size:.9rem"></a>
+  </div>
+
+    <div class="card">
+    <div class="ch">
+      <div class="ci"><svg viewBox="0 0 16 16" fill="none"><path d="M9 1.5H4a1.5 1.5 0 0 0-1.5 1.5v10A1.5 1.5 0 0 0 4 14.5h8a1.5 1.5 0 0 0 1.5-1.5V6L9 1.5Z" stroke="white" stroke-width="1.5"/><path d="M9 1.5V6H13.5" stroke="white" stroke-width="1.5" stroke-linejoin="round"/><path d="M6 9.5h4M8 7.5v4" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg></div>
+      <div><div class="cht">PDFs zusammenführen (optional)</div><div class="chs" id="mergeSub">Vertrag-PDF zuerst hochladen, dann Angebots-PDF – werden zusammengefügt</div></div>
+    </div>
+    <div class="cb stk">
+      <div class="g2" style="margin-bottom:10px">
+        <div class="stk">
+          <div style="font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--mut);margin-bottom:4px">① Vertrag-PDF</div>
+          <input type="file" id="mergeFile1" accept=".pdf" style="font-size:13px;font-family:inherit"/>
+          <div id="mergeHint1" style="font-size:11px;color:var(--hnt);margin-top:3px">Noch kein PDF</div>
+        </div>
+        <div class="stk" id="mergeSlot2Manual">
+          <div style="font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--mut);margin-bottom:4px">② Angebots-PDF</div>
+          <input type="file" id="mergeFile2" accept=".pdf" style="font-size:13px;font-family:inherit"/>
+          <div id="mergeHint2" style="font-size:11px;color:var(--hnt);margin-top:3px">Noch kein PDF</div>
+        </div>
+        <div class="stk" id="mergeSlot2Auto" style="display:none">
+          <div style="font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--mut);margin-bottom:4px">② Angebots-PDF</div>
+          <div id="mergeHint2Auto" style="font-size:12px;color:var(--hnt);margin-top:4px">Noch kein PDF aus Vollbetrieb hochgeladen</div>
+        </div>
+      </div>
+      <div class="prog-w" id="mergePW" style="display:none"><div class="prog-b" id="mergePB" style="width:0%"></div></div>
+      <div class="sts" id="mergeSts"></div>
+      <div style="display:flex;justify-content:flex-end;margin-top:8px">
+        <button class="btn prim" id="mergeBtn" onclick="mergePDFs()" disabled>PDFs zusammenführen</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="acts">
+    <button class="btn" onclick="resetAll()">Zurücksetzen</button>
+
+  </div>
+</div>
+
+<script>
+// ===== VERTRAGSTYP =====
+let currentTyp = 'betrieb';
+document.addEventListener('DOMContentLoaded', () => { setTyp('betrieb'); });
+
+function setTyp(typ) {
+  currentTyp = typ;
+  document.getElementById('btn-betrieb').classList.toggle('active', typ === 'betrieb');
+  document.getElementById('btn-wartung').classList.toggle('active', typ === 'wartung');
+  document.getElementById('btn-vollbetrieb').classList.toggle('active', typ === 'vollbetrieb');
+  document.getElementById('btn-betrieb-dc').classList.toggle('active', typ === 'betrieb-dc');
+
+  const apCard = document.getElementById('apCard');
+  const hdrSub = document.getElementById('hdrSubtitle');
+  const badge  = document.getElementById('badgeText');
+  const partnerLabel = document.getElementById('partnerLabel');
+  const anhangLabel = document.getElementById('anhangLabel');
+
+  if (typ === 'wartung') {
+    apCard.classList.add('disabled');
+    document.getElementById('laufzeitRow').style.display = '';
+    document.getElementById('mergeSlot2Manual').style.display = '';
+    document.getElementById('mergeSlot2Auto').style.display = 'none';
+    document.getElementById('mergeSub').textContent = 'Vertrag-PDF zuerst hochladen, dann Angebots-PDF – werden zusammengefügt';
+    updateMergeBtn();
+    apCard.title = 'Nicht Bestandteil des Wartungsvertrags';
+    hdrSub.textContent = 'Rahmenwartungsvertrag';
+    badge.textContent = 'AMBA_Wartungsvertrag_Vorlage.docx · Vorlage wird von GitHub geladen';
+    partnerLabel.textContent = '(nachstehend „amba operations")';
+    document.getElementById('agLabel').textContent = 'Vertragspartner';
+    document.getElementById('agSubLabel').textContent = 'Firmendaten des Vertragspartners';
+    anhangLabel.textContent = 'Anlage 1 – Ladeeinrichtungen';
+  } else if (typ === 'vollbetrieb') {
+    apCard.classList.remove('disabled');
+    apCard.removeAttribute('title');
+    document.getElementById('apTechRow').style.display = '';
+    document.getElementById('laufzeitRow').style.display = '';
+    document.getElementById('apNameLabel').textContent = 'Techn. Ansprechpartner (optional)';
+    document.getElementById('mergeSlot2Manual').style.display = 'none';
+    document.getElementById('mergeSlot2Auto').style.display = '';
+    document.getElementById('mergeSub').textContent = 'Vertrag-PDF hochladen – Angebots-PDF wird aus dem Vollbetrieb-Upload übernommen';
+    updateMergeBtn();
+    hdrSub.textContent = 'Vollbetrieb ohne Strom';
+    badge.textContent = 'AMBA_Vollbetrieb_ohne_Strom_Vorlage.docx · Vorlage wird von GitHub geladen';
+    partnerLabel.textContent = '(nachstehend „Betreiber")';
+    document.getElementById('agLabel').textContent = 'Firma';
+    document.getElementById('agSubLabel').textContent = 'Firmendaten des Kunden';
+    anhangLabel.textContent = 'Anlage 2 – Ladeeinrichtungen';
+  } else if (typ === 'betrieb-dc') {
+    apCard.classList.remove('disabled');
+    apCard.removeAttribute('title');
+    document.getElementById('apTechRow').style.display = 'none';
+    document.getElementById('laufzeitRow').style.display = '';
+    document.getElementById('apNameLabel').textContent = 'Ansprechpartner';
+    document.getElementById('mergeSlot2Manual').style.display = '';
+    document.getElementById('mergeSlot2Auto').style.display = 'none';
+    document.getElementById('mergeSub').textContent = 'Vertrag-PDF zuerst hochladen, dann Angebots-PDF – werden zusammengefügt';
+    updateMergeBtn();
+    hdrSub.textContent = 'Technische Betriebsführung DC';
+    badge.textContent = 'AMBA_VertragTechBetriebsfuehrung_DC_Vorlage.docx · Vorlage wird von GitHub geladen';
+    partnerLabel.textContent = '(nachstehend „Auftragnehmer")';
+    document.getElementById('agLabel').textContent = 'Auftraggeber';
+    document.getElementById('agSubLabel').textContent = 'Firmendaten des Auftraggebers';
+    anhangLabel.textContent = 'Anhang 2 – Ladeeinrichtungen';
+  } else {
+    apCard.classList.remove('disabled');
+    apCard.removeAttribute('title');
+    document.getElementById('apTechRow').style.display = 'none';
+    document.getElementById('laufzeitRow').style.display = '';
+    document.getElementById('apNameLabel').textContent = 'Ansprechpartner';
+    document.getElementById('mergeSlot2Manual').style.display = '';
+    document.getElementById('mergeSlot2Auto').style.display = 'none';
+    document.getElementById('mergeSub').textContent = 'Vertrag-PDF zuerst hochladen, dann Angebots-PDF – werden zusammengefügt';
+    updateMergeBtn();
+    hdrSub.textContent = 'Technische Betriebsführung AC';
+    badge.textContent = 'AMBA_VertragTechBetriebsfuehrung_Vorlage.docx · Vorlage wird von GitHub geladen';
+    partnerLabel.textContent = '(nachstehend „Auftragnehmer")';
+    document.getElementById('agLabel').textContent = 'Auftraggeber';
+    document.getElementById('agSubLabel').textContent = 'Firmendaten des Auftraggebers';
+    anhangLabel.textContent = 'Anhang 2 – Ladeeinrichtungen';
+  }
+
+  const artikelName = document.getElementById('artikel_name');
+  if (typ === 'betrieb') artikelName.value = 'technische Betriebsführung';
+  else if (typ === 'betrieb-dc') artikelName.value = 'technische Betriebsführung DC';
+  else if (typ === 'vollbetrieb') artikelName.value = 'Vollbetrieb - ganzheitlicher Betrieb der Ladestation ohne Strom';
+  else if (typ === 'wartung') artikelName.value = 'Wartung AC-LP bis 22kW nach DGUV-3';
+
+  const vbPdfCard = document.getElementById('vbPdfCard');
+  if (typ === 'vollbetrieb') {
+    vbPdfCard.style.display = 'block';
+    initVbPdfUpload();
+  } else {
+    vbPdfCard.style.display = 'none';
+  }
+}
+
+
+// ===== PLATZHALTER WARTUNG =====
+
+
+// ===== GITHUB RAW TEMPLATE URLS =====
+const GITHUB_BASE = 'https://raw.githubusercontent.com/AO-Ingo/Betreibervertr-ge/main/';
+const TEMPLATE_URLS = {
+  betrieb:     GITHUB_BASE + 'AMBA_VertragTechBetriebsfuehrung%20Vorlage.docx',
+  'betrieb-dc': GITHUB_BASE + 'AMBA_VertragTechBetriebsfuehrung_DC%20-%20Vorlage.docx',
+  vollbetrieb: GITHUB_BASE + 'AMBA_Vollbetrieb_ohne_Strom_Vorlage.docx',
+  wartung:     GITHUB_BASE + 'AMBA_Wartungsvertrag%20Vorlage.docx'
+};
+
+async function fetchTemplate(typ) {
+  const url = TEMPLATE_URLS[typ];
+  const resp = await fetch(url);
+  if (!resp.ok) throw new Error(`Vorlage konnte nicht geladen werden (${resp.status}): ${url}`);
+  return await resp.arrayBuffer();
+}
+
+function getLaufzeit(){ return document.getElementById('vb_laufzeit')?.value || ''; }
+
+function esc(s){
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+function v(id){return (document.getElementById(id)||{}).value||'';}
+
+let rowCount=0;
+function addRow(standort='',art='',anzahl=''){
+  rowCount++;
+  const tr=document.createElement('tr');
+  tr.innerHTML=`
+    <td style="text-align:center;color:var(--hnt);font-size:11px;padding:8px 4px">${rowCount}</td>
+    <td style="display:flex;align-items:center;gap:6px">
+      <label style="display:flex;align-items:center;gap:3px;font-size:11px;color:var(--mut);white-space:nowrap;cursor:pointer" title="Adresse wie Kunde übernehmen">
+        <input type="checkbox" style="margin:0;cursor:pointer" onchange="if(this.checked){var s=document.getElementById('ag_strasse').value;var p=document.getElementById('ag_plz').value;var c=document.getElementById('ag_stadt').value;var addr=[s,p&&c?p+' '+c:p||c].filter(Boolean).join(', ');this.closest('td').querySelector('input[type=text]').value=addr;}"/>
+        <span>Wie Kunde</span>
+      </label>
+      <input type="text" placeholder="Name, Anschrift Standort" value="${standort}" style="flex:1"/>
+    </td>
+    <td><input type="text" placeholder="Hersteller, Modell" value="${art}"/></td>
+    <td><input type="number" min="1" placeholder="1" value="${anzahl}"/></td>
+    <td style="text-align:center"><button class="btn-del" onclick="this.closest('tr').remove();renumber()">×</button></td>`;
+  document.getElementById('ladeBody').appendChild(tr);
+  tr.cells[3].querySelector('input').addEventListener('input', updateArtikelAnzahl);
+  updateArtikelAnzahl();
+}
+function renumber(){
+  document.querySelectorAll('#ladeBody tr').forEach((tr,i)=>tr.cells[0].textContent=i+1);
+  updateArtikelAnzahl();
+}
+function updateArtikelAnzahl(){
+  const sum = Array.from(document.querySelectorAll('#ladeBody tr')).reduce((acc,tr)=>{
+    return acc + (parseInt(tr.cells[3].querySelector('input').value)||0);
+  },0);
+  const el = document.getElementById('artikel_anzahl');
+  if(el) el.value = sum > 0 ? sum : '';
+}
+addRow();
+
+const today=new Date().toISOString().slice(0,10);
+document.getElementById('stand_datum').value=today;
+
+function getRows(){
+  return Array.from(document.querySelectorAll('#ladeBody tr')).map(tr=>({
+    standort:tr.cells[1].querySelector('input[type=text]').value,
+    art:tr.cells[2].querySelector('input').value,
+    anzahl:tr.cells[3].querySelector('input').value,
+  }));
+}
+function fmtDate(iso){
+  if(!iso)return'';const[y,m,d]=iso.split('-');return `${d}.${m}.${y}`;
+}
+function fmtDateMY(iso){
+  // Format MM/YYYY for Wartungsvertrag Stand
+  if(!iso)return'';const[y,m]=iso.split('-');return `${m}/${y}`;
+}
+
+async function generateDocx(){
+  const firma  =v('ag_firma')||'Firma';
+  const strasse=v('ag_strasse')||'Straße';
+  const plz    =v('ag_plz')||'PLZ';
+  const stadt  =v('ag_stadt')||'Stadt';
+  const standDat=fmtDate(v('stand_datum'));
+  const rows=getRows();
+  const slug=(v('ag_firma')||'Vertrag').replace(/\s+/g,'_').replace(/[^a-zA-Z0-9_-]/g,'');
+  const laufzeit = getLaufzeit();
+
+  if (currentTyp === 'betrieb' || currentTyp === 'betrieb-dc') {
+    await generateBetrieb(firma, strasse, plz, stadt, standDat, laufzeit, rows, slug);
+  } else if (currentTyp === 'vollbetrieb') {
+    await generateVollbetrieb(firma, strasse, plz, stadt, standDat, rows, slug);
+  } else {
+    await generateWartung(firma, strasse, plz, stadt, standDat, laufzeit, rows, slug);
+  }
+}
+
+// splitting-sicherer Platzhalter-Replace
+function replaceTag(xml, tag, value) {
+  const val = (value||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  const placeholder = '{{' + tag + '}}';
+  if (xml.includes(placeholder)) {
+    return xml.split(placeholder).join(val);
+  }
+  // Splitting-Fall: Platzhalter über mehrere w:t-Runs verteilt
+  const re = /(<w:r\b[^>]*>(?:<w:rPr>[\s\S]*?<\/w:rPr>)?<w:t[^>]*>)([\s\S]*?)(<\/w:t><\/w:r>)/g;
+  let parts = [], match;
+  while ((match = re.exec(xml)) !== null) {
+    parts.push({ start: match.index, end: re.lastIndex, pre: match[1], text: match[2], post: match[3] });
+  }
+  for (let i = 0; i < parts.length; i++) {
+    let combined = '';
+    for (let j = i; j < parts.length; j++) {
+      combined += parts[j].text;
+      if (combined === placeholder) {
+        xml = xml.slice(0, parts[i].start) + parts[i].pre + val + parts[i].post + xml.slice(parts[j].end);
+        return xml;
+      }
+      if (!placeholder.startsWith(combined)) break;
+    }
+  }
+  return xml;
+}
+
+async function generateBetrieb(firma, strasse, plz, stadt, standDat, laufzeit, rows, slug){
+  const apName = v('ap_name')||'';
+  const apMail = v('ap_email')||'';
+  const apTel  = v('ap_tel')||'';
+
+  const buffer = await fetchTemplate(currentTyp === 'betrieb-dc' ? 'betrieb-dc' : 'betrieb');
+  const zip=await JSZip.loadAsync(buffer);
+  let xml=await zip.file('word/document.xml').async('string');
+
+  xml = replaceTag(xml, 'FIRMA',     firma);
+  xml = replaceTag(xml, 'STRASSE',   strasse);
+  xml = replaceTag(xml, 'PLZSTADT',  plz+' '+stadt);
+  xml = replaceTag(xml, 'DATUM',     standDat);
+  xml = replaceTag(xml, 'LAUFZEIT',  laufzeit);
+  xml = replaceTag(xml, 'AP_NAME',   apName);
+  xml = replaceTag(xml, 'AP_MAIL',   apMail);
+  xml = replaceTag(xml, 'AP_TEL',    apTel);
+
+  const firstRow=rows[0]||{};
+  xml = replaceTag(xml, 'STANDORT_1', firstRow.standort||'');
+  xml = replaceTag(xml, 'ART_1',      firstRow.art||'');
+  xml = replaceTag(xml, 'ANZAHL_1',   firstRow.anzahl||'');
+
+  if(rows.length>1){
+    const rpr=`<w:rPr><w:rFonts w:ascii="Barlow" w:hAnsi="Barlow" w:cstheme="majorHAnsi"/><w:sz w:val="19"/><w:szCs w:val="19"/></w:rPr>`;
+    const ex=(s)=>(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    let extra='';
+    for(let i=1;i<rows.length;i++){
+      const row=rows[i];
+      extra+=`<w:tr><w:trPr><w:trHeight w:val="497"/></w:trPr>`+
+        `<w:tc><w:tcPr><w:tcW w:w="5488" w:type="dxa"/><w:vAlign w:val="center"/></w:tcPr>`+
+        `<w:p><w:pPr><w:pStyle w:val="Brieftext"/><w:spacing w:after="0" w:line="240" w:lineRule="auto"/></w:pPr>`+
+        `<w:r>${rpr}<w:t>${ex(row.standort)}</w:t></w:r></w:p></w:tc>`+
+        `<w:tc><w:tcPr><w:tcW w:w="4430" w:type="dxa"/><w:vAlign w:val="center"/></w:tcPr>`+
+        `<w:p><w:pPr><w:pStyle w:val="Brieftext"/><w:spacing w:after="0" w:line="240" w:lineRule="auto"/></w:pPr>`+
+        `<w:r>${rpr}<w:t>${ex(row.art)}</w:t></w:r></w:p></w:tc>`+
+        `<w:tc><w:tcPr><w:tcW w:w="2698" w:type="dxa"/><w:vAlign w:val="center"/></w:tcPr>`+
+        `<w:p><w:pPr><w:pStyle w:val="Brieftext"/><w:spacing w:after="0" w:line="240" w:lineRule="auto"/></w:pPr>`+
+        `<w:r>${rpr}<w:t>${ex(row.anzahl)}</w:t></w:r></w:p></w:tc>`+
+        `</w:tr>`;
+    }
+    xml=xml.replace('<w:bookmarkEnd w:id="0"/></w:tbl>',extra+'<w:bookmarkEnd w:id="0"/></w:tbl>');
+  }
+
+  zip.file('word/document.xml',xml);
+  const out=await zip.generateAsync({type:'blob',mimeType:'application/vnd.openxmlformats-officedocument.wordprocessingml.document'});
+  const dlPrefix = currentTyp === 'betrieb-dc' ? 'AMBA_Betriebsfuehrung_DC' : 'AMBA_Betriebsfuehrung';
+  download(out, `${dlPrefix}_${slug}.docx`);
+}
+
+async function generateVollbetrieb(firma, strasse, plz, stadt, standDat, rows, slug){
+  const angebotsnr  = v('vb_angebotsnr') || 'Angebotsnummer';
+  const laufzeit = getLaufzeit();
+  const apKfmName   = v('ap_tech_name');
+  const apKfmTel    = v('ap_tech_tel');
+  const apKfmEmail  = v('ap_tech_email');
+  const apTechName  = v('ap_name');
+  const apTechTel   = v('ap_tel');
+  const apTechEmail = v('ap_email');
+
+  const buffer = await fetchTemplate('vollbetrieb');
+  const zip = await JSZip.loadAsync(buffer);
+  let xml = await zip.file('word/document.xml').async('string');
+
+  xml = replaceTag(xml, 'ANGEBOTSNR',   angebotsnr);
+  xml = replaceTag(xml, 'FIRMA',        firma);
+  xml = replaceTag(xml, 'STRASSE',      strasse);
+  xml = replaceTag(xml, 'PLZSTADT',     plz + ' ' + stadt);
+  xml = replaceTag(xml, 'DATUM',        standDat);
+  xml = replaceTag(xml, 'LAUFZEIT',     laufzeit);
+  xml = replaceTag(xml, 'AP_KFM_NAME',  apKfmName);
+  xml = replaceTag(xml, 'AP_KFM_TEL',   apKfmTel);
+  xml = replaceTag(xml, 'AP_KFM_MAIL',  apKfmEmail);
+  xml = replaceTag(xml, 'AP_TECH_NAME', apTechName);
+  xml = replaceTag(xml, 'AP_TECH_TEL',  apTechTel);
+  xml = replaceTag(xml, 'AP_TECH_MAIL', apTechEmail);
+
+  // ── Anlage 2: Zeile 1 ────────────────────────────────────────────────────
+  const firstRow = rows[0] || {};
+  xml = replaceTag(xml, 'STANDORT_1', firstRow.standort||'');
+  xml = replaceTag(xml, 'ART_1',      firstRow.art||'');
+  xml = replaceTag(xml, 'ANZAHL_1',   firstRow.anzahl||'');
+
+  // ── Anlage 2: Zusatzzeilen ────────────────────────────────────────────────
+  if(rows.length > 1){
+    const rpr5 = '<w:rPr><w:rStyle w:val="Formatvorlage5"/></w:rPr>';
+    const rprA = '<w:rPr><w:rStyle w:val="Formatvorlage5"/><w:rFonts w:cs="Arial"/></w:rPr>';
+    let extraRows = '';
+    for(let i=1; i<rows.length; i++){
+      const row = rows[i];
+      extraRows +=
+        `<w:tr w:rsidR="009D5EDF" w:rsidRPr="00A34979" w:rsidTr="009D5EDF">` +
+        `<w:trPr><w:trHeight w:val="421"/></w:trPr>` +
+        `<w:tc><w:tcPr><w:tcW w:w="4112" w:type="dxa"/><w:vAlign w:val="center"/></w:tcPr>` +
+        `<w:p><w:pPr><w:pStyle w:val="Brieftext"/><w:spacing w:after="0" w:line="240" w:lineRule="auto"/><w:jc w:val="left"/></w:pPr>` +
+        `<w:r>${rpr5}<w:t>${esc(row.standort||'')}</w:t></w:r></w:p></w:tc>` +
+        `<w:tc><w:tcPr><w:tcW w:w="4394" w:type="dxa"/><w:vAlign w:val="center"/></w:tcPr>` +
+        `<w:p><w:pPr><w:pStyle w:val="Brieftext"/><w:spacing w:after="0" w:line="240" w:lineRule="auto"/><w:jc w:val="left"/></w:pPr>` +
+        `<w:r>${rprA}<w:t>${esc(row.art||'')}</w:t></w:r></w:p></w:tc>` +
+        `<w:tc><w:tcPr><w:tcW w:w="4678" w:type="dxa"/><w:vAlign w:val="center"/></w:tcPr>` +
+        `<w:p><w:pPr><w:pStyle w:val="Brieftext"/><w:spacing w:after="0" w:line="240" w:lineRule="auto"/><w:jc w:val="left"/></w:pPr>` +
+        `<w:r>${rprA}<w:t>${esc(row.anzahl||'')}</w:t></w:r></w:p></w:tc>` +
+        `</w:tr>`;
+    }
+    xml = xml.replace('<w:bookmarkEnd w:id="0"/></w:tbl>', extraRows + '<w:bookmarkEnd w:id="0"/></w:tbl>');
+  }
+
+  zip.file('word/document.xml', xml);
+  const out = await zip.generateAsync({type:'blob',mimeType:'application/vnd.openxmlformats-officedocument.wordprocessingml.document'});
+  download(out, `AMBA_Vollbetrieb_${slug}.docx`);
+}
+
+async function generateWartung(firma, strasse, plz, stadt, standDat, laufzeit, rows, slug){
+  const buffer = await fetchTemplate('wartung');
+  const zip=await JSZip.loadAsync(buffer);
+  let xml=await zip.file('word/document.xml').async('string');
+
+  xml = replaceTag(xml, 'FIRMA',     firma);
+  xml = replaceTag(xml, 'STRASSE',   strasse);
+  xml = replaceTag(xml, 'PLZSTADT',  plz+' '+stadt);
+  xml = replaceTag(xml, 'DATUM',     standDat);
+  xml = replaceTag(xml, 'LAUFZEIT',  laufzeit);
+
+  const firstRow=rows[0]||{};
+  xml = replaceTag(xml, 'STANDORT_1', firstRow.standort||'');
+  xml = replaceTag(xml, 'ART_1',      firstRow.art||'');
+  xml = replaceTag(xml, 'ANZAHL_1',   firstRow.anzahl||'');
+
+  if(rows.length>1){
+    let extra='';
+    for(let i=1;i<rows.length;i++){
+      const row=rows[i];
+      extra+=`<w:tr>`+
+        `<w:tc><w:tcPr><w:tcW w:w="3516" w:type="dxa"/></w:tcPr>`+
+        `<w:p><w:r><w:t>${esc(row.standort||'')}</w:t></w:r></w:p></w:tc>`+
+        `<w:tc><w:tcPr><w:tcW w:w="3855" w:type="dxa"/></w:tcPr>`+
+        `<w:p><w:r><w:t>${esc(row.art||'')}</w:t></w:r></w:p></w:tc>`+
+        `<w:tc><w:tcPr><w:tcW w:w="2693" w:type="dxa"/></w:tcPr>`+
+        `<w:p><w:r><w:t>${esc(row.anzahl||'')}</w:t></w:r></w:p></w:tc>`+
+        `</w:tr>`;
+    }
+    xml=xml.replace('<w:bookmarkEnd w:id="0"/></w:tbl>', extra+'<w:bookmarkEnd w:id="0"/></w:tbl>');
+  }
+
+  zip.file('word/document.xml',xml);
+  const out=await zip.generateAsync({type:'blob',mimeType:'application/vnd.openxmlformats-officedocument.wordprocessingml.document'});
+  download(out, `AMBA_Wartungsvertrag_${slug}.docx`);
+}
+
+function download(blob, filename){
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url; a.download=filename; a.click();
+  const bar=document.getElementById('dlLinkBar');
+  const anchor=document.getElementById('dlLinkAnchor');
+  if(bar && anchor){
+    anchor.href=url; anchor.download=filename; anchor.textContent=filename; anchor.onclick=null;
+    bar.style.display='flex';
+  }
+}
+
+
+// ===== MAKE WEBHOOK =====
+const MAKE_WEBHOOK = 'https://hook.eu2.make.com/bxt8ju15xwttjyphu3ubb1jdff6xlh4w';
+const ZOHO_ARTIKEL = {
+  betrieb:     { id: '520234000000111332', name: 'technische Betriebsführung' },
+  'betrieb-dc': { id: '520234000003960018', name: 'technische Betriebsführung DC' },
+  vollbetrieb: { id: '520234000003540041', name: 'Vollbetrieb - ganzheitlicher Betrieb der Ladestation ohne Strom' },
+  wartung:     { id: '520234000000056504', name: 'Wartung AC-LP bis 22kW nach DGUV-3' },
+};
+
+async function sendenAnMake(){
+  const sendBtn = document.getElementById('sendenBtn');
+  const sendSts = document.getElementById('sendSts');
+  sendBtn.disabled = true;
+  sendSts.className = 'sts proc';
+  sendSts.innerHTML = '<div class="spin"></div><span>Wird an Make gesendet…</span>';
+  sendSts.style.display = 'flex';
+
+  const artikel = ZOHO_ARTIKEL[currentTyp];
+  const payload = {
+    vertragstyp: currentTyp,
+    zoho_artikel_id: artikel.id,
+    zoho_artikel_name: artikel.name,
+    ag_firma:   v('ag_firma'),
+    ag_strasse: v('ag_strasse'),
+    ag_plz:     v('ag_plz'),
+    ag_stadt:   v('ag_stadt'),
+    stand_datum: v('stand_datum'),
+    ap_name:    v('ap_name'),
+    ap_email:   v('ap_email'),
+    ap_tel:     v('ap_tel'),
+    ap_tech_name:  v('ap_tech_name'),
+    ap_tech_email: v('ap_tech_email'),
+    ap_tech_tel:   v('ap_tech_tel'),
+    ladeeinrichtungen: getRows(),
+    artikel_anzahl: v('artikel_anzahl'),
+  };
+  if(currentTyp === 'vollbetrieb') payload.vb_angebotsnr = v('vb_angebotsnr');
+
+  try {
+    const resp = await fetch(MAKE_WEBHOOK, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+    if(resp.ok){
+      sendSts.className = 'sts ok';
+      sendSts.innerHTML = '<span>✓</span><span>Erfolgreich an Make gesendet – Zoho-Angebot wird erstellt.</span>';
+    } else {
+      throw new Error(`HTTP ${resp.status}`);
+    }
+  } catch(err){
+    sendSts.className = 'sts err';
+    sendSts.innerHTML = `<span>✕</span><span>Fehler beim Senden: ${err.message}</span>`;
+  }
+  sendBtn.disabled = false;
+}
+
+// ===== VOLLBETRIEB PDF-UPLOAD (Angebotsnummer aus Dateinamen) =====
+let vbInitDone = false;
+function initVbPdfUpload(){
+  if(vbInitDone) return;
+  vbInitDone = true;
+  const inp = document.getElementById('vbAngebotPdf');
+  if(!inp) return;
+  inp.addEventListener('change', e => {
+    const file = e.target.files[0];
+    const vbGenBtn = document.getElementById('vbGenBtn');
+    if(!file){ vbGenBtn.disabled=true; document.getElementById('vbPdfHint').textContent='Noch kein PDF hochgeladen'; document.getElementById('vbPdfHint').style.color=''; return; }
+    const name = file.name.replace(/\.pdf$/i, '').trim();
+    document.getElementById('vb_angebotsnr').value = name;
+    document.getElementById('vbPdfHint').textContent = `📄 ${file.name} → Angebotsnummer: ${name}`;
+    document.getElementById('vbPdfHint').style.color = 'var(--grn)';
+    vbGenBtn.disabled = false;
+  });
+}
+
+function resetAll(){
+  ['ag_firma','ag_strasse','ag_plz','ag_stadt','ap_name','ap_email','ap_tel','ap_tech_name','ap_tech_email','ap_tech_tel','vb_angebotsnr'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  document.getElementById('stand_datum').value=today;
+  document.getElementById('ladeBody').innerHTML='';rowCount=0;addRow();
+  // Artikel-Anzahl zurücksetzen
+  const aa=document.getElementById('artikel_anzahl'); if(aa) aa.value='';
+  // Senden-Status zurücksetzen
+  const ss=document.getElementById('sendSts'); if(ss){ss.className='sts';ss.innerHTML='';ss.style.display='none';}
+  // PDF-Upload zurücksetzen
+  const vbPdf=document.getElementById('vbAngebotPdf'); if(vbPdf) vbPdf.value='';
+  const vbHint=document.getElementById('vbPdfHint'); if(vbHint){vbHint.textContent='Noch kein PDF hochgeladen';vbHint.style.color='';}
+  // genBtn-Sperre neu setzen falls Vollbetrieb aktiv
+  if(currentTyp==='vollbetrieb'){document.getElementById('genBtn').disabled=true;}
+  // Merge-Felder zurücksetzen
+  ['mergeFile1','mergeFile2'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  ['mergeHint1','mergeHint2'].forEach(id=>{const el=document.getElementById(id);if(el){el.textContent='Noch kein PDF';el.style.color='';}});
+  const mb=document.getElementById('mergeBtn');if(mb)mb.disabled=true;
+  const ms=document.getElementById('mergeSts');if(ms){ms.className='sts';ms.innerHTML='';}
+}
+// ===== PDF MERGE =====
+document.addEventListener('DOMContentLoaded',function(){
+  const f1=document.getElementById('mergeFile1');
+  const f2=document.getElementById('mergeFile2');
+  f1.addEventListener('change',e=>{
+    const f=e.target.files[0];
+    document.getElementById('mergeHint1').textContent=f?`📄 ${f.name}`:'Noch kein PDF';
+    document.getElementById('mergeHint1').style.color=f?'var(--grn)':'';
+    updateMergeBtn();
+  });
+  f2.addEventListener('change',e=>{
+    const f=e.target.files[0];
+    document.getElementById('mergeHint2').textContent=f?`📄 ${f.name}`:'Noch kein PDF';
+    document.getElementById('mergeHint2').style.color=f?'var(--grn)':'';
+    updateMergeBtn();
+  });
+});
+
+function updateMergeBtn(){
+  const f1 = document.getElementById('mergeFile1').files[0];
+  const isVb = currentTyp === 'vollbetrieb';
+  const f2vb = document.getElementById('vbAngebotPdf').files[0];
+  const f2manual = document.getElementById('mergeFile2').files[0];
+  const ready = f1 && (isVb ? f2vb : f2manual);
+  document.getElementById('mergeBtn').disabled = !ready;
+  // update auto hint
+  if(isVb){
+    const hint = document.getElementById('mergeHint2Auto');
+    hint.textContent = f2vb ? '📄 ' + f2vb.name : 'Noch kein PDF aus Vollbetrieb hochgeladen';
+    hint.style.color = f2vb ? 'var(--grn)' : 'var(--hnt)';
+  }
+}
+
+async function mergePDFs(){
+  const f1=document.getElementById('mergeFile1').files[0];
+  const f2vb=currentTyp==='vollbetrieb' ? document.getElementById('vbAngebotPdf').files[0] : null;
+  const f2=f2vb || document.getElementById('mergeFile2').files[0];
+  if(!f1||!f2)return;
+  const btn=document.getElementById('mergeBtn');
+  const pw=document.getElementById('mergePW');
+  const pb=document.getElementById('mergePB');
+  const sts=document.getElementById('mergeSts');
+  btn.disabled=true; pw.style.display='block'; pb.style.width='0%';
+  sts.className='sts proc'; sts.innerHTML='<div class="spin"></div><span>Zusammenführen…</span>';
+  try{
+    const {PDFDocument}=PDFLib;
+    const merged=await PDFDocument.create();
+    for(const [i,file] of [[0,f1],[1,f2]]){
+      const doc=await PDFDocument.load(await file.arrayBuffer());
+      const pages=await merged.copyPages(doc,doc.getPageIndices());
+      pages.forEach(p=>merged.addPage(p));
+      pb.style.width=((i+1)/2*90)+'%';
+    }
+    pb.style.width='100%';
+    const blob=new Blob([await merged.save()],{type:'application/pdf'});
+    const a=document.createElement('a');
+    const slug=(v('ag_firma')||'Dokument').replace(/\s+/g,'_').replace(/[^a-zA-Z0-9_-]/g,'');
+    a.href=URL.createObjectURL(blob); a.download=`AMBA_Vertrag_${slug}.pdf`; a.click(); URL.revokeObjectURL(a.href);
+    sts.className='sts ok'; sts.innerHTML='<span>✓</span><span>Erfolgreich zusammengefügt und heruntergeladen.</span>';
+  }catch(err){
+    sts.className='sts err'; sts.innerHTML=`<span>✕</span><span>Fehler: ${err.message}</span>`;
+  }
+  btn.disabled=false; setTimeout(()=>{pw.style.display='none';},2500);
+}
+</script>
+</body>
+</html>
