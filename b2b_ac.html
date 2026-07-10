@@ -116,7 +116,18 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:var(--bg);color:var(--tx
 .btn.prim{background:var(--acc);color:#fff;border-color:var(--acc)}.btn.prim:hover{background:var(--amid);border-color:var(--amid)}
 .btn.prim:disabled{opacity:.35;cursor:not-allowed}
 .btn.grn{background:var(--grn);color:#fff;border-color:var(--grn)}.btn.grn:hover{background:#145c30;border-color:#145c30}
-</style>
+
+    .vt-btn--disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+      filter: grayscale(1);
+    }
+    .vt-btn--disabled:hover {
+      transform: none !important;
+      box-shadow: none !important;
+      border-color: transparent !important;
+    }
+  </style>
 </head>
 <!-- back nav added -->
 <body>
@@ -144,11 +155,11 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:var(--bg);color:var(--tx
     </button>
     DC-TAB-ENDE -->
     <button class="vt-btn" id="btn-vollbetrieb" onclick="setTyp('vollbetrieb')">
-      <div class="vt-label">Vollbetrieb ohne Strom</div>
+      <div class="vt-label">Vollbetrieb ohne Strom AC</div>
       <div class="vt-desc">AMBA_Vollbetrieb_Vorlage.docx</div>
     </button>
     <button class="vt-btn" id="btn-wartung" onclick="setTyp('wartung')">
-      <div class="vt-label">Rahmenwartungsvertrag</div>
+      <div class="vt-label">Rahmenwartungsvertrag AC</div>
       <div class="vt-desc">AMBA_Wartungsvertrag_Vorlage.docx</div>
     </button>
   </div>
