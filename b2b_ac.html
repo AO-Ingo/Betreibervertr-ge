@@ -148,20 +148,24 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:var(--bg);color:var(--tx
       <div class="vt-label">Technische Betriebsführung AC</div>
       <div class="vt-desc">AMBA_VertragTechnischeBetriebsfuehrung_Vorlage.docx</div>
     </button>
-    <!-- DC-TAB: ausgeblendet, wird in b2b_dc.html verwendet
+    <button class="vt-btn" id="btn-vollbetrieb" onclick="setTyp('vollbetrieb')">
+      <div class="vt-label">Vollbetrieb ohne Strom AC</div>
+      <div class="vt-desc">AMBA_Vollbetrieb_ohne_Strom_Vorlage.docx</div>
+    </button>
+    <button class="vt-btn vt-btn--disabled" disabled title="Demnächst verfügbar">
+      <div class="vt-label">Vollbetrieb mit Strom AC</div>
+      <div class="vt-desc">Demnächst verfügbar</div>
+    </button>
+    <button class="vt-btn" id="btn-wartung" onclick="setTyp('wartung')">
+      <div class="vt-label">Rahmenwartungsvertrag AC</div>
+      <div class="vt-desc">AMBA_Wartungsvertrag%20Vorlage.docx</div>
+    </button>
+    <!-- DC-TAB: verwendet in b2b_dc.html
     <button class="vt-btn" id="btn-betrieb-dc" onclick="setTyp('betrieb-dc')">
       <div class="vt-label">Technische Betriebsführung DC</div>
       <div class="vt-desc">AMBA_VertragTechBetriebsfuehrung_DC_Vorlage.docx</div>
     </button>
     DC-TAB-ENDE -->
-    <button class="vt-btn" id="btn-vollbetrieb" onclick="setTyp('vollbetrieb')">
-      <div class="vt-label">Vollbetrieb ohne Strom AC</div>
-      <div class="vt-desc">AMBA_Vollbetrieb_Vorlage.docx</div>
-    </button>
-    <button class="vt-btn" id="btn-wartung" onclick="setTyp('wartung')">
-      <div class="vt-label">Rahmenwartungsvertrag AC</div>
-      <div class="vt-desc">AMBA_Wartungsvertrag_Vorlage.docx</div>
-    </button>
   </div>
 
   <div class="word-badge" id="wordBadge">
