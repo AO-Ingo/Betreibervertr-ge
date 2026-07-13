@@ -163,10 +163,7 @@
     </select>
   </div>
   <!-- AC-TABS: verwendet in b2b_ac.html -->
-  <div style="margin-top:10px;margin-bottom:24px">
-    <div style="font-size:11px;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;color:var(--text-muted);margin-bottom:8px">Vertragsvorlagen herunterladen</div>
-    <div style="display:flex;flex-wrap:wrap;gap:8px"><a href="https://raw.githubusercontent.com/AO-Ingo/Vertragsgenerator/main/AMBA_VertragTechBetriebsfuehrung_DC%20-%20Vorlage.docx" download style="display:inline-flex;align-items:center;gap:6px;padding:7px 12px;border:1px solid var(--border);border-radius:var(--radius);font-size:12px;font-weight:500;color:var(--text);text-decoration:none;background:var(--surface);transition:all 0.15s" onmouseover="this.style.borderColor='var(--border-strong)';this.style.background='var(--surface2)'" onmouseout="this.style.borderColor='var(--border)';this.style.background='var(--surface)'"><span style="font-size:14px">⬇</span>Technische Betriebsführung DC</a></div>
-  </div>
+  <div id="dlSection" style="margin-bottom:24px;display:none"></div>
   
 
   <div class="card">
@@ -273,9 +270,33 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // ── TYP WECHSEL ──
+
+const DOCX_DOWNLOAD = {
+  betrieb:     { label: 'Technische Betriebsführung AC', url: 'https://raw.githubusercontent.com/AO-Ingo/Vertragsgenerator/main/AMBA_VertragTechBetriebsfuehrung%20Vorlage.docx' },
+  vollbetrieb: { label: 'Vollbetrieb ohne Strom AC',     url: 'https://raw.githubusercontent.com/AO-Ingo/Vertragsgenerator/main/AMBA_Vollbetrieb_ohne_Strom_Vorlage.docx' },
+  wartung:     { label: 'Rahmenwartungsvertrag AC',       url: 'https://raw.githubusercontent.com/AO-Ingo/Vertragsgenerator/main/AMBA_Wartungsvertrag%20Vorlage.docx' },
+  'betrieb-dc':{ label: 'Technische Betriebsführung DC', url: 'https://raw.githubusercontent.com/AO-Ingo/Vertragsgenerator/main/AMBA_VertragTechBetriebsfuehrung_DC%20-%20Vorlage.docx' },
+};
+
+function renderDlSection(typ) {
+  const sec = document.getElementById('dlSection');
+  if (!sec) return;
+  const d = DOCX_DOWNLOAD[typ];
+  if (!d) { sec.style.display = 'none'; return; }
+  sec.style.display = '';
+  sec.innerHTML = `
+    <div style="font-size:11px;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;color:var(--text-muted);margin-bottom:8px">Vertragsvorlage herunterladen</div>
+    <a href="${d.url}" download style="display:inline-flex;align-items:center;gap:6px;padding:7px 12px;border:1px solid var(--border);border-radius:var(--radius);font-size:12px;font-weight:500;color:var(--text);text-decoration:none;background:var(--surface);transition:all 0.15s"
+      onmouseover="this.style.borderColor='var(--border-strong)';this.style.background='var(--surface2)'"
+      onmouseout="this.style.borderColor='var(--border)';this.style.background='var(--surface)'">
+      <span>⬇</span> ${d.label}
+    </a>`;
+}
+
 function setTyp(typ) {
   if (!typ) return;
   currentTyp = typ;
+  renderDlSection(typ);
   const sel = document.getElementById('vtSelect');
   if (sel && sel.value !== typ) sel.value = typ;
 
