@@ -174,10 +174,8 @@ document.addEventListener('DOMContentLoaded', () => { setTyp('betrieb'); });
 
 function setTyp(typ) {
   currentTyp = typ;
-  document.getElementById('btn-betrieb').classList.toggle('active', typ === 'betrieb');
-  document.getElementById('btn-wartung').classList.toggle('active', typ === 'wartung');
-  document.getElementById('btn-vollbetrieb').classList.toggle('active', typ === 'vollbetrieb');
-  document.getElementById('btn-betrieb-dc').classList.toggle('active', typ === 'betrieb-dc');
+  const sel = document.getElementById('vtSelect');
+  if (sel && sel.value !== typ) sel.value = typ;
 
   const apCard = document.getElementById('apCard');
   const hdrSub = document.getElementById('hdrSubtitle');
