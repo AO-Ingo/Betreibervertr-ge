@@ -3,273 +3,157 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link rel="icon" href="favicon.svg">
   <title>AMBA Vertragsgenerator – B2C</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
   <style>
+    @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap');
+    :root {
+      --bg: #F0EFEB; --surface: #FFFFFF; --surface2: #F7F6F2;
+      --border: #D8D5CE; --border-strong: #B0AA9F;
+      --text: #1A1916; --text-muted: #6B6660;
+      --accent: #1A1916; --accent-hover: #3D3A35;
+      --danger: #C0392B; --success: #1A6B3C;
+      --shadow: 0 1px 3px rgba(0,0,0,0.08), 0 4px 12px rgba(0,0,0,0.04);
+      --radius: 6px; --radius-lg: 10px;
+    }
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-      background: #f0f2f5;
-      min-height: 100vh;
-      padding: 60px 20px 40px;
-      color: #1a1a2e;
-    }
-
-    .back-link {
-      position: fixed;
-      top: 14px;
-      left: 16px;
-      z-index: 999;
-      text-decoration: none;
-      font-size: 13px;
-      color: #0057b8;
-      font-weight: 600;
-      opacity: 0.8;
-    }
-    .back-link:hover { opacity: 1; }
-
-    h1 {
-      text-align: center;
-      font-size: 22px;
-      font-weight: 700;
-      margin-bottom: 6px;
-    }
-    .subtitle {
-      text-align: center;
-      font-size: 13px;
-      color: #888;
-      margin-bottom: 32px;
-    }
-
-    .card {
-      background: #fff;
-      border-radius: 14px;
-      padding: 28px 32px;
-      max-width: 700px;
-      margin: 0 auto 24px;
-      box-shadow: 0 2px 12px rgba(0,0,0,0.07);
-    }
-
-    .card h2 {
-      font-size: 14px;
-      font-weight: 700;
-      letter-spacing: 1.5px;
-      text-transform: uppercase;
-      color: #0057b8;
-      margin-bottom: 18px;
-    }
-
-    .field-group {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 14px;
-    }
+    body { font-family: 'DM Sans', sans-serif; background: #232C2B; min-height: 100vh; display: flex; flex-direction: column; color: var(--text); font-size: 14px; }
+    .site-header { width: 100%; padding: 28px 0 22px; text-align: center; border-bottom: 1px solid rgba(255,255,255,0.08); background: #232C2B; flex-shrink: 0; position: relative; }
+    .logo-amba { font-size: 24px; font-weight: 300; letter-spacing: 0.55em; color: #fff; text-transform: uppercase; display: block; padding-left: 0.55em; }
+    .logo-sub { font-size: 11px; font-weight: 300; letter-spacing: 0.22em; color: rgba(255,255,255,0.4); display: block; padding-left: 0.22em; margin-top: 2px; }
+    .back-link { position: absolute; top: 50%; left: 20px; transform: translateY(-50%); font-size: 12px; color: rgba(255,255,255,0.45); text-decoration: none; letter-spacing: 0.04em; transition: color 0.15s; }
+    .back-link:hover { color: rgba(255,255,255,0.85); }
+    .content { background: var(--bg); flex: 1; padding: 32px 40px 60px; max-width: 860px; width: 100%; margin: 0 auto; }
+    .page-header { margin-bottom: 24px; }
+    .page-title { font-size: 20px; font-weight: 500; color: var(--text); }
+    .page-subtitle { font-size: 12px; color: var(--text-muted); margin-top: 3px; }
+    .vt-select { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 28px; }
+    .vt-btn { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 14px 20px; cursor: pointer; text-align: left; transition: all 0.15s; min-width: 180px; font-family: 'DM Sans', sans-serif; }
+    .vt-btn:hover { border-color: var(--border-strong); box-shadow: var(--shadow); }
+    .vt-btn.active { background: var(--text); border-color: var(--text); color: #F0EFEB; }
+    .vt-btn.active .vt-desc { color: rgba(240,239,235,0.55); }
+    .vt-label { font-size: 13px; font-weight: 500; }
+    .vt-desc { font-size: 11px; color: var(--text-muted); margin-top: 3px; font-family: 'DM Mono', monospace; }
+    .vt-btn--disabled { opacity: 0.4; cursor: not-allowed; }
+    .vt-btn--disabled:hover { border-color: var(--border); box-shadow: none; }
+    .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 24px; margin-bottom: 20px; box-shadow: var(--shadow); }
+    .card-title { font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 16px; }
+    .field-group { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px; }
     .field-group.single { grid-template-columns: 1fr; }
     .field-group.triple { grid-template-columns: 1fr 1fr 1fr; }
-
-    label {
-      display: flex;
-      flex-direction: column;
-      font-size: 12px;
-      font-weight: 600;
-      color: #666;
-      gap: 5px;
-    }
-    label span.required { color: #e53935; }
-
-    input, select {
-      padding: 9px 12px;
-      border: 1.5px solid #e0e0e0;
-      border-radius: 8px;
-      font-size: 14px;
-      color: #1a1a2e;
-      background: #fff;
-      transition: border-color 0.15s;
-      width: 100%;
-    }
-    input:focus, select:focus {
-      outline: none;
-      border-color: #0057b8;
-    }
-    input[readonly] {
-      background: #f7f8fa;
-      color: #555;
-    }
-
-    .profile-select-wrap {
-      max-width: 700px;
-      margin: 0 auto 20px;
-    }
-    .profile-select-wrap select {
-      font-size: 15px;
-      padding: 12px 16px;
-      border-radius: 10px;
-      border: 2px solid #0057b8;
-      font-weight: 600;
-      color: #0057b8;
-      background: #fff;
-      cursor: pointer;
-    }
-
-    .info-box {
-      background: #f0f6ff;
-      border-left: 3px solid #0057b8;
-      border-radius: 0 8px 8px 0;
-      padding: 10px 14px;
-      font-size: 13px;
-      color: #444;
-      margin-bottom: 18px;
-    }
-    .info-box strong { color: #0057b8; }
-
-    .btn-generate {
-      display: block;
-      width: 100%;
-      max-width: 700px;
-      margin: 0 auto;
-      padding: 15px;
-      background: #0057b8;
-      color: #fff;
-      border: none;
-      border-radius: 10px;
-      font-size: 16px;
-      font-weight: 700;
-      cursor: pointer;
-      transition: background 0.15s, transform 0.1s;
-    }
-    .btn-generate:hover { background: #004499; transform: translateY(-1px); }
+    .field-group:last-child { margin-bottom: 0; }
+    label { display: flex; flex-direction: column; font-size: 11px; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; color: var(--text-muted); gap: 5px; }
+    input[type="text"], input[type="date"], input[type="number"], select, textarea { width: 100%; padding: 8px 10px; border: 1px solid var(--border); border-radius: var(--radius); background: var(--surface); color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 13px; transition: border-color 0.15s, box-shadow 0.15s; outline: none; }
+    input:focus, select:focus, textarea:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(26,25,22,0.07); }
+    input[readonly] { background: var(--surface2); color: var(--text-muted); }
+    hr.divider { border: none; border-top: 1px solid var(--border); margin: 16px 0; }
+    .btn-generate { display: block; width: 100%; padding: 14px; background: var(--text); color: #F0EFEB; border: none; border-radius: var(--radius-lg); font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 500; letter-spacing: 0.03em; cursor: pointer; transition: background 0.15s, transform 0.1s; margin-bottom: 12px; }
+    .btn-generate:hover { background: var(--accent-hover); transform: translateY(-1px); }
     .btn-generate:active { transform: none; }
-    .btn-generate:disabled { background: #aaa; cursor: not-allowed; transform: none; }
+    .btn-generate:disabled { background: var(--border-strong); cursor: not-allowed; transform: none; }
+    .status { font-size: 12px; text-align: center; color: var(--text-muted); min-height: 18px; margin-bottom: 8px; }
+    .status.error { color: var(--danger); }
+    .status.success { color: var(--success); }
+    .le-row { display: grid; grid-template-columns: 2fr 1fr auto; gap: 10px; align-items: end; margin-bottom: 10px; }
+    .btn-add-le { background: none; border: 1px dashed var(--border-strong); color: var(--text-muted); border-radius: var(--radius); padding: 7px 14px; font-family: 'DM Sans', sans-serif; font-size: 12px; cursor: pointer; margin-top: 6px; transition: all 0.15s; }
+    .btn-add-le:hover { border-color: var(--accent); color: var(--accent); }
+    .btn-remove-le { background: none; border: none; color: var(--text-muted); font-size: 18px; cursor: pointer; padding: 0 4px; align-self: center; margin-bottom: 2px; }
+    .btn-remove-le:hover { color: var(--danger); }
+    #pdfSection { margin-top: 24px; padding-top: 24px; border-top: 1px solid var(--border); }
+    .pdf-drop { border: 1.5px dashed var(--border-strong); border-radius: var(--radius-lg); padding: 28px; text-align: center; cursor: pointer; transition: all 0.15s; color: var(--text-muted); font-size: 13px; }
+    .pdf-drop:hover, .pdf-drop.drag { border-color: var(--accent); color: var(--text); background: var(--surface2); }
+    .pdf-drop-icon { font-size: 28px; margin-bottom: 8px; }
 
-    .status {
-      max-width: 700px;
-      margin: 14px auto 0;
-      font-size: 13px;
-      text-align: center;
-      color: #555;
-      min-height: 20px;
-    }
-    .status.error { color: #e53935; }
-    .status.success { color: #2e7d32; }
-
-    .divider {
-      border: none;
-      border-top: 1px solid #eee;
-      margin: 18px 0;
-    }
-
-    /* Ladeeinrichtungen */
-    .le-row {
-      display: grid;
-      grid-template-columns: 2fr 2fr 1fr;
-      gap: 10px;
-      align-items: end;
-      margin-bottom: 10px;
-    }
-    .btn-add-le {
-      background: none;
-      border: 1.5px dashed #0057b8;
-      color: #0057b8;
-      border-radius: 8px;
-      padding: 8px 14px;
-      font-size: 13px;
-      font-weight: 600;
-      cursor: pointer;
-      margin-top: 8px;
-    }
-    .btn-add-le:hover { background: #f0f6ff; }
-    .btn-remove-le {
-      background: none;
-      border: none;
-      color: #e53935;
-      font-size: 18px;
-      cursor: pointer;
-      padding: 0 6px;
-      line-height: 1;
-      align-self: center;
-      margin-bottom: 4px;
-    }
-  </style>
+    .profile-wrap { margin-bottom: 20px; }
+    .profile-wrap select { font-size: 14px; padding: 10px 14px; border-radius: var(--radius-lg); font-weight: 500; }
+    .info-box { background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius); padding: 10px 14px; font-size: 12px; color: var(--text-muted); margin-bottom: 16px; }
+    .info-box strong { color: var(--text); }
+    .info-warn { color: #B7791F; }
+</style>
 </head>
 <body>
 
-<a class="back-link" href="index.html">← Übersicht</a>
+<header class="site-header">
+  <a class="back-link" href="index.html">← Übersicht</a>
+  <span class="logo-amba">A M B A</span>
+  <span class="logo-sub">betreiberverträge B2C</span>
+</header>
 
-<h1>Betreiberverträge B2C</h1>
-<p class="subtitle">Kundenprofil auswählen — Felder werden automatisch befüllt</p>
+<div class="content">
+  <div class="page-header">
+    <div class="page-title">Betreiberverträge – B2C</div>
+    <div class="page-subtitle">Kundenprofil auswählen — Felder werden automatisch befüllt</div>
+  </div>
 
-<!-- Profil-Auswahl -->
-<div class="profile-select-wrap">
-  <select id="profileSelect" onchange="applyProfile()">
-    <option value="">— Kundenprofil auswählen —</option>
-    <option value="lerners">Lerner'sches Schloss</option>
-    <option value="gwg">GWG Seepark</option>
-    <option value="lbbw">LBBW Park Trio</option>
-    <option value="nio" disabled>Nio Project / Premium Immo (Vorlage ausstehend)</option>
-    <option value="gsw">GSW Reutlingen</option>
-  </select>
-</div>
+  <!-- Profil-Auswahl -->
+  <div class="profile-wrap">
+    <select id="profileSelect" onchange="applyProfile()" style="width:100%">
+      <option value="">— Kundenprofil auswählen —</option>
+      <option value="lerners">Lerner'sches Schloss</option>
+      <option value="gwg">GWG Seepark</option>
+      <option value="lbbw">LBBW Park Trio</option>
+      <option value="nio" disabled>Nio Project / Premium Immo (Vorlage ausstehend)</option>
+      <option value="gsw">GSW Reutlingen</option>
+    </select>
+  </div>
 
-<!-- Info-Box (wird bei Profilwahl befüllt) -->
-<div class="info-box" id="infoBox" style="display:none; max-width:700px; margin: 0 auto 20px;"></div>
+  <div class="info-box" id="infoBox" style="display:none"></div>
 
-<!-- Auftraggeber -->
-<div class="card">
-  <h2>Auftraggeber</h2>
-  <div class="field-group" style="grid-template-columns:1fr 1fr; margin-bottom:14px;">
-    <label>Vorname <span class="required">*</span><input type="text" id="vorname" placeholder="Max"></label>
-    <label>Nachname <span class="required">*</span><input type="text" id="nachname" placeholder="Mustermann"></label>
-  </div>
-  <div class="field-group single" style="margin-bottom:14px;">
-    <label>Straße &amp; Hausnummer<input type="text" id="strasse" placeholder="Musterstraße 1"></label>
-  </div>
-  <div class="field-group" style="margin-bottom:14px;">
-    <label>PLZ<input type="text" id="plz" placeholder="12345"></label>
-    <label>Stadt<input type="text" id="stadt" placeholder="Musterstadt"></label>
-  </div>
-  <hr class="divider">
-  <div class="field-group">
-    <label>Stellplatz / Einheit<input type="text" id="stellplatz" placeholder="z.B. Tiefgarage B12"></label>
-    <label>Vertragsdatum<input type="date" id="datum"></label>
-  </div>
-</div>
-
-<!-- Standort -->
-<div class="card">
-  <h2>Standort &amp; Ladeeinrichtung</h2>
-  <div class="field-group single" style="margin-bottom:14px;">
-    <label>Standortbezeichnung<input type="text" id="standortName" placeholder="wird durch Profil befüllt" readonly></label>
-  </div>
-  <div class="field-group single" style="margin-bottom:14px;">
-    <label>Standortadresse<input type="text" id="standortAdresse" placeholder="wird durch Profil befüllt" readonly></label>
-  </div>
-  <hr class="divider">
-  <div id="leContainer"></div>
-  <button class="btn-add-le" onclick="addLadeeinrichtung()">+ Ladeeinrichtung hinzufügen</button>
-</div>
-
-<!-- Vertragsdaten -->
-<div class="card">
-  <h2>Vertragsdaten</h2>
-  <div class="field-group">
-    <label>Artikel (Zoho)<input type="text" id="zohoArtikelName" readonly></label>
-    <label>Artikel-ID<input type="text" id="zohoArtikelId" readonly></label>
-  </div>
-  <div id="zusatzArtikelWrap" style="display:none; margin-top:14px;">
+  <!-- Auftraggeber -->
+  <div class="card">
+    <div class="card-title">Auftraggeber</div>
+    <div class="field-group">
+      <label>Vorname<input type="text" id="vorname" placeholder="Max"></label>
+      <label>Nachname<input type="text" id="nachname" placeholder="Mustermann"></label>
+    </div>
+    <div class="field-group single">
+      <label>Straße &amp; Hausnummer<input type="text" id="strasse" placeholder="Musterstraße 1"></label>
+    </div>
+    <div class="field-group">
+      <label>PLZ<input type="text" id="plz" placeholder="12345"></label>
+      <label>Stadt<input type="text" id="stadt" placeholder="Musterstadt"></label>
+    </div>
     <hr class="divider">
     <div class="field-group">
-      <label>Zusatzartikel<input type="text" id="zohoZusatzName" readonly></label>
-      <label>Zusatz-ID<input type="text" id="zohoZusatzId" readonly></label>
+      <label>Stellplatz / Einheit<input type="text" id="stellplatz" placeholder="z.B. TG B12"></label>
+      <label>Vertragsdatum<input type="date" id="datum"></label>
     </div>
   </div>
-</div>
 
-<button class="btn-generate" id="btnGenerate" onclick="generate()" disabled>
-  Vertrag generieren &amp; Angebot erstellen
-</button>
-<div class="status" id="status"></div>
+  <!-- Standort -->
+  <div class="card">
+    <div class="card-title">Standort &amp; Ladeeinrichtung</div>
+    <div class="field-group single">
+      <label>Standortbezeichnung<input type="text" id="standortName" readonly></label>
+    </div>
+    <div class="field-group single">
+      <label>Standortadresse<input type="text" id="standortAdresse" readonly></label>
+    </div>
+    <hr class="divider">
+    <div id="leContainer"></div>
+    <button class="btn-add-le" onclick="addLadeeinrichtung()">+ Ladeeinrichtung hinzufügen</button>
+  </div>
+
+  <!-- Vertragsdaten -->
+  <div class="card">
+    <div class="card-title">Vertragsdaten</div>
+    <div class="field-group">
+      <label>Artikel (Zoho)<input type="text" id="zohoArtikelName" readonly></label>
+      <label>Artikel-ID<input type="text" id="zohoArtikelId" readonly></label>
+    </div>
+    <div id="zusatzArtikelWrap" style="display:none">
+      <hr class="divider">
+      <div class="field-group">
+        <label>Zusatzartikel<input type="text" id="zohoZusatzName" readonly></label>
+        <label>Zusatz-ID<input type="text" id="zohoZusatzId" readonly></label>
+      </div>
+    </div>
+  </div>
+
+  <div class="status" id="status"></div>
+  <button class="btn-generate" id="btnGenerate" onclick="generate()" disabled>Vertrag generieren &amp; Angebot erstellen</button>
+</div>
 
 <script>
 // ============================================================
@@ -278,10 +162,10 @@
 const PROFILES = {
   lerners: {
     label: "Lerner'sches Schloss",
-    standortName: '',           // TODO: nach Vertragsaufarbeitung befüllen
-    standortAdresse: '',        // TODO
-    geraet: '',                 // TODO
-    docxUrl: '',                // TODO: Vorlage hochladen und URL eintragen
+    standortName: '',
+    standortAdresse: '',
+    geraet: '',
+    docxUrl: '',
     zohoArtikelId: '520234000000111321',
     zohoArtikelName: 'Vollbetrieb - ganzheitlicher Betrieb der Ladestation',
     zusatzId: '520234000000488013',
@@ -290,10 +174,10 @@ const PROFILES = {
   },
   gwg: {
     label: 'GWG Seepark',
-    standortName: '',           // TODO
-    standortAdresse: '',        // TODO
-    geraet: '',                 // TODO
-    docxUrl: '',                // TODO
+    standortName: '',
+    standortAdresse: '',
+    geraet: '',
+    docxUrl: '',
     zohoArtikelId: '520234000003573017',
     zohoArtikelName: 'Vollbetrieb - ganzheitlicher Betrieb der Ladestation (AMBA/reev living)',
     zusatzId: null,
@@ -317,7 +201,7 @@ const PROFILES = {
     standortName: '',
     standortAdresse: '',
     geraet: '',
-    docxUrl: '',                // TODO: Vorlage hochladen
+    docxUrl: '',
     zohoArtikelId: '520234000003658062',
     zohoArtikelName: 'Operative Betriebsführung (NIO)',
     zusatzId: null,
@@ -339,12 +223,9 @@ const PROFILES = {
 };
 
 const WEBHOOK = 'https://hook.eu2.make.com/bxt8ju15xwttjyphu3ubb1jdff6xlh4w';
-
 let currentProfile = null;
+let leCount = 0;
 
-// ============================================================
-// PROFIL ANWENDEN
-// ============================================================
 function applyProfile() {
   const key = document.getElementById('profileSelect').value;
   if (!key) {
@@ -354,19 +235,14 @@ function applyProfile() {
     clearProfileFields();
     return;
   }
-
   const p = PROFILES[key];
   currentProfile = { key, ...p };
 
-  // Standort
   document.getElementById('standortName').value = p.standortName;
   document.getElementById('standortAdresse').value = p.standortAdresse;
-
-  // Artikel
   document.getElementById('zohoArtikelId').value = p.zohoArtikelId;
   document.getElementById('zohoArtikelName').value = p.zohoArtikelName;
 
-  // Zusatzartikel
   const zusatzWrap = document.getElementById('zusatzArtikelWrap');
   if (p.zusatzId) {
     document.getElementById('zohoZusatzId').value = p.zusatzId;
@@ -376,22 +252,19 @@ function applyProfile() {
     zusatzWrap.style.display = 'none';
   }
 
-  // Ladeeinrichtungen zurücksetzen und default hinzufügen
   document.getElementById('leContainer').innerHTML = '';
+  leCount = 0;
   addLadeeinrichtung(p.geraet);
 
-  // Info-Box
   const infoBox = document.getElementById('infoBox');
   let info = `<strong>${p.label}</strong>`;
   if (p.preis) info += ` &nbsp;·&nbsp; ${p.preis}`;
-  if (!p.docxUrl) info += ` &nbsp;·&nbsp; ⚠️ DOCX-Vorlage noch nicht hinterlegt`;
+  if (!p.docxUrl) info += ` &nbsp;·&nbsp; <span class="info-warn">⚠ DOCX-Vorlage noch nicht hinterlegt</span>`;
   infoBox.innerHTML = info;
   infoBox.style.display = '';
 
-  // Button aktivieren (nur wenn DOCX vorhanden)
   document.getElementById('btnGenerate').disabled = !p.docxUrl;
 
-  // Datum heute vorausfüllen
   if (!document.getElementById('datum').value) {
     document.getElementById('datum').value = new Date().toISOString().split('T')[0];
   }
@@ -405,11 +278,6 @@ function clearProfileFields() {
   document.getElementById('leContainer').innerHTML = '';
 }
 
-// ============================================================
-// LADEEINRICHTUNGEN
-// ============================================================
-let leCount = 0;
-
 function addLadeeinrichtung(defaultGeraet = '') {
   leCount++;
   const id = leCount;
@@ -417,53 +285,32 @@ function addLadeeinrichtung(defaultGeraet = '') {
   row.className = 'le-row';
   row.id = `le-${id}`;
   row.innerHTML = `
-    <label>Gerät / Typ
-      <input type="text" id="le-geraet-${id}" value="${defaultGeraet}" placeholder="z.B. ABL eM4">
-    </label>
-    <label>Seriennummer
-      <input type="text" id="le-serial-${id}" placeholder="SN-XXXXXX">
-    </label>
-    <button class="btn-remove-le" onclick="removeLadeeinrichtung(${id})" title="Entfernen">×</button>
+    <label>Gerät / Typ<input type="text" id="le-geraet-${id}" value="${defaultGeraet}" placeholder="z.B. ABL eM4"></label>
+    <label>Seriennummer<input type="text" id="le-serial-${id}" placeholder="SN-XXXXXX"></label>
+    <button class="btn-remove-le" onclick="document.getElementById('le-${id}').remove()" title="Entfernen">×</button>
   `;
   document.getElementById('leContainer').appendChild(row);
 }
 
-function removeLadeeinrichtung(id) {
-  const el = document.getElementById(`le-${id}`);
-  if (el) el.remove();
-}
-
-// ============================================================
-// PLACEHOLDER REPLACE (split-XML-safe)
-// ============================================================
 function replaceTag(xml, tag, value) {
   const safe = String(value ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-  // First try direct replacement
   const direct = `{{${tag}}}`;
-  if (xml.includes(direct)) {
-    return xml.split(direct).join(safe);
-  }
-  // Split-run repair: find the placeholder spread across runs
-  const parts = `{{${tag}}}`.split('');
+  if (xml.includes(direct)) return xml.split(direct).join(safe);
+  const parts = direct.split('');
   const tagPattern = new RegExp(
     parts.map(c => `(?:<[^>]+>)*${c.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')}(?:<[^>]+>)*`).join(''),
     'g'
   );
   return xml.replace(tagPattern, match => {
-    // Extract run properties from first run
     const rPrMatch = match.match(/<w:rPr>[\s\S]*?<\/w:rPr>/);
     const rPr = rPrMatch ? rPrMatch[0] : '';
     return `<w:r>${rPr}<w:t>${safe}</w:t></w:r>`;
   });
 }
 
-// ============================================================
-// GENERATE
-// ============================================================
 async function generate() {
   const btn = document.getElementById('btnGenerate');
   const status = document.getElementById('status');
-
   if (!currentProfile) return;
 
   const vorname = document.getElementById('vorname').value.trim();
@@ -480,7 +327,6 @@ async function generate() {
     return;
   }
 
-  // Ladeeinrichtungen sammeln
   const leRows = document.querySelectorAll('[id^="le-geraet-"]');
   const ladeeinrichtungen = [];
   leRows.forEach(el => {
@@ -495,7 +341,6 @@ async function generate() {
   status.className = 'status';
 
   try {
-    // DOCX laden
     const resp = await fetch(currentProfile.docxUrl);
     if (!resp.ok) throw new Error(`Vorlage nicht erreichbar (${resp.status})`);
     const arrayBuffer = await resp.arrayBuffer();
@@ -504,30 +349,21 @@ async function generate() {
     const zip = await JSZip.loadAsync(arrayBuffer);
     let xml = await zip.file('word/document.xml').async('string');
 
-    // Datum formatieren
     const datumFormatiert = datum
       ? new Date(datum).toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit', year: 'numeric' })
       : '';
-
-    // Ladeeinrichtung 1 (Hauptgerät)
     const le1 = ladeeinrichtungen[0] || {};
 
-    // Platzhalter ersetzen
     const replacements = {
-      'VORNAME':        vorname,
-      'NACHNAME':       nachname,
-      'NAME':           `${vorname} ${nachname}`,
-      'STRASSE':        strasse,
-      'PLZ':            plz,
-      'STADT':          stadt,
-      'PLZSTADT':       `${plz} ${stadt}`.trim(),
-      'STELLPLATZ':     stellplatz,
-      'DATUM':          datumFormatiert,
-      'STANDORT':       currentProfile.standortName,
-      'STANDORTADRESSE':currentProfile.standortAdresse,
-      'GERAET':         le1.geraet || '',
-      'SERIENNUMMER':   le1.serial || '',
-      'ARTIKEL':        currentProfile.zohoArtikelName,
+      'VORNAME': vorname, 'NACHNAME': nachname,
+      'NAME': `${vorname} ${nachname}`,
+      'STRASSE': strasse, 'PLZ': plz, 'STADT': stadt,
+      'PLZSTADT': `${plz} ${stadt}`.trim(),
+      'STELLPLATZ': stellplatz, 'DATUM': datumFormatiert,
+      'STANDORT': currentProfile.standortName,
+      'STANDORTADRESSE': currentProfile.standortAdresse,
+      'GERAET': le1.geraet || '', 'SERIENNUMMER': le1.serial || '',
+      'ARTIKEL': currentProfile.zohoArtikelName,
     };
 
     for (const [tag, val] of Object.entries(replacements)) {
@@ -536,35 +372,28 @@ async function generate() {
 
     zip.file('word/document.xml', xml);
     const blob = await zip.generateAsync({ type: 'blob' });
-
-    // Download
     const a = document.createElement('a');
     a.href = URL.createObjectURL(blob);
     a.download = `AMBA_Betreibervertrag_${nachname}_${currentProfile.label.replace(/[^a-zA-Z0-9]/g,'_')}.docx`;
     a.click();
 
-    // Webhook
     status.textContent = 'Angebot wird erstellt…';
-    const payload = {
-      profil: currentProfile.key,
-      profil_label: currentProfile.label,
-      vorname, nachname,
-      strasse, plz, stadt,
-      stellplatz,
-      datum: datumFormatiert,
-      standort: currentProfile.standortName,
-      standort_adresse: currentProfile.standortAdresse,
-      ladeeinrichtungen,
-      zoho_artikel_id: currentProfile.zohoArtikelId,
-      zoho_artikel_name: currentProfile.zohoArtikelName,
-      zoho_zusatz_id: currentProfile.zusatzId || null,
-      zoho_zusatz_name: currentProfile.zusatzName || null,
-    };
-
     await fetch(WEBHOOK, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload),
+      body: JSON.stringify({
+        profil: currentProfile.key,
+        profil_label: currentProfile.label,
+        vorname, nachname, strasse, plz, stadt, stellplatz,
+        datum: datumFormatiert,
+        standort: currentProfile.standortName,
+        standort_adresse: currentProfile.standortAdresse,
+        ladeeinrichtungen,
+        zoho_artikel_id: currentProfile.zohoArtikelId,
+        zoho_artikel_name: currentProfile.zohoArtikelName,
+        zoho_zusatz_id: currentProfile.zusatzId || null,
+        zoho_zusatz_name: currentProfile.zusatzName || null,
+      }),
     });
 
     status.textContent = '✓ Vertrag heruntergeladen & Angebot erstellt.';
@@ -577,6 +406,5 @@ async function generate() {
   }
 }
 </script>
-
 </body>
 </html>
