@@ -72,7 +72,7 @@
 <header class="site-header">
   <a class="back-link" href="index.html">← Übersicht</a>
   <span class="logo-amba">A M B A</span>
-  <span class="logo-sub">betreuungsverträge AC</span>
+  <span class="logo-sub">BETREUUNGSVERTRÄGE AC</span>
 </header>
 
 <div class="content">
@@ -82,30 +82,17 @@
   </div>
 
   <!-- Vertragstyp -->
-  <div class="vt-select">
-    <button class="vt-btn active" id="btn-betrieb" onclick="setTyp('betrieb')">
-      <div class="vt-label">Technische Betriebsführung AC</div>
-      <div class="vt-desc">AMBA_VertragTechBetriebsfuehrung Vorlage.docx</div>
-    </button>
-    <button class="vt-btn" id="btn-vollbetrieb" onclick="setTyp('vollbetrieb')">
-      <div class="vt-label">Vollbetrieb ohne Strom AC</div>
-      <div class="vt-desc">AMBA_Vollbetrieb_ohne_Strom_Vorlage.docx</div>
-    </button>
-    <button class="vt-btn vt-btn--disabled" disabled title="Demnächst verfügbar">
-      <div class="vt-label">Vollbetrieb mit Strom AC</div>
-      <div class="vt-desc">Demnächst verfügbar</div>
-    </button>
-    <button class="vt-btn" id="btn-wartung" onclick="setTyp('wartung')">
-      <div class="vt-label">Rahmenwartungsvertrag AC</div>
-      <div class="vt-desc">AMBA_Wartungsvertrag Vorlage.docx</div>
-    </button>
-    <!-- DC-TAB: verwendet in b2b_dc.html
-    <button class="vt-btn" id="btn-betrieb-dc" onclick="setTyp('betrieb-dc')">
-      <div class="vt-label">Technische Betriebsführung DC</div>
-      <div class="vt-desc">AMBA_VertragTechBetriebsfuehrung_DC - Vorlage.docx</div>
-    </button>
-    DC-TAB-ENDE -->
+  <div style="margin-bottom:24px;">
+    <select id="vtSelect" onchange="setTyp(this.value)" style="width:100%;font-size:14px;padding:10px 14px;border-radius:var(--radius-lg);font-weight:500;border:1px solid var(--border);background:var(--surface);font-family:'DM Sans',sans-serif;color:var(--text);outline:none;cursor:pointer;">
+      <option value="betrieb">Technische Betriebsführung AC</option>
+      <option value="vollbetrieb">Vollbetrieb ohne Strom AC</option>
+      <option value="vollbetrieb-strom" disabled>Vollbetrieb mit Strom AC (demnächst)</option>
+      <option value="wartung">Rahmenwartungsvertrag AC</option>
+    </select>
   </div>
+  <!-- DC-TAB: verwendet in b2b_dc.html
+    betrieb-dc: AMBA_VertragTechBetriebsfuehrung_DC - Vorlage.docx
+  DC-TAB-ENDE -->
 
   <!-- Auftraggeber -->
   <div class="card">
