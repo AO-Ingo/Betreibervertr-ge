@@ -280,11 +280,13 @@ function setTyp(typ) {
   document.getElementById('sectionBtnRow').innerHTML = isVollbetrieb
     ? `<button class="btn-action btn-primary" onclick="sendenAnMake()"><span>✉</span><span>Angebot erzeugen (über Make)</span></button>
        <button class="btn-action btn-secondary" onclick="genDocx()"><span>⬇</span><span>Vertrag erzeugen (.docx)</span></button>`
-    : `<div style="display:flex;gap:12px;width:100%;margin-bottom:10px">
-         <button class="btn-action btn-primary" onclick="sendenAnMake()"><span>✉</span><span>Angebot erzeugen (über Make)</span></button>
-         <button class="btn-action btn-secondary" onclick="genDocx()"><span>⬇</span><span>Vertrag erzeugen (.docx)</span></button>
-       </div>
-       <button class="btn-action btn-both" style="width:100%" onclick="beidesAusfuehren()"><span>⚡</span><span>Angebot &amp; Vertrag (.docx) erzeugen</span></button>`;
+    : `<div style="display:flex;flex-direction:column;gap:10px;width:100%">
+         <div style="display:flex;gap:12px">
+           <button class="btn-action btn-primary" onclick="sendenAnMake()"><span>✉</span><span>Angebot erzeugen (über Make)</span></button>
+           <button class="btn-action btn-secondary" onclick="genDocx()"><span>⬇</span><span>Vertrag erzeugen (.docx)</span></button>
+         </div>
+         <button class="btn-action btn-both" onclick="beidesAusfuehren()"><span>⚡</span><span>Angebot &amp; Vertrag (.docx) erzeugen</span></button>
+       </div>`;
 
   // Angebot-Upload Sektion (nur Vollbetrieb)
   const sa = document.getElementById('sectionAngebot');
