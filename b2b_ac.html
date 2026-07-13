@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="icon" href="favicon.svg">
-  <title>AMBA Vertragsgenerator – B2B AC</title>
+  <title>AMBA Vertragsgenerator – Betreuungsverträge AC</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
   <style>
@@ -143,20 +143,16 @@
 </style>
 </head>
 <body>
-
 <header class="site-header">
   <a class="back-link" href="index.html">← Übersicht</a>
   <span class="logo-amba">A M B A</span>
   <span class="logo-sub">Betreuungsverträge AC</span>
 </header>
-
 <div class="content">
   <div class="page-header">
     <div class="page-title">B2B Verträge – AC</div>
     <div class="page-subtitle">Vertragstyp auswählen und Formular ausfüllen</div>
   </div>
-
-  <!-- Vertragstyp Dropdown -->
   <div style="margin-bottom:24px">
     <select id="vtSelect" onchange="setTyp(this.value)" style="width:100%;font-size:14px;padding:10px 14px;border-radius:var(--radius-lg);font-weight:500;border:1px solid var(--border);background:var(--surface);font-family:'DM Sans',sans-serif;color:var(--text);outline:none;cursor:pointer;">
       <option value="" disabled selected>— Vertragstyp auswählen —</option>
@@ -166,137 +162,88 @@
       <option value="wartung">Rahmenwartungsvertrag AC</option>
     </select>
   </div>
-  <!-- DC-TAB: verwendet in b2b_dc.html -->
+  
 
-
-  <!-- Auftraggeber -->
   <div class="card">
     <div class="card-title">Auftraggeber</div>
-    <div class="field-group single">
-      <label>Firma / Name<input type="text" id="ag_firma" placeholder="Musterfirma GmbH"></label>
-    </div>
-    <div class="field-group single">
-      <label>Straße &amp; Hausnummer<input type="text" id="ag_strasse" placeholder="Musterstraße 1"></label>
-    </div>
+    <div class="field-group single"><label>Firma / Name<input type="text" id="ag_firma" placeholder="Musterfirma GmbH"></label></div>
+    <div class="field-group single"><label>Straße &amp; Hausnummer<input type="text" id="ag_strasse" placeholder="Musterstraße 1"></label></div>
     <div class="field-group">
       <label>PLZ<input type="text" id="ag_plz" placeholder="12345"></label>
       <label>Stadt<input type="text" id="ag_stadt" placeholder="Musterstadt"></label>
     </div>
   </div>
-
-  <!-- Ansprechpartner -->
   <div class="card">
     <div class="card-title">Ansprechpartner</div>
-    <div class="field-group">
-      <label>Kfm. AP Name<input type="text" id="ap_tech_name" placeholder="Max Mustermann"></label>
-      <label>Kfm. AP Telefon<input type="text" id="ap_tech_tel" placeholder="+49 ..."></label>
-    </div>
-    <div class="field-group single">
-      <label>Kfm. AP E-Mail<input type="text" id="ap_tech_email" placeholder="max@musterfirma.de"></label>
-    </div>
+    <div class="field-group"><label>Kfm. AP Name<input type="text" id="ap_tech_name" placeholder="Max Mustermann"></label><label>Kfm. AP Telefon<input type="text" id="ap_tech_tel" placeholder="+49 ..."></label></div>
+    <div class="field-group single"><label>Kfm. AP E-Mail<input type="text" id="ap_tech_email" placeholder="max@musterfirma.de"></label></div>
     <hr class="divider">
-    <div class="field-group">
-      <label>Tech. AP Name<input type="text" id="ap_name" placeholder="Max Mustermann"></label>
-      <label>Tech. AP Telefon<input type="text" id="ap_tel" placeholder="+49 ..."></label>
-    </div>
-    <div class="field-group single">
-      <label>Tech. AP E-Mail<input type="text" id="ap_email" placeholder="tech@musterfirma.de"></label>
-    </div>
+    <div class="field-group"><label>Tech. AP Name<input type="text" id="ap_name" placeholder="Max Mustermann"></label><label>Tech. AP Telefon<input type="text" id="ap_tel" placeholder="+49 ..."></label></div>
+    <div class="field-group single"><label>Tech. AP E-Mail<input type="text" id="ap_email" placeholder="tech@musterfirma.de"></label></div>
   </div>
-
-  <!-- Vertragsdaten -->
   <div class="card">
     <div class="card-title">Vertragsdaten</div>
-    <div class="field-group">
-      <label>Vertragsdatum<input type="date" id="stand_datum"></label>
-      <label>Artikel-Anzahl<input type="number" id="artikel_anzahl" placeholder="1" min="1"></label>
-    </div>
-    <div class="field-group single" id="laufzeitWrap">
-      <label>Laufzeit in Jahren<input type="number" id="vb_laufzeit" min="1" max="10" placeholder="3"></label>
-    </div>
+    <div class="field-group"><label>Vertragsdatum<input type="date" id="stand_datum"></label><label>Artikel-Anzahl<input type="number" id="artikel_anzahl" placeholder="1" min="1"></label></div>
+    <div class="field-group single" id="laufzeitWrap"><label>Laufzeit in Jahren<input type="number" id="vb_laufzeit" min="1" max="10" placeholder="3"></label></div>
     <input type="hidden" id="vb_angebotsnr">
   </div>
-
-  <!-- Ladeeinrichtungen -->
   <div class="card">
     <div class="card-title">Ladeeinrichtungen</div>
-    <div style="overflow-x:auto">
-      <table style="width:100%;border-collapse:collapse;font-size:13px">
-        <thead>
-          <tr style="border-bottom:1px solid var(--border)">
-            <th style="width:32px;padding:6px 4px"></th>
-            <th style="padding:6px 8px;text-align:left;font-size:11px;letter-spacing:0.05em;text-transform:uppercase;color:var(--text-muted);font-weight:600">Standort</th>
-            <th style="padding:6px 8px;text-align:left;font-size:11px;letter-spacing:0.05em;text-transform:uppercase;color:var(--text-muted);font-weight:600">Ladestation / Typ</th>
-            <th style="padding:6px 8px;text-align:left;font-size:11px;letter-spacing:0.05em;text-transform:uppercase;color:var(--text-muted);font-weight:600">Anzahl</th>
-          </tr>
-        </thead>
-        <tbody id="ladeBody"></tbody>
-      </table>
-    </div>
+    <div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse;font-size:13px">
+      <thead><tr style="border-bottom:1px solid var(--border)">
+        <th style="width:32px"></th>
+        <th style="padding:6px 8px;text-align:left;font-size:11px;text-transform:uppercase;color:var(--text-muted);font-weight:600">Standort</th>
+        <th style="padding:6px 8px;text-align:left;font-size:11px;text-transform:uppercase;color:var(--text-muted);font-weight:600">Ladestation / Typ</th>
+        <th style="padding:6px 8px;text-align:left;font-size:11px;text-transform:uppercase;color:var(--text-muted);font-weight:600">Anzahl</th>
+      </tr></thead>
+      <tbody id="ladeBody"></tbody>
+    </table></div>
     <button onclick="addRow()" class="btn-add-le" style="margin-top:10px">+ Zeile hinzufügen</button>
   </div>
-
-  <!-- Schritt 1: Aktion -->
   <div class="step-divider">Aktion</div>
   <div id="sectionBtnRow" class="btn-row"></div>
   <div id="makeSts" class="sts" style="margin-bottom:4px"></div>
+  <div id="genSts" class="sts" style="margin-bottom:8px"></div>
 
-  <!-- Schritt 2: Vollbetrieb — Angebot hochladen -->
   <div id="sectionAngebot" style="display:none">
     <div class="step-divider">Angebot hochladen &amp; Vertrag erzeugen</div>
     <div class="card">
       <div class="card-title">Zoho-Angebot PDF</div>
-      <p style="font-size:12px;color:var(--text-muted);margin-bottom:12px">Lade das fertige Angebot aus Zoho Books hoch. Die Angebotsnummer wird automatisch aus dem Dateinamen erkannt.</p>
+      <p style="font-size:12px;color:var(--text-muted);margin-bottom:12px">Angebot aus Zoho hochladen — Angebotsnummer wird automatisch aus dem Dateinamen erkannt.</p>
       <label class="upload-area" for="vbAngebotPdf">
-        <div class="upload-icon">📎</div>
-        <div>Angebot-PDF hier ablegen oder klicken</div>
-        <div class="upload-hint">Dateiname enthält die Angebotsnummer (z.B. AN000-229.pdf)</div>
+        <div class="upload-icon">📎</div><div>Angebot-PDF hier ablegen oder klicken</div>
+        <div class="upload-hint">z.B. AN000-229.pdf</div>
       </label>
       <input type="file" id="vbAngebotPdf" accept=".pdf" style="display:none">
       <div id="vbPdfHint" style="font-size:12px;margin-top:6px;color:var(--text-muted)">Noch kein PDF hochgeladen</div>
-      <div style="margin-top:14px">
-        <button class="btn-generate" id="vbGenBtn" onclick="genVollbetrieb()" disabled>⬇ Vertrag mit Angebotsnummer herunterladen (.docx)</button>
-        <div id="genSts" class="sts"></div>
-      </div>
     </div>
   </div>
 
-  <!-- Schritt 2/3: Tech/Wartung — nur genSts -->
-  <div id="genStsWrap"><div id="genSts" class="sts" style="margin-bottom:16px"></div></div>
-
-  <!-- Schritt 3: PDFs zusammenführen -->
   <div class="step-divider">PDFs zusammenführen</div>
   <div class="card">
     <div class="card-title">Zusammenführen</div>
     <div class="merge-grid">
       <div>
-        <div style="font-size:11px;font-weight:600;letter-spacing:0.05em;text-transform:uppercase;color:var(--text-muted);margin-bottom:8px">Vertrag als PDF</div>
-        <label class="upload-area" for="mergeFile1">
-          <div class="upload-icon">📄</div><div>Vertrag-PDF hochladen</div>
-        </label>
+        <div style="font-size:11px;font-weight:600;text-transform:uppercase;color:var(--text-muted);margin-bottom:8px">Vertrag als PDF</div>
+        <label class="upload-area" for="mergeFile1"><div class="upload-icon">📄</div><div>Vertrag-PDF hochladen</div></label>
         <input type="file" id="mergeFile1" accept=".pdf" style="display:none">
         <div id="mergeHint1" class="upload-hint">Noch kein PDF</div>
       </div>
       <div id="mergeAngebotCol">
-        <div style="font-size:11px;font-weight:600;letter-spacing:0.05em;text-transform:uppercase;color:var(--text-muted);margin-bottom:8px">Angebot als PDF</div>
-        <label class="upload-area" for="mergeFile2" id="mergeAngebotLabel">
-          <div class="upload-icon">📋</div><div>Angebot-PDF hochladen</div>
-        </label>
+        <div style="font-size:11px;font-weight:600;text-transform:uppercase;color:var(--text-muted);margin-bottom:8px">Angebot als PDF</div>
+        <label class="upload-area" for="mergeFile2" id="mergeAngebotLabel"><div class="upload-icon">📋</div><div>Angebot-PDF hochladen</div></label>
         <input type="file" id="mergeFile2" accept=".pdf" style="display:none">
         <div id="mergeHint2" class="upload-hint">Noch kein PDF</div>
-        <div id="mergeHint2Auto" class="upload-hint" style="display:none">Wird vom Angebot-Upload oben übernommen</div>
+        <div id="mergeHint2Auto" class="upload-hint" style="display:none;color:var(--text-muted)">Wird vom Angebot-Upload oben übernommen</div>
       </div>
     </div>
     <button class="btn-generate" id="mergeBtn" onclick="mergePDFs()" disabled>Zusammenführen &amp; herunterladen</button>
     <div class="progress-wrap" id="mergePW"><div class="progress-bar" id="mergePB"></div></div>
     <div id="mergeSts" class="sts"></div>
   </div>
-
 </div>
-
 <script>
 
-// ===== CONFIG =====
 const GITHUB_BASE = 'https://raw.githubusercontent.com/AO-Ingo/Vertragsgenerator/main/';
 const TEMPLATE_URLS = {
   betrieb:      GITHUB_BASE + 'AMBA_VertragTechBetriebsfuehrung%20Vorlage.docx',
@@ -313,358 +260,221 @@ const ZOHO_ARTIKEL = {
 };
 
 let currentTyp = '';
-const today = new Date().toISOString().split('T')[0];
 
 document.addEventListener('DOMContentLoaded', () => {
-  document.getElementById('stand_datum').value = today;
+  document.getElementById('stand_datum').value = new Date().toISOString().split('T')[0];
   addRow();
   setupMergeListeners();
 });
 
-// ===== TYP WECHSEL =====
+// ── TYP WECHSEL ──
 function setTyp(typ) {
   if (!typ) return;
   currentTyp = typ;
   const sel = document.getElementById('vtSelect');
   if (sel && sel.value !== typ) sel.value = typ;
 
-  const isVollbetrieb = typ === 'vollbetrieb' || typ === 'vollbetrieb-dc';
-  
-  // Zeige/verstecke Sektionen
-  document.getElementById('sectionMake').style.display = isVollbetrieb ? '' : '';
-  document.getElementById('sectionBtnRow').innerHTML = isVollbetrieb ? getBtnRowVollbetrieb() : getBtnRowTechWartung();
-  document.getElementById('sectionAngebot').style.display = isVollbetrieb ? '' : 'none';
-  document.getElementById('laufzeitWrap').style.display = (typ === 'betrieb' || typ === 'betrieb-dc' || typ === 'wartung') ? '' : 'none';
+  const isVollbetrieb = (typ === 'vollbetrieb' || typ === 'vollbetrieb-dc');
 
-  // VB-PDF init
+  // Button-Zeile
+  document.getElementById('sectionBtnRow').innerHTML = isVollbetrieb
+    ? `<button class="btn-action btn-primary" onclick="sendenAnMake()"><span>✉</span><span>Daten an Make senden</span></button>
+       <button class="btn-action btn-secondary" onclick="genDocx()"><span>⬇</span><span>Vertrag erzeugen</span></button>`
+    : `<button class="btn-action btn-primary" onclick="sendenAnMake()"><span>✉</span><span>Daten an Make senden</span></button>
+       <button class="btn-action btn-secondary" onclick="genDocx()"><span>⬇</span><span>Vertrag erzeugen</span></button>
+       <button class="btn-action btn-both" onclick="beidesAusfuehren()"><span>⚡</span><span>Beides</span></button>`;
+
+  // Angebot-Upload Sektion (nur Vollbetrieb)
+  const sa = document.getElementById('sectionAngebot');
+  if (sa) sa.style.display = isVollbetrieb ? '' : 'none';
+
+  // Laufzeit (nicht bei Vollbetrieb)
+  const lw = document.getElementById('laufzeitWrap');
+  if (lw) lw.style.display = isVollbetrieb ? 'none' : '';
+
+  // Merge-Spalte 2: Auto (VB) vs. manuell (Tech/Wartung)
+  const m2label = document.getElementById('mergeAngebotLabel');
+  const m2input = document.getElementById('mergeFile2');
+  const m2hint  = document.getElementById('mergeHint2');
+  const m2auto  = document.getElementById('mergeHint2Auto');
+  if (m2label) m2label.style.display = isVollbetrieb ? 'none' : '';
+  if (m2input) m2input.style.display  = isVollbetrieb ? 'none' : '';
+  if (m2hint)  m2hint.style.display   = isVollbetrieb ? 'none' : '';
+  if (m2auto)  m2auto.style.display   = isVollbetrieb ? '' : 'none';
+
   if (isVollbetrieb) initVbPdfUpload();
   updateMergeBtn();
 }
 
-function getBtnRowVollbetrieb() {
-  return `
-    <button class="btn-action btn-primary" onclick="sendenAnMake()">
-      <span>✉</span><span>Daten an Make senden</span>
-    </button>
-    <button class="btn-action btn-secondary" id="vbGenBtn" onclick="genVollbetrieb()" disabled>
-      <span>⬇</span><span>Vertrag erzeugen</span>
-    </button>`;
-}
-
-function getBtnRowTechWartung() {
-  return `
-    <button class="btn-action btn-primary" onclick="sendenAnMake()">
-      <span>✉</span><span>Daten an Make senden</span>
-    </button>
-    <button class="btn-action btn-secondary" onclick="genDocx()">
-      <span>⬇</span><span>Vertrag erzeugen</span>
-    </button>
-    <button class="btn-action btn-both" onclick="beidesAusfuehren()">
-      <span>⚡</span><span>Beides</span>
-    </button>`;
-}
-
-// ===== HELPERS =====
+// ── HELPERS ──
 function v(id) { return (document.getElementById(id)||{}).value||''; }
-function fmtDate(iso) { if(!iso) return ''; const [y,m,d]=iso.split('-'); return `${d}.${m}.${y}`; }
-function getLaufzeit() { return document.getElementById('vb_laufzeit')?.value || ''; }
-
+function fmtDate(iso) { if(!iso)return''; const[y,m,d]=iso.split('-'); return `${d}.${m}.${y}`; }
+function getLaufzeit() { return document.getElementById('vb_laufzeit')?.value||''; }
 function getRows() {
-  return Array.from(document.querySelectorAll('#ladeBody tr')).map(tr => ({
+  return Array.from(document.querySelectorAll('#ladeBody tr')).map(tr=>({
     standort: tr.cells[1].querySelector('input[type=text]').value,
     art:      tr.cells[2].querySelector('input').value,
     anzahl:   tr.cells[3].querySelector('input').value,
   }));
 }
-
-let rowCount = 0;
-function addRow(standort='', art='', anzahl='') {
+let rowCount=0;
+function addRow(standort='',art='',anzahl='') {
   rowCount++;
-  const tr = document.createElement('tr');
-  tr.id = 'row-' + rowCount;
-  tr.style.cssText = 'border-bottom:1px solid var(--border)';
-  tr.innerHTML = `
-    <td style="padding:6px 4px;text-align:center">
-      <button onclick="this.closest('tr').remove()" style="background:none;border:none;cursor:pointer;color:var(--text-muted);font-size:16px">×</button>
-    </td>
+  const tr=document.createElement('tr');
+  tr.style.borderBottom='1px solid var(--border)';
+  tr.innerHTML=`
+    <td style="padding:6px 4px;text-align:center"><button onclick="this.closest('tr').remove()" style="background:none;border:none;cursor:pointer;color:var(--text-muted);font-size:16px">×</button></td>
     <td style="padding:4px"><input type="text" value="${standort}" placeholder="Standort"></td>
     <td style="padding:4px"><input type="text" value="${art}" placeholder="Ladestation / Typ"></td>
     <td style="padding:4px"><input type="number" value="${anzahl}" placeholder="1" min="1" style="width:70px"></td>`;
   document.getElementById('ladeBody').appendChild(tr);
 }
 
-// ===== PLACEHOLDER REPLACE =====
+// ── PLACEHOLDER REPLACE ──
 function replaceTag(xml, tag, value) {
-  const val = (value||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-  const ph = '{{' + tag + '}}';
-  if (xml.includes(ph)) return xml.split(ph).join(val);
-  // split-run repair
-  const escaped = ph.split('').map(c => c.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')).join('(?:<[^>]+>)*');
-  return xml.replace(new RegExp(escaped,'g'), match => {
-    const rPr = (match.match(/<w:rPr>[\s\S]*?<\/w:rPr>/)||[''])[0];
+  const val=(value||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  const ph='{{'+tag+'}}';
+  if(xml.includes(ph)) return xml.split(ph).join(val);
+  const esc=ph.split('').map(c=>c.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')).join('(?:<[^>]+>)*');
+  return xml.replace(new RegExp(esc,'g'),match=>{
+    const rPr=(match.match(/<w:rPr>[\s\S]*?<\/w:rPr>/)||[''])[0];
     return `<w:r>${rPr}<w:t>${val}</w:t></w:r>`;
   });
 }
 
 async function fetchTemplate(typ) {
-  const url = TEMPLATE_URLS[typ];
-  const resp = await fetch(url);
-  if (!resp.ok) throw new Error(`Vorlage nicht erreichbar (${resp.status}): ${url}`);
+  const url=TEMPLATE_URLS[typ];
+  const resp=await fetch(url);
+  if(!resp.ok) throw new Error(`Vorlage nicht erreichbar (${resp.status})`);
   return resp.arrayBuffer();
 }
 
-// ===== DOCX GENERIEREN (Tech / Wartung) =====
+// ── DOCX GENERIEREN ──
 async function genDocx() {
-  const firma   = v('ag_firma');
-  const strasse = v('ag_strasse');
-  const plz     = v('ag_plz');
-  const stadt   = v('ag_stadt');
-  const datum   = fmtDate(v('stand_datum'));
-  const laufzeit = getLaufzeit();
-  const rows    = getRows();
-  const slug    = (firma||'Vertrag').replace(/\s+/g,'_').replace(/[^a-zA-Z0-9_-]/g,'');
-
-  setSts('genSts', 'proc', 'Vorlage wird geladen…');
+  setSts('genSts','proc','Vorlage wird geladen…');
   try {
-    const buf = await fetchTemplate(currentTyp);
-    const zip = await JSZip.loadAsync(buf);
-    let xml = await zip.file('word/document.xml').async('string');
+    const buf=await fetchTemplate(currentTyp);
+    const zip=await JSZip.loadAsync(buf);
+    let xml=await zip.file('word/document.xml').async('string');
+    const firma=v('ag_firma'), strasse=v('ag_strasse'), plz=v('ag_plz'), stadt=v('ag_stadt');
+    const datum=fmtDate(v('stand_datum')), laufzeit=getLaufzeit(), rows=getRows();
+    const slug=(firma||'Vertrag').replace(/\s+/g,'_').replace(/[^a-zA-Z0-9_-]/g,'');
 
-    xml = replaceTag(xml,'FIRMA', firma);
-    xml = replaceTag(xml,'STRASSE', strasse);
-    xml = replaceTag(xml,'PLZ', plz);
-    xml = replaceTag(xml,'STADT', stadt);
-    xml = replaceTag(xml,'PLZSTADT', `${plz} ${stadt}`);
-    xml = replaceTag(xml,'DATUM', datum);
-    xml = replaceTag(xml,'LAUFZEIT IN JAHREN', laufzeit);
-    xml = replaceTag(xml,'Laufzeit in Jahren', laufzeit);
+    const isVb = currentTyp==='vollbetrieb'||currentTyp==='vollbetrieb-dc';
+    const angebotsnr = isVb ? (v('vb_angebotsnr')||'Angebotsnummer') : '';
 
-    // AP fields
-    xml = replaceTag(xml,'AP_KFM_NAME',  v('ap_tech_name'));
-    xml = replaceTag(xml,'AP_KFM_TEL',   v('ap_tech_tel'));
-    xml = replaceTag(xml,'AP_KFM_MAIL',  v('ap_tech_email'));
-    xml = replaceTag(xml,'AP_TECH_NAME', v('ap_name'));
-    xml = replaceTag(xml,'AP_TECH_TEL',  v('ap_tel'));
-    xml = replaceTag(xml,'AP_TECH_MAIL', v('ap_email'));
+    const repl = {
+      'ANGEBOTSNR':angebotsnr,'FIRMA':firma,'STRASSE':strasse,'PLZ':plz,'STADT':stadt,
+      'PLZSTADT':`${plz} ${stadt}`,'DATUM':datum,'LAUFZEIT IN JAHREN':laufzeit,'Laufzeit in Jahren':laufzeit,
+      'AP_KFM_NAME':v('ap_tech_name'),'AP_KFM_TEL':v('ap_tech_tel'),'AP_KFM_MAIL':v('ap_tech_email'),
+      'AP_TECH_NAME':v('ap_name'),'AP_TECH_TEL':v('ap_tel'),'AP_TECH_MAIL':v('ap_email'),
+    };
+    if(rows[0]){repl['STANDORT_1']=rows[0].standort;repl['ART_1']=rows[0].art;repl['ANZAHL_1']=rows[0].anzahl;}
+    for(const[tag,val]of Object.entries(repl)) xml=replaceTag(xml,tag,val);
 
-    // Ladeeinrichtungen
-    if (rows.length > 0) {
-      xml = replaceTag(xml,'STANDORT_1', rows[0].standort);
-      xml = replaceTag(xml,'ART_1',      rows[0].art);
-      xml = replaceTag(xml,'ANZAHL_1',   rows[0].anzahl);
-    }
-
-    zip.file('word/document.xml', xml);
-    const blob = await zip.generateAsync({type:'blob', mimeType:'application/vnd.openxmlformats-officedocument.wordprocessingml.document'});
-    download(blob, `AMBA_Vertrag_${slug}.docx`);
-    setSts('genSts', 'ok', '✓ Vertrag heruntergeladen.');
-  } catch(err) {
-    setSts('genSts', 'err', '✕ ' + err.message);
-  }
+    zip.file('word/document.xml',xml);
+    const blob=await zip.generateAsync({type:'blob',mimeType:'application/vnd.openxmlformats-officedocument.wordprocessingml.document'});
+    const fname = isVb ? `AMBA_Vertrag_${slug}_${angebotsnr}.docx` : `AMBA_Vertrag_${slug}.docx`;
+    download(blob,fname);
+    setSts('genSts','ok','✓ Vertrag heruntergeladen.');
+  } catch(err){setSts('genSts','err','✕ '+err.message);}
 }
 
-// ===== VOLLBETRIEB: PDF hochladen → Angebotsnummer → DOCX =====
-let vbInitDone = false;
-function initVbPdfUpload() {
-  if (vbInitDone) return;
-  vbInitDone = true;
-  const inp = document.getElementById('vbAngebotPdf');
-  if (!inp) return;
-  inp.addEventListener('change', e => {
-    const file = e.target.files[0];
-    const btn  = document.getElementById('vbGenBtn');
-    if (!file) { btn.disabled=true; setHint('vbPdfHint','Noch kein PDF hochgeladen',''); return; }
-    const name = file.name.replace(/\.pdf$/i,'').trim();
-    document.getElementById('vb_angebotsnr').value = name;
-    setHint('vbPdfHint', `📄 ${file.name} → Angebotsnummer: ${name}`, 'var(--success)');
-    btn.disabled = false;
+// ── VOLLBETRIEB PDF-UPLOAD ──
+let vbInitDone=false;
+function initVbPdfUpload(){
+  if(vbInitDone)return; vbInitDone=true;
+  const inp=document.getElementById('vbAngebotPdf');
+  if(!inp)return;
+  inp.addEventListener('change',e=>{
+    const file=e.target.files[0];
+    if(!file){document.getElementById('vb_angebotsnr').value='';setHint('vbPdfHint','Noch kein PDF','');return;}
+    const name=file.name.replace(/\.pdf$/i,'').trim();
+    document.getElementById('vb_angebotsnr').value=name;
+    setHint('vbPdfHint',`📄 ${file.name} → Angebotsnummer: ${name}`,'var(--success)');
     updateMergeBtn();
   });
 }
 
-async function genVollbetrieb() {
-  const angebotsnr = v('vb_angebotsnr') || 'Angebotsnummer';
-  const firma   = v('ag_firma');
-  const strasse = v('ag_strasse');
-  const plz     = v('ag_plz');
-  const stadt   = v('ag_stadt');
-  const datum   = fmtDate(v('stand_datum'));
-  const laufzeit = getLaufzeit();
-  const rows    = getRows();
-  const slug    = (firma||'Vertrag').replace(/\s+/g,'_').replace(/[^a-zA-Z0-9_-]/g,'');
-
-  setSts('genSts', 'proc', 'Vorlage wird geladen…');
-  try {
-    const buf = await fetchTemplate(currentTyp);
-    const zip = await JSZip.loadAsync(buf);
-    let xml = await zip.file('word/document.xml').async('string');
-
-    xml = replaceTag(xml,'ANGEBOTSNR',   angebotsnr);
-    xml = replaceTag(xml,'FIRMA',        firma);
-    xml = replaceTag(xml,'STRASSE',      strasse);
-    xml = replaceTag(xml,'PLZ',          plz);
-    xml = replaceTag(xml,'STADT',        stadt);
-    xml = replaceTag(xml,'PLZSTADT',     `${plz} ${stadt}`);
-    xml = replaceTag(xml,'DATUM',        datum);
-    xml = replaceTag(xml,'LAUFZEIT',     laufzeit);
-    xml = replaceTag(xml,'AP_KFM_NAME',  v('ap_tech_name'));
-    xml = replaceTag(xml,'AP_KFM_TEL',   v('ap_tech_tel'));
-    xml = replaceTag(xml,'AP_KFM_MAIL',  v('ap_tech_email'));
-    xml = replaceTag(xml,'AP_TECH_NAME', v('ap_name'));
-    xml = replaceTag(xml,'AP_TECH_TEL',  v('ap_tel'));
-    xml = replaceTag(xml,'AP_TECH_MAIL', v('ap_email'));
-    if (rows.length > 0) {
-      xml = replaceTag(xml,'STANDORT_1', rows[0].standort);
-      xml = replaceTag(xml,'ART_1',      rows[0].art);
-      xml = replaceTag(xml,'ANZAHL_1',   rows[0].anzahl);
-    }
-
-    zip.file('word/document.xml', xml);
-    const blob = await zip.generateAsync({type:'blob', mimeType:'application/vnd.openxmlformats-officedocument.wordprocessingml.document'});
-    download(blob, `AMBA_Vertrag_${slug}_${angebotsnr}.docx`);
-    setSts('genSts', 'ok', '✓ Vertrag heruntergeladen.');
-  } catch(err) {
-    setSts('genSts', 'err', '✕ ' + err.message);
-  }
-}
-
-// ===== MAKE WEBHOOK =====
-async function sendenAnMake() {
-  const artikel = ZOHO_ARTIKEL[currentTyp];
-  if (!artikel) { setSts('makeSts','err','✕ Vertragstyp nicht erkannt.'); return; }
-
-  setSts('makeSts', 'proc', 'Wird gesendet…');
-  const payload = {
-    vertragstyp: currentTyp,
-    zoho_artikel_id:   artikel.id,
-    zoho_artikel_name: artikel.name,
-    ag_firma:   v('ag_firma'),
-    ag_strasse: v('ag_strasse'),
-    ag_plz:     v('ag_plz'),
-    ag_stadt:   v('ag_stadt'),
-    stand_datum: v('stand_datum'),
-    ap_name:    v('ap_name'),
-    ap_email:   v('ap_email'),
-    ap_tel:     v('ap_tel'),
-    ap_tech_name:  v('ap_tech_name'),
-    ap_tech_email: v('ap_tech_email'),
-    ap_tech_tel:   v('ap_tech_tel'),
-    ladeeinrichtungen: getRows(),
-  };
-  try {
-    const resp = await fetch(MAKE_WEBHOOK, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(payload) });
-    if (resp.ok) setSts('makeSts','ok','✓ Erfolgreich gesendet – Zoho-Angebot wird erstellt.');
+// ── MAKE WEBHOOK ──
+async function sendenAnMake(){
+  const artikel=ZOHO_ARTIKEL[currentTyp];
+  if(!artikel){setSts('makeSts','err','✕ Vertragstyp nicht erkannt.');return;}
+  setSts('makeSts','proc','Wird gesendet…');
+  try{
+    const resp=await fetch(MAKE_WEBHOOK,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({
+      vertragstyp:currentTyp,zoho_artikel_id:artikel.id,zoho_artikel_name:artikel.name,
+      ag_firma:v('ag_firma'),ag_strasse:v('ag_strasse'),ag_plz:v('ag_plz'),ag_stadt:v('ag_stadt'),
+      stand_datum:v('stand_datum'),ap_name:v('ap_name'),ap_email:v('ap_email'),ap_tel:v('ap_tel'),
+      ap_tech_name:v('ap_tech_name'),ap_tech_email:v('ap_tech_email'),ap_tech_tel:v('ap_tech_tel'),
+      ladeeinrichtungen:getRows(),
+    })});
+    if(resp.ok) setSts('makeSts','ok','✓ Gesendet – Zoho-Angebot wird erstellt.');
     else throw new Error(`HTTP ${resp.status}`);
-  } catch(err) {
-    setSts('makeSts','err','✕ Fehler: ' + err.message);
-  }
+  }catch(err){setSts('makeSts','err','✕ '+err.message);}
 }
 
-async function beidesAusfuehren() {
-  await sendenAnMake();
-  await genDocx();
-}
+async function beidesAusfuehren(){await sendenAnMake();await genDocx();}
 
-// ===== PDF MERGE =====
-function setupMergeListeners() {
-  ['mergeFile1','mergeFile2'].forEach((id,i) => {
-    const el = document.getElementById(id);
-    if (!el) return;
-    el.addEventListener('change', e => {
-      const f = e.target.files[0];
-      setHint('mergeHint'+(i+1), f ? `📄 ${f.name}` : 'Noch kein PDF', f ? 'var(--success)' : '');
+// ── PDF MERGE ──
+function setupMergeListeners(){
+  ['mergeFile1','mergeFile2'].forEach((id,i)=>{
+    const el=document.getElementById(id);
+    if(!el)return;
+    el.addEventListener('change',e=>{
+      const f=e.target.files[0];
+      setHint('mergeHint'+(i+1),f?`📄 ${f.name}`:'Noch kein PDF',f?'var(--success)':'');
       updateMergeBtn();
     });
   });
 }
 
-function updateMergeBtn() {
-  const f1 = document.getElementById('mergeFile1')?.files[0];
-  const isVb = currentTyp === 'vollbetrieb' || currentTyp === 'vollbetrieb-dc';
-  const f2vb = isVb ? document.getElementById('vbAngebotPdf')?.files[0] : null;
-  const f2manual = document.getElementById('mergeFile2')?.files[0];
-  const ready = f1 && (isVb ? f2vb : f2manual);
-  const btn = document.getElementById('mergeBtn');
-  if (btn) btn.disabled = !ready;
-  if (isVb) {
-    const hint = document.getElementById('mergeHint2Auto');
-    if (hint) {
-      hint.textContent = f2vb ? '📄 ' + f2vb.name : 'Wird vom Angebot-Upload oben übernommen';
-      hint.style.color = f2vb ? 'var(--success)' : 'var(--text-muted)';
-    }
-  }
+function updateMergeBtn(){
+  const f1=document.getElementById('mergeFile1')?.files[0];
+  const isVb=currentTyp==='vollbetrieb'||currentTyp==='vollbetrieb-dc';
+  const f2vb=document.getElementById('vbAngebotPdf')?.files[0];
+  const f2manual=document.getElementById('mergeFile2')?.files[0];
+  const ready=f1&&(isVb?f2vb:f2manual);
+  const btn=document.getElementById('mergeBtn');
+  if(btn)btn.disabled=!ready;
+  const auto=document.getElementById('mergeHint2Auto');
+  if(auto&&isVb){auto.textContent=f2vb?`📄 ${f2vb.name}`:'Wird vom Angebot-Upload oben übernommen';auto.style.color=f2vb?'var(--success)':'var(--text-muted)';}
 }
 
-async function mergePDFs() {
-  const f1   = document.getElementById('mergeFile1').files[0];
-  const isVb = currentTyp === 'vollbetrieb' || currentTyp === 'vollbetrieb-dc';
-  const f2vb = isVb ? document.getElementById('vbAngebotPdf')?.files[0] : null;
-  const f2   = f2vb || document.getElementById('mergeFile2')?.files[0];
-  if (!f1 || !f2) return;
-
-  const btn = document.getElementById('mergeBtn');
-  const pw  = document.getElementById('mergePW');
-  const pb  = document.getElementById('mergePB');
-  btn.disabled = true;
-  pw.style.display = 'block';
-  pb.style.width = '0%';
+async function mergePDFs(){
+  const f1=document.getElementById('mergeFile1').files[0];
+  const isVb=currentTyp==='vollbetrieb'||currentTyp==='vollbetrieb-dc';
+  const f2=isVb?document.getElementById('vbAngebotPdf')?.files[0]:document.getElementById('mergeFile2')?.files[0];
+  if(!f1||!f2)return;
+  const btn=document.getElementById('mergeBtn');btn.disabled=true;
+  const pw=document.getElementById('mergePW');pw.style.display='block';
+  const pb=document.getElementById('mergePB');pb.style.width='0%';
   setSts('mergeSts','proc','Zusammenführen…');
-
-  try {
-    const {PDFDocument} = PDFLib;
-    const merged = await PDFDocument.create();
-    for (const [i, file] of [[0,f1],[1,f2]]) {
-      const doc = await PDFDocument.load(await file.arrayBuffer());
-      const pages = await merged.copyPages(doc, doc.getPageIndices());
-      pages.forEach(p => merged.addPage(p));
-      pb.style.width = ((i+1)/2*90) + '%';
+  try{
+    const{PDFDocument}=PDFLib;
+    const merged=await PDFDocument.create();
+    for(const[i,file]of[[0,f1],[1,f2]]){
+      const doc=await PDFDocument.load(await file.arrayBuffer());
+      const pages=await merged.copyPages(doc,doc.getPageIndices());
+      pages.forEach(p=>merged.addPage(p));
+      pb.style.width=((i+1)/2*90)+'%';
     }
-    pb.style.width = '100%';
-    const blob = new Blob([await merged.save()], {type:'application/pdf'});
-    const slug = (v('ag_firma')||'Dokument').replace(/\s+/g,'_').replace(/[^a-zA-Z0-9_-]/g,'');
-    const angebotName = (f2vb || f2)?.name?.replace(/\.pdf$/i,'').replace(/\s+/g,'_') || '';
-    const fname = angebotName ? `AMBA_Vertrag_${slug}_${angebotName}.pdf` : `AMBA_Vertrag_${slug}.pdf`;
-    const a = document.createElement('a');
-    a.href = URL.createObjectURL(blob); a.download = fname; a.click();
+    pb.style.width='100%';
+    const blob=new Blob([await merged.save()],{type:'application/pdf'});
+    const slug=(v('ag_firma')||'Dokument').replace(/\s+/g,'_').replace(/[^a-zA-Z0-9_-]/g,'');
+    const angebotName=f2?.name?.replace(/\.pdf$/i,'').replace(/\s+/g,'_')||'';
+    const a=document.createElement('a');
+    a.href=URL.createObjectURL(blob);a.download=angebotName?`AMBA_Vertrag_${slug}_${angebotName}.pdf`:`AMBA_Vertrag_${slug}.pdf`;a.click();
     setSts('mergeSts','ok','✓ Zusammengefügt und heruntergeladen.');
-  } catch(err) {
-    setSts('mergeSts','err','✕ Fehler: ' + err.message);
-  }
-  btn.disabled = false;
-  setTimeout(() => { pw.style.display='none'; }, 2500);
+  }catch(err){setSts('mergeSts','err','✕ '+err.message);}
+  btn.disabled=false;setTimeout(()=>{pw.style.display='none';},2500);
 }
 
-// ===== UTILS =====
-function download(blob, filename) {
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob); a.download = filename; a.click();
-}
-function setSts(id, cls, msg) {
-  const el = document.getElementById(id);
-  if (!el) return;
-  el.className = 'sts ' + cls;
-  el.innerHTML = cls==='proc' ? `<div class="spin"></div><span>${msg}</span>` : `<span>${msg}</span>`;
-}
-function setHint(id, msg, color) {
-  const el = document.getElementById(id);
-  if (!el) return;
-  el.textContent = msg; el.style.color = color;
-}
+// ── UTILS ──
+function download(blob,filename){const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=filename;a.click();}
+function setSts(id,cls,msg){const el=document.getElementById(id);if(!el)return;el.className='sts '+cls;el.innerHTML=cls==='proc'?`<div class="spin"></div><span>${msg}</span>`:`<span>${msg}</span>`;}
+function setHint(id,msg,color){const el=document.getElementById(id);if(!el)return;el.textContent=msg;el.style.color=color;}
 
-
-// AC-specific: update merge UI based on typ
-const _origSetTyp = setTyp;
-setTyp = function(typ) {
-  _origSetTyp(typ);
-  const isVb = typ === 'vollbetrieb';
-  // For vollbetrieb: Angebot-col shows auto hint, for tech/wartung: manual upload
-  document.getElementById('mergeFile2').style.display = isVb ? 'none' : '';
-  document.getElementById('mergeAngebotLabel').style.display = isVb ? 'none' : '';
-  document.getElementById('mergeHint2').style.display = isVb ? 'none' : '';
-  document.getElementById('mergeHint2Auto').style.display = isVb ? '' : 'none';
-  // genSts: only show separate wrapper for tech/wartung
-  document.getElementById('genStsWrap').style.display = isVb ? 'none' : '';
-};
 </script>
 </body>
 </html>
