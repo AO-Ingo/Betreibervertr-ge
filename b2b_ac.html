@@ -1,152 +1,91 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-<meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>AMBA – Vertragsgenerator</title>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
-<style>
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-:root{
-  --bg:#f0efe9;--sur:#fff;--sur2:#f7f6f2;
-  --bdr:#dddbd3;--bdrs:#bfbcb3;
-  --txt:#1a1917;--mut:#6b6860;--hnt:#a09d96;
-  --acc:#1c3d5a;--amid:#2d5f8a;--alit:#e6eff7;
-  --red:#c0392b;--redbg:#fdf0ef;
-  --grn:#1a6e3a;--grnbg:#eaf5ed;--grnbdr:#a3d4b4;
-  --lok:#e8f0f7;--lokbdr:#b5cfe8;--loktxt:#2d5f8a;
-  --dis:#f5f4f1;--disbdr:#dddbd3;--distxt:#a09d96;
-  --r:10px;--rs:6px;
-}
-body{font-family:'Segoe UI',Arial,sans-serif;background:var(--bg);color:var(--txt);min-height:100vh}
-.hdr{background:var(--acc);height:56px;display:flex;align-items:center;padding:0 1.75rem;gap:12px;position:sticky;top:0;z-index:50;box-shadow:0 2px 10px rgba(0,0,0,.2)}
-.hm{background:rgba(255,255,255,.18);width:32px;height:32px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:13px;color:#fff;flex-shrink:0}
-.hi{flex:1}.ht{font-size:14px;font-weight:600;color:#fff}.hs{font-size:11px;color:rgba(255,255,255,.5);margin-top:1px}
-.hc{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);border-radius:20px;font-size:11px;color:rgba(255,255,255,.7);padding:3px 11px}
-.wrap{max-width:800px;margin:0 auto;padding:2.25rem 1.25rem 6rem}
-.ph{margin-bottom:1.75rem}.ph h1{font-size:19px;font-weight:600;margin-bottom:5px}
-.ph p{font-size:13px;color:var(--mut);line-height:1.6}
-
-/* Vertragstyp-Auswahl */
-.vt-select{display:flex;flex-direction:column;gap:6px;margin-bottom:1.5rem;max-width:420px}
-.vt-btn{background:var(--sur);border:2px solid var(--bdr);border-radius:var(--r);padding:10px 14px;cursor:pointer;text-align:left;font-family:inherit;transition:border-color .15s,background .15s;position:relative}
-.vt-btn:hover{border-color:var(--amid);background:var(--alit)}
-.vt-btn.active{border-color:var(--amid);background:var(--alit)}
-.vt-btn.active::after{content:'✓';position:absolute;top:10px;right:13px;font-size:14px;font-weight:700;color:var(--amid)}
-.vt-icon{font-size:20px;margin-bottom:5px}
-.vt-label{font-size:13.5px;font-weight:700;color:var(--txt);margin-bottom:3px}
-.vt-desc{font-size:11.5px;color:var(--mut)}
-
-.word-badge{display:inline-flex;align-items:center;gap:8px;background:#1e4391;color:#fff;border-radius:6px;padding:5px 12px;font-size:12px;font-weight:600;margin-bottom:1.5rem}
-.word-badge svg{width:16px;height:16px;opacity:.9}
-.card{background:var(--sur);border:1px solid var(--bdr);border-radius:var(--r);margin-bottom:1rem;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,.05)}
-.ch{display:flex;align-items:center;gap:9px;padding:12px 17px;border-bottom:1px solid var(--bdr);background:var(--sur2)}
-.ci{width:26px;height:26px;border-radius:6px;background:var(--acc);display:flex;align-items:center;justify-content:center;flex-shrink:0}
-.ci svg{width:13px;height:13px}.ci.li{background:var(--lokbdr)}
-.cht{font-size:11.5px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--txt)}
-.chs{font-size:11px;color:var(--hnt);margin-top:1px}
-.lbdg{margin-left:auto;font-size:10px;font-weight:700;background:var(--lok);color:var(--loktxt);border:1px solid var(--lokbdr);border-radius:20px;padding:2px 9px;letter-spacing:.04em}
-.cb{padding:17px}
-.g2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
-.stk{display:flex;flex-direction:column;gap:12px}
-@media(max-width:560px){.g2,.g3,.apr,.vt-select{grid-template-columns:1fr}.aktn-grid{grid-template-columns:1fr!important}}
-.fld{display:flex;flex-direction:column;gap:4px}
-.fld label{font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--mut)}
-.fld label .r{color:var(--red);margin-left:1px}
-.fld input{height:38px;padding:0 10px;border:1px solid var(--bdrs);border-radius:var(--rs);background:#fff;color:var(--txt);font-size:13.5px;font-family:inherit;outline:none;transition:border-color .13s,box-shadow .13s}
-.fld input:focus{border-color:var(--amid);box-shadow:0 0 0 3px rgba(45,95,138,.12)}
-.fld input::placeholder{color:var(--hnt)}
-.fld input.lf{background:var(--lok);border-color:var(--lokbdr);color:var(--loktxt);font-weight:500;cursor:default}
-
-/* Ausgegraut */
-.card.disabled{opacity:.5;pointer-events:none}
-.card.disabled .ch{background:var(--dis)}
-.card.disabled .ci{background:var(--distxt)}
-.dis-note{font-size:11.5px;color:var(--distxt);background:var(--dis);border:1px solid var(--disbdr);border-radius:var(--rs);padding:10px 13px;margin-bottom:4px}
-
-.lok-blk{background:var(--lok);border:1px solid var(--lokbdr);border-radius:var(--rs);padding:12px 14px;color:var(--loktxt);font-size:13.5px;line-height:1.65}
-.lok-blk strong{display:block;font-size:14px;font-weight:700;margin-bottom:2px}
-.lok-blk .ln{font-size:11px;opacity:.6;margin-top:4px}
-.atbl{width:100%;border-collapse:collapse;font-size:13px;margin-top:4px}
-.atbl th{background:var(--sur2);font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--mut);padding:8px 9px;border:1px solid var(--bdr);text-align:left}
-.atbl td{padding:4px 5px;border:1px solid var(--bdr)}
-.atbl td input{width:100%;height:31px;padding:0 7px;border:1px solid transparent;border-radius:4px;background:transparent;color:var(--txt);font-size:13px;font-family:inherit;outline:none;transition:border-color .12s,background .12s}
-.atbl td input:focus{border-color:var(--amid);background:#fff;box-shadow:0 0 0 2px rgba(45,95,138,.1)}
-.atbl td input::placeholder{color:var(--hnt)}
-.btn-add{margin-top:8px;font-size:12px;font-weight:600;color:var(--amid);background:none;border:1.5px dashed var(--lokbdr);border-radius:var(--rs);padding:5px 13px;cursor:pointer;font-family:inherit;transition:background .12s}
-.btn-add:hover{background:var(--alit)}
-.btn-del{background:none;border:none;cursor:pointer;color:var(--hnt);font-size:16px;padding:0 3px;line-height:1;transition:color .12s}
-.btn-del:hover{color:var(--red)}
-.apr{display:grid;grid-template-columns:1fr 1fr;gap:12px;align-items:stretch}
-.apr-new{display:grid;grid-template-columns:1fr 1fr;gap:12px;align-items:stretch}
-.ap-fix{background:var(--lok);border:1px solid var(--lokbdr);border-radius:var(--rs);padding:13px 14px;display:flex;flex-direction:column;justify-content:center}
-.apl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--loktxt);margin-bottom:7px}
-.apn{font-size:13.5px;font-weight:700;color:var(--loktxt);margin-bottom:4px}
-.apd{font-size:12px;color:var(--loktxt);opacity:.8;line-height:1.7}
-.gen-bar{background:var(--grnbg);border:1px solid var(--grnbdr);border-radius:var(--r);padding:17px 18px;margin-bottom:1rem;display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap}
-.gen-bar-txt h3{font-size:13.5px;font-weight:700;color:var(--grn);margin-bottom:3px}
-.gen-bar-txt p{font-size:12px;color:var(--grn);opacity:.8}
-.drop{border:2px dashed var(--bdrs);border-radius:var(--r);padding:1.75rem 1rem;text-align:center;cursor:pointer;background:var(--sur2);transition:border-color .13s,background .13s;position:relative}
-.drop.ov{border-color:var(--amid);background:var(--alit)}
-.drop input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
-.drop-ico{font-size:28px;margin-bottom:6px}.drop-t{font-size:13.5px;font-weight:600;color:var(--txt)}.drop-s{font-size:11.5px;color:var(--hnt);margin-top:3px}
-.flist{margin-top:10px;display:flex;flex-direction:column;gap:6px}
-.fi{display:flex;align-items:center;gap:9px;padding:8px 12px;background:var(--sur);border:1px solid var(--bdr);border-radius:var(--rs);cursor:grab}
-.fi:active{cursor:grabbing}.fi.dragging{opacity:.4}.fi.dov{box-shadow:0 0 0 2px var(--amid)}
-.fi-drag{color:var(--hnt);font-size:14px;user-select:none}
-.fi-ico{font-size:9px;font-weight:800;background:#e24b4a;color:#fff;border-radius:3px;padding:2px 5px;flex-shrink:0}
-.fi-n{flex:1;font-size:12.5px;color:var(--txt);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.fi-sz{font-size:11px;color:var(--hnt);flex-shrink:0}
-.fi-del{background:none;border:none;cursor:pointer;color:var(--hnt);font-size:16px;width:21px;height:21px;border-radius:50%;display:flex;align-items:center;justify-content:center;transition:background .1s,color .1s}
-.fi-del:hover{background:var(--redbg);color:var(--red)}
-.ord-hint{font-size:11px;color:var(--hnt);margin-top:4px}
-.sts{display:none;align-items:center;gap:8px;margin-top:10px;padding:9px 13px;border-radius:var(--rs);font-size:12.5px}
-.sts.proc{display:flex;background:var(--alit);color:var(--acc)}
-.sts.ok{display:flex;background:var(--grnbg);color:var(--grn)}
-.sts.err{display:flex;background:var(--redbg);color:var(--red)}
-.spin{width:13px;height:13px;border-radius:50%;border:2px solid currentColor;border-top-color:transparent;animation:sp .6s linear infinite;flex-shrink:0}
-@keyframes sp{to{transform:rotate(360deg)}}
-.prog-w{height:3px;background:var(--bdr);border-radius:2px;overflow:hidden;margin-top:7px;display:none}
-.prog-b{height:100%;background:var(--amid);border-radius:2px;transition:width .3s}
-.acts{display:flex;justify-content:flex-end;gap:9px;margin-top:1.75rem;flex-wrap:wrap}
-.btn{height:39px;padding:0 18px;border-radius:var(--rs);font-size:13.5px;font-weight:600;cursor:pointer;border:1.5px solid var(--bdrs);background:var(--sur);color:var(--txt);font-family:inherit;transition:background .12s;white-space:nowrap}
-.btn:hover{background:var(--sur2)}
-.btn.prim{background:var(--acc);color:#fff;border-color:var(--acc)}.btn.prim:hover{background:var(--amid);border-color:var(--amid)}
-.btn.prim:disabled{opacity:.35;cursor:not-allowed}
-.btn.grn{background:var(--grn);color:#fff;border-color:var(--grn)}.btn.grn:hover{background:#145c30;border-color:#145c30}
-
-    .vt-btn--disabled {
-      opacity: 0.4;
-      cursor: not-allowed;
-      filter: grayscale(1);
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" href="favicon.svg">
+  <title>AMBA Vertragsgenerator – B2B AC</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap');
+    :root {
+      --bg: #F0EFEB; --surface: #FFFFFF; --surface2: #F7F6F2;
+      --border: #D8D5CE; --border-strong: #B0AA9F;
+      --text: #1A1916; --text-muted: #6B6660;
+      --accent: #1A1916; --accent-hover: #3D3A35;
+      --danger: #C0392B; --success: #1A6B3C;
+      --shadow: 0 1px 3px rgba(0,0,0,0.08), 0 4px 12px rgba(0,0,0,0.04);
+      --radius: 6px; --radius-lg: 10px;
     }
-    .vt-btn--disabled:hover {
-      transform: none !important;
-      box-shadow: none !important;
-      border-color: transparent !important;
-    }
-  </style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'DM Sans', sans-serif; background: #232C2B; min-height: 100vh; display: flex; flex-direction: column; color: var(--text); font-size: 14px; }
+    .site-header { width: 100%; padding: 28px 0 22px; text-align: center; border-bottom: 1px solid rgba(255,255,255,0.08); background: #232C2B; flex-shrink: 0; position: relative; }
+    .logo-amba { font-size: 24px; font-weight: 300; letter-spacing: 0.55em; color: #fff; text-transform: uppercase; display: block; padding-left: 0.55em; }
+    .logo-sub { font-size: 11px; font-weight: 300; letter-spacing: 0.22em; color: rgba(255,255,255,0.4); display: block; padding-left: 0.22em; margin-top: 2px; }
+    .back-link { position: absolute; top: 50%; left: 20px; transform: translateY(-50%); font-size: 12px; color: rgba(255,255,255,0.45); text-decoration: none; letter-spacing: 0.04em; transition: color 0.15s; }
+    .back-link:hover { color: rgba(255,255,255,0.85); }
+    .content { background: var(--bg); flex: 1; padding: 32px 40px 60px; max-width: 860px; width: 100%; margin: 0 auto; }
+    .page-header { margin-bottom: 24px; }
+    .page-title { font-size: 20px; font-weight: 500; color: var(--text); }
+    .page-subtitle { font-size: 12px; color: var(--text-muted); margin-top: 3px; }
+    .vt-select { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 28px; }
+    .vt-btn { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 14px 20px; cursor: pointer; text-align: left; transition: all 0.15s; min-width: 180px; font-family: 'DM Sans', sans-serif; }
+    .vt-btn:hover { border-color: var(--border-strong); box-shadow: var(--shadow); }
+    .vt-btn.active { background: var(--text); border-color: var(--text); color: #F0EFEB; }
+    .vt-btn.active .vt-desc { color: rgba(240,239,235,0.55); }
+    .vt-label { font-size: 13px; font-weight: 500; }
+    .vt-desc { font-size: 11px; color: var(--text-muted); margin-top: 3px; font-family: 'DM Mono', monospace; }
+    .vt-btn--disabled { opacity: 0.4; cursor: not-allowed; }
+    .vt-btn--disabled:hover { border-color: var(--border); box-shadow: none; }
+    .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 24px; margin-bottom: 20px; box-shadow: var(--shadow); }
+    .card-title { font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 16px; }
+    .field-group { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px; }
+    .field-group.single { grid-template-columns: 1fr; }
+    .field-group.triple { grid-template-columns: 1fr 1fr 1fr; }
+    .field-group:last-child { margin-bottom: 0; }
+    label { display: flex; flex-direction: column; font-size: 11px; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; color: var(--text-muted); gap: 5px; }
+    input[type="text"], input[type="date"], input[type="number"], select, textarea { width: 100%; padding: 8px 10px; border: 1px solid var(--border); border-radius: var(--radius); background: var(--surface); color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 13px; transition: border-color 0.15s, box-shadow 0.15s; outline: none; }
+    input:focus, select:focus, textarea:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(26,25,22,0.07); }
+    input[readonly] { background: var(--surface2); color: var(--text-muted); }
+    hr.divider { border: none; border-top: 1px solid var(--border); margin: 16px 0; }
+    .btn-generate { display: block; width: 100%; padding: 14px; background: var(--text); color: #F0EFEB; border: none; border-radius: var(--radius-lg); font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 500; letter-spacing: 0.03em; cursor: pointer; transition: background 0.15s, transform 0.1s; margin-bottom: 12px; }
+    .btn-generate:hover { background: var(--accent-hover); transform: translateY(-1px); }
+    .btn-generate:active { transform: none; }
+    .btn-generate:disabled { background: var(--border-strong); cursor: not-allowed; transform: none; }
+    .status { font-size: 12px; text-align: center; color: var(--text-muted); min-height: 18px; margin-bottom: 8px; }
+    .status.error { color: var(--danger); }
+    .status.success { color: var(--success); }
+    .le-row { display: grid; grid-template-columns: 2fr 1fr auto; gap: 10px; align-items: end; margin-bottom: 10px; }
+    .btn-add-le { background: none; border: 1px dashed var(--border-strong); color: var(--text-muted); border-radius: var(--radius); padding: 7px 14px; font-family: 'DM Sans', sans-serif; font-size: 12px; cursor: pointer; margin-top: 6px; transition: all 0.15s; }
+    .btn-add-le:hover { border-color: var(--accent); color: var(--accent); }
+    .btn-remove-le { background: none; border: none; color: var(--text-muted); font-size: 18px; cursor: pointer; padding: 0 4px; align-self: center; margin-bottom: 2px; }
+    .btn-remove-le:hover { color: var(--danger); }
+    #pdfSection { margin-top: 24px; padding-top: 24px; border-top: 1px solid var(--border); }
+    .pdf-drop { border: 1.5px dashed var(--border-strong); border-radius: var(--radius-lg); padding: 28px; text-align: center; cursor: pointer; transition: all 0.15s; color: var(--text-muted); font-size: 13px; }
+    .pdf-drop:hover, .pdf-drop.drag { border-color: var(--accent); color: var(--text); background: var(--surface2); }
+    .pdf-drop-icon { font-size: 28px; margin-bottom: 8px; }
+</style>
 </head>
-<!-- back nav added -->
 <body>
-<header class="hdr">
-  <div class="hm">A</div>
-  <div class="hi"><div class="ht">amba operations GmbH</div><div class="hs" id="hdrSubtitle">Vertragsgenerator</div></div>
-  <div class="hc">Vorlage v2.0</div>
+
+<header class="site-header">
+  <a class="back-link" href="index.html">← Übersicht</a>
+  <span class="logo-amba">A M B A</span>
+  <span class="logo-sub">betreuungsverträge AC</span>
 </header>
-<div class="wrap">
-  <div class="ph">
-    <h1>Vertragsgenerator</h1>
-    <p>Vertragstyp auswählen, Felder ausfüllen und als Word-Dokument herunterladen.</p>
+
+<div class="content">
+  <div class="page-header">
+    <div class="page-title">B2B Verträge – AC</div>
+    <div class="page-subtitle">Vertragstyp auswählen und Formular ausfüllen</div>
   </div>
 
-  <!-- VERTRAGSTYP -->
+  <!-- Vertragstyp -->
   <div class="vt-select">
     <button class="vt-btn active" id="btn-betrieb" onclick="setTyp('betrieb')">
       <div class="vt-label">Technische Betriebsführung AC</div>
-      <div class="vt-desc">AMBA_VertragTechnischeBetriebsfuehrung_Vorlage.docx</div>
+      <div class="vt-desc">AMBA_VertragTechBetriebsfuehrung Vorlage.docx</div>
     </button>
     <button class="vt-btn" id="btn-vollbetrieb" onclick="setTyp('vollbetrieb')">
       <div class="vt-label">Vollbetrieb ohne Strom AC</div>
@@ -158,222 +97,90 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:var(--bg);color:var(--tx
     </button>
     <button class="vt-btn" id="btn-wartung" onclick="setTyp('wartung')">
       <div class="vt-label">Rahmenwartungsvertrag AC</div>
-      <div class="vt-desc">AMBA_Wartungsvertrag%20Vorlage.docx</div>
+      <div class="vt-desc">AMBA_Wartungsvertrag Vorlage.docx</div>
     </button>
     <!-- DC-TAB: verwendet in b2b_dc.html
     <button class="vt-btn" id="btn-betrieb-dc" onclick="setTyp('betrieb-dc')">
       <div class="vt-label">Technische Betriebsführung DC</div>
-      <div class="vt-desc">AMBA_VertragTechBetriebsfuehrung_DC_Vorlage.docx</div>
+      <div class="vt-desc">AMBA_VertragTechBetriebsfuehrung_DC - Vorlage.docx</div>
     </button>
     DC-TAB-ENDE -->
   </div>
 
-  <div class="word-badge" id="wordBadge">
-    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6zm-1 1.5L18.5 9H13V3.5zM6 20V4h5v7h7v9H6z"/></svg>
-    <span id="badgeText">AMBA_VertragTechnischeBetriebsfuehrung_Vorlage.docx &nbsp;·&nbsp; Vorlage wird von GitHub geladen</span>
-  </div>
-
-  <!-- AUFTRAGNEHMER -->
+  <!-- Auftraggeber -->
   <div class="card">
-    <div class="ch">
-      <div class="ci li"><svg viewBox="0 0 16 16" fill="none"><rect x="3" y="7" width="10" height="8" rx="1.5" stroke="#2d5f8a" stroke-width="1.5"/><path d="M5.5 7V5a2.5 2.5 0 0 1 5 0v2" stroke="#2d5f8a" stroke-width="1.5" stroke-linecap="round"/></svg></div>
-      <div><div class="cht">Auftragnehmer</div><div class="chs">Fest hinterlegt – nicht bearbeitbar</div></div>
-      <span class="lbdg">GESPERRT</span>
+    <div class="card-title">Auftraggeber</div>
+    <div class="field-group single">
+      <label>Firma / Name<input type="text" id="firma" placeholder="Musterfirma GmbH"></label>
     </div>
-    <div class="cb">
-      <div class="lok-blk">
-        <strong>amba operations GmbH</strong>
-        Obere Weidenstraße 2<br>81543 München
-        <div class="ln" id="partnerLabel">(nachstehend „Auftragnehmer")</div>
-      </div>
+    <div class="field-group single">
+      <label>Straße &amp; Hausnummer<input type="text" id="strasse" placeholder="Musterstraße 1"></label>
+    </div>
+    <div class="field-group">
+      <label>PLZ<input type="text" id="plz" placeholder="12345"></label>
+      <label>Stadt<input type="text" id="stadt" placeholder="Musterstadt"></label>
     </div>
   </div>
 
-  <!-- VERTRAGSPARTNER -->
+  <!-- Ansprechpartner -->
   <div class="card">
-    <div class="ch">
-      <div class="ci"><svg viewBox="0 0 16 16" fill="none"><rect x="1.5" y="3.5" width="13" height="10" rx="1.5" stroke="white" stroke-width="1.5"/><path d="M5.5 3.5V2.5a1 1 0 0 1 1-1h3a1 1 0 0 1 1 1v1" stroke="white" stroke-width="1.5"/><path d="M1.5 7h13" stroke="white" stroke-width="1.5"/></svg></div>
-      <div><div class="cht" id="agLabel">Auftraggeber</div><div class="chs" id="agSubLabel">Firmendaten des Vertragspartners</div></div>
+    <div class="card-title">Ansprechpartner</div>
+    <div class="field-group">
+      <label>Kfm. AP Name<input type="text" id="ap_kfm_name" placeholder="Max Mustermann"></label>
+      <label>Kfm. AP Telefon<input type="text" id="ap_kfm_tel" placeholder="+49 ..."></label>
     </div>
-    <div class="cb stk">
-      <div class="g2">
-        <div class="fld"><label>Firmenname <span class="r">*</span></label><input id="ag_firma" placeholder="Muster GmbH"/></div>
-        <div class="fld"><label>Straße &amp; Hausnummer <span class="r">*</span></label><input id="ag_strasse" placeholder="Musterstraße 12"/></div>
-      </div>
-      <div class="g2">
-        <div class="fld"><label>PLZ <span class="r">*</span></label><input id="ag_plz" placeholder="80000" maxlength="10"/></div>
-        <div class="fld"><label>Stadt <span class="r">*</span></label><input id="ag_stadt" placeholder="München"/></div>
-      </div>
-      <div id="laufzeitRow" style="display:none;margin-top:10px">
-        <div class="fld"><label>Laufzeit (Jahre) <span class="r">*</span></label><input type="number" id="vb_laufzeit" placeholder="2" min="1" max="10" value="2" style="width:120px"/></div>
-      </div>
+    <div class="field-group single">
+      <label>Kfm. AP E-Mail<input type="text" id="ap_kfm_mail" placeholder="max@musterfirma.de"></label>
+    </div>
+    <hr class="divider">
+    <div class="field-group">
+      <label>Tech. AP Name<input type="text" id="ap_tech_name" placeholder="Max Mustermann"></label>
+      <label>Tech. AP Telefon<input type="text" id="ap_tech_tel" placeholder="+49 ..."></label>
+    </div>
+    <div class="field-group single">
+      <label>Tech. AP E-Mail<input type="text" id="ap_tech_mail" placeholder="tech@musterfirma.de"></label>
     </div>
   </div>
 
-  <!-- ANHANG / LADEEINRICHTUNGEN -->
+  <!-- Vertragsdaten -->
   <div class="card">
-    <div class="ch">
-      <div class="ci"><svg viewBox="0 0 16 16" fill="none"><path d="M8 2v5l3 3" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><circle cx="8" cy="8" r="6" stroke="white" stroke-width="1.5"/></svg></div>
-      <div><div class="cht" id="anhangLabel">Anhang 2 – Ladeeinrichtungen</div><div class="chs">Standorte &amp; technische Spezifikationen</div></div>
+    <div class="card-title">Vertragsdaten</div>
+    <div class="field-group">
+      <label>Angebotsnummer<input type="text" id="angebotsnr" placeholder="AO-2024-001"></label>
+      <label>Vertragsdatum<input type="date" id="datum"></label>
     </div>
-    <div class="cb">
-      <div class="g2" style="margin-bottom:13px">
-        <div class="fld"><label>Stand (Datum)</label><input type="date" id="stand_datum"/></div>
-      </div>
-      <div style="overflow-x:auto">
-        <table class="atbl">
-          <thead><tr>
-            <th style="width:28px">#</th>
-            <th>Standort (Name, Anschrift)</th>
-            <th>Art der Ladeeinrichtung</th>
-            <th style="width:130px">Anzahl Ladepunkte</th>
-            <th style="width:30px"></th>
-          </tr></thead>
-          <tbody id="ladeBody"></tbody>
-        </table>
-      </div>
-      <button class="btn-add" onclick="addRow()">+ Zeile hinzufügen</button>
+    <div class="field-group single" id="laufzeitWrap" style="display:none;">
+      <label>Laufzeit in Jahren<input type="number" id="laufzeit" min="1" max="10" placeholder="3"></label>
     </div>
   </div>
 
-  <!-- ANGEBOTSNUMMER (nur Vollbetrieb) -->
-    <div class="card" id="apCard">
-    <div class="ch">
-      <div class="ci"><svg viewBox="0 0 16 16" fill="none"><circle cx="8" cy="5.5" r="3" stroke="white" stroke-width="1.5"/><path d="M2.5 14c0-3.038 2.462-5.5 5.5-5.5s5.5 2.462 5.5 5.5" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg></div>
-      <div><div class="cht">Anhang 3 – Ansprechpartner</div><div class="chs">Kontaktpersonen beider Parteien</div></div>
-    </div>
-    <div class="cb" id="apCardBody">
-      <div class="apr-new">
-        <div class="ap-fix">
-          <div class="apl">Für amba operations GmbH</div>
-          <div class="apn">Ingo Vogt-Luffer</div>
-          <div class="apd">i.vogt@amba-operations.com<br>+49 176 13613032</div>
-        </div>
-        <div class="stk">
-          <div class="apl" style="color:var(--mut)">Für Kunden</div>
-          <div id="apTechRow" style="display:none">
-            <div class="fld"><label>Kaufm. Ansprechpartner</label><input id="ap_tech_name" placeholder="Max Mustermann"/></div>
-            <div class="g2" style="margin-bottom:12px">
-              <div class="fld"><label>E-Mail</label><input type="email" id="ap_tech_email" placeholder="max@firma.de"/></div>
-              <div class="fld"><label>Telefon</label><input type="tel" id="ap_tech_tel" placeholder="+49 89 123456"/></div>
-            </div>
-          </div>
-          <div class="fld"><label id="apNameLabel">Ansprechpartner</label><input id="ap_name" placeholder="Max Mustermann"/></div>
-          <div class="g2">
-            <div class="fld"><label>E-Mail</label><input type="email" id="ap_email" placeholder="max@firma.de"/></div>
-            <div class="fld"><label>Telefon</label><input type="tel" id="ap_tel" placeholder="+49 89 123456"/></div>
-          </div>
-        </div>
-      </div>
-    </div>
+  <!-- Ladeeinrichtungen -->
+  <div class="card">
+    <div class="card-title">Ladeeinrichtungen</div>
+    <div id="leContainer"></div>
+    <button class="btn-add-le" onclick="addLadeeinrichtung()">+ Ladeeinrichtung hinzufügen</button>
   </div>
 
-  <!-- ARTIKEL -->
-  <div class="card" id="artikelCard">
-    <div class="ch">
-      <div class="ci"><svg viewBox="0 0 16 16" fill="none"><path d="M2.5 3.5h11M2.5 6.5h7M2.5 9.5h9M2.5 12.5h5" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg></div>
-      <div><div class="cht">Artikel</div><div class="chs">Zoho-Artikel für diesen Vertragstyp</div></div>
+  <!-- Angebot PDF -->
+  <div class="card">
+    <div class="card-title">Angebot (optional)</div>
+    <div id="pdfDrop" class="pdf-drop"
+      ondragover="event.preventDefault(); this.classList.add('drag')"
+      ondragleave="this.classList.remove('drag')"
+      ondrop="handleDrop(event)"
+      onclick="document.getElementById('pdfInput').click()">
+      <div class="pdf-drop-icon">📎</div>
+      <div id="pdfDropLabel">Angebots-PDF hier ablegen oder klicken</div>
     </div>
-    <div class="cb">
-      <div class="g2">
-        <div class="fld">
-          <label>Artikelname</label>
-          <input id="artikel_name" class="lf" readonly/>
-        </div>
-        <div class="fld">
-          <label>Anzahl (∑ Ladepunkte)</label>
-          <input id="artikel_anzahl" type="number" min="1" placeholder="–" class="lf" readonly/>
-        </div>
-      </div>
-    </div>
+    <input type="file" id="pdfInput" accept=".pdf" style="display:none" onchange="handleFileSelect(event)">
   </div>
 
-  <!-- AKTIONEN -->
-  <div class="aktn-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px">
-    <div class="gen-bar" style="margin-bottom:0">
-      <div class="gen-bar-txt">
-        <h3>✦ Word herunterladen</h3>
-        <p>Vorlage mit Ihren Angaben befüllt.</p>
-      </div>
-      <button class="btn grn" id="genBtn" onclick="generateDocx()">Generieren</button>
-    </div>
-    <div class="gen-bar" style="background:var(--alit);border-color:var(--lokbdr);margin-bottom:0">
-      <div class="gen-bar-txt">
-        <h3 style="color:var(--acc)">📤 Zoho-Angebot</h3>
-        <p style="color:var(--acc);opacity:.8">Daten per Webhook an Make senden.</p>
-      </div>
-      <button class="btn prim" id="sendenBtn" onclick="sendenAnMake()">Senden</button>
-    </div>
-  </div>
-  <button class="btn" id="beideBtn" onclick="generateDocx();sendenAnMake()" style="width:100%;height:44px;font-size:14px;font-weight:700;background:var(--acc);color:#fff;border-color:var(--acc);border-radius:var(--rs);display:flex;align-items:center;justify-content:center;gap:9px">
-    <svg width="15" height="15" viewBox="0 0 16 16" fill="none"><path d="M2 8.5 6 12.5 14 4" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-    Vertrag generieren &amp; an Make senden
-  </button>
-  <div class="sts" id="sendSts" style="margin-top:8px;margin-bottom:1rem"></div>
-
-  <!-- PDF MERGE -->
-  <div class="card" id="vbPdfCard" style="display:none">
-    <div class="ch">
-      <div class="ci"><svg viewBox="0 0 16 16" fill="none"><path d="M9 1.5H4a1.5 1.5 0 0 0-1.5 1.5v10A1.5 1.5 0 0 0 4 14.5h8a1.5 1.5 0 0 0 1.5-1.5V6L9 1.5Z" stroke="white" stroke-width="1.5"/><path d="M9 1.5V6H13.5" stroke="white" stroke-width="1.5" stroke-linejoin="round"/></svg></div>
-      <div><div class="cht">Vollbetrieb – Angebots-PDF hochladen</div><div class="chs">Dateiname = Angebotsnummer → Vertrag generieren</div></div>
-    </div>
-    <div class="cb">
-      <p style="font-size:12.5px;color:var(--mut);margin-bottom:10px">Zoho-Angebot als PDF exportieren, Dateiname = Angebotsnummer. Dann hochladen und Vertrag generieren.</p>
-      <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
-        <div class="stk" style="flex:1;min-width:200px">
-          <input type="file" id="vbAngebotPdf" accept=".pdf" style="font-size:13px;font-family:inherit" onchange="initVbPdfUpload();updateMergeBtn();"/>
-          <input type="hidden" id="vb_angebotsnr" value=""/>
-          <div id="vbPdfHint" style="font-size:12px;color:var(--hnt);margin-top:4px">Noch kein PDF hochgeladen</div>
-        </div>
-        <button class="btn grn" id="vbGenBtn" onclick="generateDocx()" disabled style="white-space:nowrap;height:39px">Vertrag generieren</button>
-      </div>
-    </div>
-  </div>
-
-
-  <div id="dlLinkBar" style="display:none;margin-bottom:10px;padding:12px 16px;background:var(--alit);border:1px solid var(--lokbdr);border-radius:8px;align-items:center;gap:12px">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:20px;height:20px;flex-shrink:0;color:#2a9d8f"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-    <span style="flex:1;font-size:.9rem">Vertragsentwurf erstellt:</span>
-    <a id="dlLinkAnchor" href="#" style="font-weight:600;color:#2a9d8f;text-decoration:none;font-size:.9rem"></a>
-  </div>
-
-    <div class="card">
-    <div class="ch">
-      <div class="ci"><svg viewBox="0 0 16 16" fill="none"><path d="M9 1.5H4a1.5 1.5 0 0 0-1.5 1.5v10A1.5 1.5 0 0 0 4 14.5h8a1.5 1.5 0 0 0 1.5-1.5V6L9 1.5Z" stroke="white" stroke-width="1.5"/><path d="M9 1.5V6H13.5" stroke="white" stroke-width="1.5" stroke-linejoin="round"/><path d="M6 9.5h4M8 7.5v4" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg></div>
-      <div><div class="cht">PDFs zusammenführen (optional)</div><div class="chs" id="mergeSub">Vertrag-PDF zuerst hochladen, dann Angebots-PDF – werden zusammengefügt</div></div>
-    </div>
-    <div class="cb stk">
-      <div class="g2" style="margin-bottom:10px">
-        <div class="stk">
-          <div style="font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--mut);margin-bottom:4px">① Vertrag-PDF</div>
-          <input type="file" id="mergeFile1" accept=".pdf" style="font-size:13px;font-family:inherit"/>
-          <div id="mergeHint1" style="font-size:11px;color:var(--hnt);margin-top:3px">Noch kein PDF</div>
-        </div>
-        <div class="stk" id="mergeSlot2Manual">
-          <div style="font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--mut);margin-bottom:4px">② Angebots-PDF</div>
-          <input type="file" id="mergeFile2" accept=".pdf" style="font-size:13px;font-family:inherit"/>
-          <div id="mergeHint2" style="font-size:11px;color:var(--hnt);margin-top:3px">Noch kein PDF</div>
-        </div>
-        <div class="stk" id="mergeSlot2Auto" style="display:none">
-          <div style="font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--mut);margin-bottom:4px">② Angebots-PDF</div>
-          <div id="mergeHint2Auto" style="font-size:12px;color:var(--hnt);margin-top:4px">Noch kein PDF aus Vollbetrieb hochgeladen</div>
-        </div>
-      </div>
-      <div class="prog-w" id="mergePW" style="display:none"><div class="prog-b" id="mergePB" style="width:0%"></div></div>
-      <div class="sts" id="mergeSts"></div>
-      <div style="display:flex;justify-content:flex-end;margin-top:8px">
-        <button class="btn prim" id="mergeBtn" onclick="mergePDFs()" disabled>PDFs zusammenführen</button>
-      </div>
-    </div>
-  </div>
-
-  <div class="acts">
-    <button class="btn" onclick="resetAll()">Zurücksetzen</button>
-
-  </div>
+  <div class="status" id="status"></div>
+  <button class="btn-generate" id="btnGenerate" onclick="generate()">Vertrag generieren &amp; Angebot erstellen</button>
 </div>
 
 <script>
+
 // ===== VERTRAGSTYP =====
 let currentTyp = 'betrieb';
 document.addEventListener('DOMContentLoaded', () => { setTyp('betrieb'); });
@@ -917,9 +724,7 @@ async function mergePDFs(){
   }
   btn.disabled=false; setTimeout(()=>{pw.style.display='none';},2500);
 }
+
 </script>
-  <div style="position:fixed;top:14px;left:16px;z-index:999">
-    <a href="index.html" style="text-decoration:none;font-size:13px;color:#0057b8;font-weight:600;opacity:0.8">← Übersicht</a>
-  </div>
 </body>
 </html>
