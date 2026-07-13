@@ -84,8 +84,8 @@
   <!-- Vertragstyp -->
   <div style="margin-bottom:24px;">
     <select id="vtSelect" onchange="setTyp(this.value)" style="width:100%;font-size:14px;padding:10px 14px;border-radius:var(--radius-lg);font-weight:500;border:1px solid var(--border);background:var(--surface);font-family:'DM Sans',sans-serif;color:var(--text);outline:none;cursor:pointer;">
-      <option value="" disabled selected>— Vertragstyp auswählen —</option>
-      <option value="betrieb-dc">Technische Betriebsführung DC</option>
+      <option value="" disabled>— Vertragstyp auswählen —</option>
+      <option value="betrieb-dc" selected>Technische Betriebsführung DC</option>
       <option value="vollbetrieb-dc" disabled>Vollbetrieb ohne Strom DC (demnächst)</option>
       <option value="vollbetrieb-strom-dc" disabled>Vollbetrieb mit Strom DC (demnächst)</option>
       <option value="wartung-dc" disabled>Rahmenwartungsvertrag DC (demnächst)</option>
@@ -171,7 +171,7 @@
 
 // ===== VERTRAGSTYP =====
 let currentTyp = 'betrieb';
-document.addEventListener('DOMContentLoaded', () => { /* no default preselect — user must choose */ });
+document.addEventListener('DOMContentLoaded', () => { setTyp('betrieb-dc'); });
 
 function setTyp(typ) {
   currentTyp = typ;
