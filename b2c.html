@@ -293,7 +293,7 @@
   <div class="card">
     <div class="card-title">Kunde</div>
     <div class="field-group">
-      <label>Vorname <span class="required-star">*</span><input type="text" id="vorname" placeholder="Max"></label>
+      <label>Vorname<input type="text" id="vorname" placeholder="Max"></label>
       <label>Nachname <span class="required-star">*</span><input type="text" id="nachname" placeholder="Mustermann"></label>
     </div>
     <div class="field-group single">
@@ -305,7 +305,7 @@
   </div>
 
   <!-- Rechnungsadresse -->
-  <div class="card">
+  <div class="card" id="rechnungsadresseCard">
     <div class="card-title">Rechnungsadresse</div>
     <div class="field-group single">
       <label>Straße &amp; Hausnummer <span class="required-star">*</span><input type="text" id="strasse" placeholder="Musterstraße 12"></label>
@@ -637,6 +637,7 @@ function applyProfile() {
   if (s2) { s2.style.opacity = nioMode ? '0.35' : '1'; s2.style.pointerEvents = nioMode ? 'none' : ''; }
   if (s3) { s3.style.opacity = nioMode ? '0.35' : '1'; s3.style.pointerEvents = nioMode ? 'none' : ''; }
   document.getElementById('nioLock').style.display = nioMode ? '' : 'none';
+  document.getElementById('rechnungsadresseCard').style.display = nioMode ? 'none' : '';
 
   // Download-Link
   if (p.docxUrl) {
@@ -729,7 +730,7 @@ async function b2cNioVertrag() {
     };
     for (const [tag, val] of Object.entries(repl)) {
       const ph = '{{' + tag + '}}';
-      if (xml.includes(ph)) xml = xml.split(ph).join(val.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'));
+      if (xml.includes(ph)) xml = xml.split(ph).join((val||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'));
     }
     zip.file('word/document.xml', xml);
     const blob = await zip.generateAsync({type:'blob', mimeType:'application/vnd.openxmlformats-officedocument.wordprocessingml.document'});
