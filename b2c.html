@@ -379,8 +379,8 @@
 
   <!-- Buttons -->
   <div id="sectionMake" class="btn-row" style="margin-bottom:8px">
-    <button class="btn-action btn-primary" onclick="b2cSenden()"><span>✉</span><span>Angebot erzeugen (über Make)</span></button>
-    <button class="btn-action btn-secondary" id="btnVertrag" onclick="b2cVertrag()" disabled><span>⬇</span><span>Vertrag erzeugen (.docx)</span></button>
+    <button id="btnMake" class="btn-action btn-primary" onclick="b2cSenden()"><span>✉</span><span>Angebot erzeugen (über Make)</span></button>
+    <button id="btnVertragDocx" class="btn-action btn-secondary" onclick="b2cVertrag()" disabled><span>⬇</span><span>Vertrag erzeugen (.docx)</span></button>
   </div>
   <div id="makeSts" class="sts" style="margin-bottom:4px"></div>
 
@@ -848,6 +848,8 @@ document.addEventListener('DOMContentLoaded', () => {
     if (sel) sel.value = savedProfil;
     applyProfile();
   }
+  // Clear on navigation away (keep on reload)
+  window.addEventListener('pagehide', () => sessionStorage.removeItem('b2c_profil'));
   document.getElementById('angebotPdf').addEventListener('change', e => {
     const f = e.target.files[0];
     document.getElementById('angebotHint').textContent = f ? '📄 ' + f.name + ' → Angebotsnummer: ' + f.name.replace(/\.pdf$/i,'') : 'Noch kein PDF hochgeladen';
