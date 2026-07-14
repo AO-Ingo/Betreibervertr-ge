@@ -293,7 +293,7 @@
   <div class="card">
     <div class="card-title">Kunde</div>
     <div class="field-group">
-      <label>Vorname<input type="text" id="vorname" placeholder="Max"></label>
+      <label style="text-transform:none;letter-spacing:0">Vorname <span style="font-weight:400;color:var(--text-muted);font-size:11px">(optional)</span><input type="text" id="vorname" placeholder="Max"></label>
       <label>Nachname <span class="required-star">*</span><input type="text" id="nachname" placeholder="Mustermann"></label>
     </div>
     <div class="field-group single">
@@ -517,8 +517,8 @@ const PROFILES = {
   },
   "nio": {
     "label": "Nio Project / Premium Immo",
-    "standortName": "",
-    "standortAdresse": "",
+    "standortName": "Bornholmer Str. 67, 10439 Berlin",
+    "standortAdresse": "Bornholmer Str. 67, 10439 Berlin",
     "geraet": "",
     "docxUrl": "",
     "artikel": [
@@ -533,8 +533,8 @@ const PROFILES = {
   },
   "nio": {
     "label": "Nio Project / Premium Immo",
-    "standortName": "",
-    "standortAdresse": "",
+    "standortName": "Bornholmer Str. 67, 10439 Berlin",
+    "standortAdresse": "Bornholmer Str. 67, 10439 Berlin",
     "geraet": "",
     "docxUrl": "https://raw.githubusercontent.com/AO-Ingo/Vertragsgenerator/main/AMBA_Betreibervertrag_NIO_Vorlage.docx",
     "nioMode": true,
@@ -580,6 +580,10 @@ function applyProfile() {
   if (!p) return;
   currentProfile = {key, ...p};
   sessionStorage.setItem('b2c_profil', key);
+  // Reset fields before applying new profile
+  document.getElementById('standortAdresse').value = '';
+  document.getElementById('geraet').value = '';
+  document.getElementById('standortSelect').innerHTML = '<option value="" disabled selected>– bitte wählen –</option>';
   sessionStorage.setItem('b2c_profil', key);
 
   // Standort-Optionen
@@ -722,7 +726,7 @@ async function b2cNioVertrag() {
       'KUNDE_VOLLNAME':     (v('vorname') + ' ' + v('nachname')).trim(),
       'KUNDE_EMAIL':        v('email'),
       'KUNDE_TELEFON':      v('telefon'),
-      'STELLPLATZ_NUMMER':  v('stellplatz'),
+      'STELLPLATZ':  v('stellplatz'),
       'LADEPUNKTE_ANZAHL':  v('anzahlLadepunkte') || '1',
       'INBETRIEBNAHME_DATUM': inbetrieb,
       'DATUM_HEUTE':        heute,
