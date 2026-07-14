@@ -265,6 +265,9 @@
       <option value="wartung">Rahmenwartungsvertrag AC</option>
     </select>
   </div>
+  <div style="display:flex;justify-content:flex-end;margin-top:-8px;margin-bottom:12px">
+    <button onclick="resetForm()" style="background:none;border:none;font-size:12px;color:var(--text-muted);cursor:pointer;padding:4px 8px;border-radius:var(--radius);transition:all 0.15s" onmouseover="this.style.background='var(--surface2)'" onmouseout="this.style.background='none'">↺ Felder zurücksetzen</button>
+  </div>
   <div id="dlSection" style="margin-bottom:20px;display:none">
     <div style="font-size:11px;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;color:var(--text-muted);margin-bottom:8px">Vertragsvorlage herunterladen</div>
     <div id="dlLinks"></div>
@@ -424,12 +427,15 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('anlage_datum').value = new Date().toISOString().split('T')[0];
   addRow();
   setupMergeListeners();
+  const savedTyp = sessionStorage.getItem('b2b_ac_typ');
+  if (savedTyp) setTyp(savedTyp);
 });
 
 // ===== TYP WECHSEL =====
 function setTyp(typ) {
   if (!typ) return;
   currentTyp = typ;
+  sessionStorage.setItem('b2b_ac_typ', typ);
   const sel = document.getElementById('vtSelect');
   if (sel && sel.value !== typ) sel.value = typ;
 
@@ -689,6 +695,32 @@ function dl(blob,filename){const a=document.createElement('a');a.href=URL.create
 function setSts(id,cls,msg){const el=document.getElementById(id);if(!el)return;el.className='sts '+cls;el.innerHTML=cls==='proc'?`<div class="spin"></div><span>${msg}</span>`:`<span>${msg}</span>`;}
 function setHint(id,msg,color){const el=document.getElementById(id);if(!el)return;el.textContent=msg;el.style.color=color;}
 
+
+function resetForm() {
+  // Clear text inputs
+  document.querySelectorAll('input[type=text], input[type=email], input[type=tel], input[type=number]').forEach(el => {
+    if (el.id !== 'vb_angebotsnr') el.value = el.defaultValue || '';
+  });
+  document.getElementById('stand_datum').value = new Date().toISOString().split('T')[0];
+  document.getElementById('anlage_datum').value = new Date().toISOString().split('T')[0];
+  document.getElementById('vb_angebotsnr').value = '';
+  // Reset table
+  document.getElementById('ladeBody').innerHTML = '';
+  rowCount = 0;
+  addRow();
+  // Reset status messages
+  ['makeSts','genSts','mergeSts','vbPdfHint'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) { el.className = 'sts'; el.innerHTML = ''; }
+  });
+  // Reset file inputs
+  document.querySelectorAll('input[type=file]').forEach(el => el.value = '');
+  document.getElementById('mergeHint1') && (document.getElementById('mergeHint1').textContent = 'Noch kein PDF');
+  document.getElementById('mergeHint2') && (document.getElementById('mergeHint2').textContent = 'Noch kein PDF');
+  document.getElementById('mergeBtn') && (document.getElementById('mergeBtn').disabled = true);
+  if (document.getElementById('vbPdfHint')) document.getElementById('vbPdfHint').textContent = 'Noch kein PDF hochgeladen';
+  updateArtikelAnzahl();
+}
 </script>
 </body>
 </html>
