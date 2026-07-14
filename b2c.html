@@ -563,6 +563,7 @@ function applyProfile() {
   if (!p) return;
   currentProfile = {key, ...p};
   sessionStorage.setItem('b2c_profil', key);
+  sessionStorage.setItem('b2c_profil', key);
 
   // Standort-Optionen
   if (p.standortName) {
@@ -600,10 +601,13 @@ function applyProfile() {
   document.getElementById('artikelCard').style.pointerEvents = nioMode ? 'none' : '';
 
   // Make-Button: ausgegraut bei Nio, Vertrag-Button aktiv
-  const makeBtn = document.querySelector('#sectionMake .btn-primary');
-  const vertragBtn = document.querySelector('#sectionMake .btn-secondary');
+  const makeBtn = document.getElementById('btnMake');
+  const vertragBtn = document.getElementById('btnVertragDocx');
   if (makeBtn) { makeBtn.style.opacity = nioMode ? '0.35' : '1'; makeBtn.disabled = nioMode; }
-  if (vertragBtn) { vertragBtn.disabled = nioMode ? false : !p.docxUrl; vertragBtn.onclick = nioMode ? b2cNioVertrag : b2cVertrag; }
+  if (vertragBtn) {
+    vertragBtn.disabled = nioMode ? false : !p.docxUrl;
+    vertragBtn.onclick = nioMode ? b2cNioVertrag : b2cVertrag;
+  }
 
   // Schritt 2+3: gesperrt anzeigen bei Nio
   const s2 = document.getElementById('sectionSchritt2');
@@ -837,6 +841,13 @@ async function b2cMerge() {
 
 // ── UPLOAD LISTENERS ──
 document.addEventListener('DOMContentLoaded', () => {
+  // Restore profile from sessionStorage
+  const savedProfil = sessionStorage.getItem('b2c_profil');
+  if (savedProfil) {
+    const sel = document.getElementById('profileSelect');
+    if (sel) sel.value = savedProfil;
+    applyProfile();
+  }
   document.getElementById('angebotPdf').addEventListener('change', e => {
     const f = e.target.files[0];
     document.getElementById('angebotHint').textContent = f ? '📄 ' + f.name + ' → Angebotsnummer: ' + f.name.replace(/\.pdf$/i,'') : 'Noch kein PDF hochgeladen';
