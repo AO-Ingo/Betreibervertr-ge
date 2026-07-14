@@ -589,8 +589,10 @@ function applyProfile() {
   renderArtikel(p.artikel || []);
 
   // Vertrag-Button
-  document.getElementById('btnVertrag').disabled = !p.docxUrl;
-  document.getElementById('btnVertragMitNr').disabled = !p.docxUrl || !document.getElementById('angebotPdf').files[0];
+  const _btnV = document.getElementById('btnVertragDocx');
+  if (_btnV) _btnV.disabled = !p.docxUrl;
+  const _btnNr = document.getElementById('btnVertragMitNr');
+  if (_btnNr) _btnNr.disabled = !p.docxUrl || !document.getElementById('angebotPdf').files[0];
 
   // Nio-Modus
   const nioMode = !!p.nioMode;
