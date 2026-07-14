@@ -281,6 +281,9 @@
       <option value="sonstiges">Sonstiges (manuelle Eingabe)</option>
     </select>
   </div>
+  <div style="display:flex;justify-content:flex-end;margin-top:-8px;margin-bottom:12px">
+    <button onclick="resetFormB2C()" style="background:none;border:none;font-size:12px;color:var(--text-muted);cursor:pointer;padding:4px 8px;border-radius:var(--radius);transition:all 0.15s" onmouseover="this.style.background='var(--surface2)'" onmouseout="this.style.background='none'">↺ Felder zurücksetzen</button>
+  </div>
   <div id="dlSection" style="margin-bottom:20px;display:none">
     <div style="font-size:11px;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;color:var(--text-muted);margin-bottom:8px">Vertragsvorlage herunterladen</div>
     <div id="dlLinks"></div>
@@ -559,6 +562,7 @@ function applyProfile() {
   const p = PROFILES[key];
   if (!p) return;
   currentProfile = {key, ...p};
+  sessionStorage.setItem('b2c_profil', key);
 
   // Standort-Optionen
   if (p.standortName) {
@@ -861,6 +865,28 @@ function setSts(id, cls, msg) {
   const el = document.getElementById(id); if (!el) return;
   el.className = 'sts ' + cls;
   el.innerHTML = cls==='proc' ? `<div class="spin"></div><span>${msg}</span>` : `<span>${msg}</span>`;
+}
+
+function resetFormB2C() {
+  document.querySelectorAll('input[type=text], input[type=email], input[type=tel], input[type=number]').forEach(el => {
+    if (!el.readOnly) el.value = el.defaultValue || '';
+  });
+  document.getElementById('datum').value = new Date().toISOString().split('T')[0];
+  document.getElementById('anmerkungen').value = '';
+  document.querySelectorAll('input[type=file]').forEach(el => el.value = '');
+  ['angebotHint','vertragHint'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) { el.textContent = 'Noch kein PDF hochgeladen'; el.style.color = 'var(--text-muted)'; }
+  });
+  ['makeSts','genSts','mergeSts'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) { el.className = 'sts'; el.innerHTML = ''; }
+  });
+  document.getElementById('btnMerge') && (document.getElementById('btnMerge').disabled = true);
+  // Reset Ladeeinrichtungen to single empty row
+  document.getElementById('leContainer').innerHTML = '';
+  leCount = 0;
+  if (currentProfile?.geraet !== undefined) addLadeeinrichtung(currentProfile.geraet || '');
 }
 </script>
 </body>
