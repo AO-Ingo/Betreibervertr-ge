@@ -554,7 +554,7 @@ function applyProfile() {
     document.getElementById('standortAdresse').readOnly = false;
     document.getElementById('geraet').readOnly = false;
     renderArtikel([]);
-    document.getElementById('btnVertrag').disabled = true;
+    document.getElementById('btnVertragDocx') && (document.getElementById('btnVertragDocx').disabled = true);
     document.getElementById('dlSection').style.display = 'none';
     return;
   }
