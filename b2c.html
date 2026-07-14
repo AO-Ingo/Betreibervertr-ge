@@ -277,7 +277,7 @@
       <option value="gwg">GWG Seepark</option>
       <option value="lbbw">LBBW Park Trio</option>
       <option value="gsw">GSW Reutlingen</option>
-      <option value="nio" disabled>Nio Project / Premium Immo (Vorlage ausstehend)</option>
+      <option value="nio">Nio Project / Premium Immo – Operative Betriebsführung</option>
       <option value="sonstiges">Sonstiges (manuelle Eingabe)</option>
     </select>
   </div>
@@ -369,13 +369,22 @@
     <textarea id="anmerkungen" placeholder="z.B. Abrechnung über Firma, USt. ausweisen..."></textarea>
   </div>
 
+  <!-- Nio Info -->
+  <div id="nioInfo" style="display:none;background:#FFF7ED;border:1px solid #FED7AA;border-radius:var(--radius);padding:12px 14px;font-size:12px;color:#9A3412;margin-bottom:16px">
+    <strong>Operative Betriebsführung (NIO)</strong> — Das Angebot ist bereits im Vertrag enthalten. Bitte Formular ausfüllen und Vertrag direkt herunterladen. Kein Make-Webhook, keine Zusammenführung erforderlich.
+  </div>
+  <!-- Nio Button -->
+  <div id="btnVertragNio" style="display:none;margin-bottom:16px">
+    <button class="btn-generate" onclick="b2cNioVertrag()">⬇ Vertrag herunterladen (.docx)</button>
+  </div>
   <!-- Buttons -->
-  <div class="btn-row" style="margin-bottom:8px">
+  <div id="sectionMake" class="btn-row" style="margin-bottom:8px">
     <button class="btn-action btn-primary" onclick="b2cSenden()"><span>✉</span><span>Angebot erzeugen (über Make)</span></button>
     <button class="btn-action btn-secondary" id="btnVertrag" onclick="b2cVertrag()" disabled><span>⬇</span><span>Vertrag erzeugen (.docx)</span></button>
   </div>
   <div id="makeSts" class="sts" style="margin-bottom:4px"></div>
 
+  <div id="sectionSchritt2">
   <!-- Schritt 2 -->
   <div class="step-label">Schritt 2 · Angebot hochladen &amp; Vertrag herunterladen</div>
   <div class="card">
@@ -400,6 +409,8 @@
     <div id="genSts" class="sts"></div>
   </div>
 
+  </div><!-- /sectionSchritt2 -->
+  <div id="sectionSchritt3">
   <!-- Schritt 3 -->
   <div class="step-label">Schritt 3 · PDFs zusammenfügen</div>
   <div class="card">
@@ -425,6 +436,7 @@
     <div id="mergeSts" class="sts"></div>
   </div>
 
+  </div><!-- /sectionSchritt3 -->
 </div>
 
 <script>
@@ -575,6 +587,14 @@ function applyProfile() {
   document.getElementById('btnVertrag').disabled = !p.docxUrl;
   document.getElementById('btnVertragMitNr').disabled = !p.docxUrl || !document.getElementById('angebotPdf').files[0];
 
+  // Nio-Modus: kein Make, kein Merge, nur Vertrag herunterladen
+  const nioMode = !!p.nioMode;
+  document.getElementById('nioInfo').style.display = nioMode ? '' : 'none';
+  document.getElementById('sectionMake').style.display = nioMode ? 'none' : '';
+  document.getElementById('sectionSchritt2').style.display = nioMode ? 'none' : '';
+  document.getElementById('sectionSchritt3').style.display = nioMode ? 'none' : '';
+  document.getElementById('btnVertragNio').style.display = nioMode ? '' : 'none';
+
   // Download-Link
   if (p.docxUrl) {
     document.getElementById('dlSection').style.display = '';
@@ -639,6 +659,40 @@ function changeMenge(idx, delta) {
   if (!inp) return;
   const val = Math.max(1, parseInt(inp.value) + delta);
   inp.value = val;
+}
+
+// ── NIO VERTRAG ──
+async function b2cNioVertrag() {
+  setSts('makeSts','proc','Vorlage wird geladen…');
+  try {
+    const p = currentProfile;
+    const resp = await fetch(p.docxUrl);
+    if (!resp.ok) throw new Error('Vorlage nicht erreichbar (' + resp.status + ')');
+    const zip = await JSZip.loadAsync(await resp.arrayBuffer());
+    let xml = await zip.file('word/document.xml').async('string');
+
+    const inbetrieb = v('inbetriebnahme') ? new Date(v('inbetriebnahme')).toLocaleDateString('de-DE',{day:'2-digit',month:'2-digit',year:'numeric'}) : '';
+    const heute = new Date().toLocaleDateString('de-DE',{day:'2-digit',month:'2-digit',year:'numeric'});
+
+    const repl = {
+      'KUNDE_VOLLNAME':     (v('vorname') + ' ' + v('nachname')).trim(),
+      'KUNDE_EMAIL':        v('email'),
+      'KUNDE_TELEFON':      v('telefon'),
+      'STELLPLATZ_NUMMER':  v('stellplatz'),
+      'LADEPUNKTE_ANZAHL':  v('anzahlLadepunkte') || '1',
+      'INBETRIEBNAHME_DATUM': inbetrieb,
+      'DATUM_HEUTE':        heute,
+      'ANSPRECHPARTNER_NAME': (v('vorname') + ' ' + v('nachname')).trim(),
+    };
+    for (const [tag, val] of Object.entries(repl)) {
+      const ph = '{{' + tag + '}}';
+      if (xml.includes(ph)) xml = xml.split(ph).join(val.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'));
+    }
+    zip.file('word/document.xml', xml);
+    const blob = await zip.generateAsync({type:'blob', mimeType:'application/vnd.openxmlformats-officedocument.wordprocessingml.document'});
+    download(blob, `AMBA_Betreibervertrag_NIO_${v('nachname') || 'Kunde'}_Stellplatz_${v('stellplatz') || 'X'}.docx`);
+    setSts('makeSts','ok','✓ Vertrag heruntergeladen.');
+  } catch(err) { setSts('makeSts','err','✕ ' + err.message); }
 }
 
 // ── MAKE WEBHOOK ──
