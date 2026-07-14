@@ -433,6 +433,8 @@ document.addEventListener('DOMContentLoaded', () => {
     if (sel) sel.value = savedTyp;
     setTyp(savedTyp);
   }
+  // Clear on navigation away (not on reload)
+  window.addEventListener('pagehide', () => sessionStorage.removeItem('b2b_dc_typ'));
 });
 
 // ===== TYP WECHSEL =====
