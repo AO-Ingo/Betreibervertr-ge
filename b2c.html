@@ -373,10 +373,7 @@
   <div id="nioInfo" style="display:none;background:#FFF7ED;border:1px solid #FED7AA;border-radius:var(--radius);padding:12px 14px;font-size:12px;color:#9A3412;margin-bottom:16px">
     <strong>Operative Betriebsführung (NIO)</strong> — Das Angebot ist bereits im Vertrag enthalten. Bitte Formular ausfüllen und Vertrag direkt herunterladen. Kein Make-Webhook, keine Zusammenführung erforderlich.
   </div>
-  <!-- Nio Button -->
-  <div id="btnVertragNio" style="display:none;margin-bottom:16px">
-    <button class="btn-generate" onclick="b2cNioVertrag()">⬇ Vertrag herunterladen (.docx)</button>
-  </div>
+
   <!-- Buttons -->
   <div id="sectionMake" class="btn-row" style="margin-bottom:8px">
     <button class="btn-action btn-primary" onclick="b2cSenden()"><span>✉</span><span>Angebot erzeugen (über Make)</span></button>
@@ -384,6 +381,9 @@
   </div>
   <div id="makeSts" class="sts" style="margin-bottom:4px"></div>
 
+  <div id="nioLock" style="display:none;background:#FFF7ED;border:1px solid #FED7AA;border-radius:var(--radius);padding:10px 14px;font-size:12px;color:#9A3412;margin-bottom:12px;text-align:center">
+    🔒 Schritt 2 &amp; 3 nicht erforderlich — Angebot ist bereits im Vertrag enthalten
+  </div>
   <div id="sectionSchritt2">
   <!-- Schritt 2 -->
   <div class="step-label">Schritt 2 · Angebot hochladen &amp; Vertrag herunterladen</div>
@@ -587,13 +587,26 @@ function applyProfile() {
   document.getElementById('btnVertrag').disabled = !p.docxUrl;
   document.getElementById('btnVertragMitNr').disabled = !p.docxUrl || !document.getElementById('angebotPdf').files[0];
 
-  // Nio-Modus: kein Make, kein Merge, nur Vertrag herunterladen
+  // Nio-Modus
   const nioMode = !!p.nioMode;
   document.getElementById('nioInfo').style.display = nioMode ? '' : 'none';
-  document.getElementById('sectionMake').style.display = nioMode ? 'none' : '';
-  document.getElementById('sectionSchritt2').style.display = nioMode ? 'none' : '';
-  document.getElementById('sectionSchritt3').style.display = nioMode ? 'none' : '';
-  document.getElementById('btnVertragNio').style.display = nioMode ? '' : 'none';
+
+  // Artikel: ausgegraut bei Nio
+  document.getElementById('artikelCard').style.opacity = nioMode ? '0.35' : '1';
+  document.getElementById('artikelCard').style.pointerEvents = nioMode ? 'none' : '';
+
+  // Make-Button: ausgegraut bei Nio, Vertrag-Button aktiv
+  const makeBtn = document.querySelector('#sectionMake .btn-primary');
+  const vertragBtn = document.querySelector('#sectionMake .btn-secondary');
+  if (makeBtn) { makeBtn.style.opacity = nioMode ? '0.35' : '1'; makeBtn.disabled = nioMode; }
+  if (vertragBtn) { vertragBtn.disabled = nioMode ? false : !p.docxUrl; vertragBtn.onclick = nioMode ? b2cNioVertrag : b2cVertrag; }
+
+  // Schritt 2+3: gesperrt anzeigen bei Nio
+  const s2 = document.getElementById('sectionSchritt2');
+  const s3 = document.getElementById('sectionSchritt3');
+  if (s2) { s2.style.opacity = nioMode ? '0.35' : '1'; s2.style.pointerEvents = nioMode ? 'none' : ''; }
+  if (s3) { s3.style.opacity = nioMode ? '0.35' : '1'; s3.style.pointerEvents = nioMode ? 'none' : ''; }
+  document.getElementById('nioLock').style.display = nioMode ? '' : 'none';
 
   // Download-Link
   if (p.docxUrl) {
