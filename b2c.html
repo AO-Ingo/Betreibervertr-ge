@@ -603,10 +603,13 @@ function applyProfile() {
   // Make-Button: ausgegraut bei Nio, Vertrag-Button aktiv
   const makeBtn = document.getElementById('btnMake');
   const vertragBtn = document.getElementById('btnVertragDocx');
-  if (makeBtn) { makeBtn.style.opacity = nioMode ? '0.35' : '1'; makeBtn.disabled = nioMode; }
+  if (makeBtn) {
+    makeBtn.style.opacity = nioMode ? '0.35' : '1';
+    makeBtn.disabled = nioMode;
+  }
   if (vertragBtn) {
     vertragBtn.disabled = nioMode ? false : !p.docxUrl;
-    vertragBtn.onclick = nioMode ? b2cNioVertrag : b2cVertrag;
+    vertragBtn.setAttribute('onclick', nioMode ? 'b2cNioVertrag()' : 'b2cVertrag()');
   }
 
   // Schritt 2+3: gesperrt anzeigen bei Nio
@@ -848,8 +851,6 @@ document.addEventListener('DOMContentLoaded', () => {
     if (sel) sel.value = savedProfil;
     applyProfile();
   }
-  // Clear on navigation away (keep on reload)
-  window.addEventListener('pagehide', () => sessionStorage.removeItem('b2c_profil'));
   document.getElementById('angebotPdf').addEventListener('change', e => {
     const f = e.target.files[0];
     document.getElementById('angebotHint').textContent = f ? '📄 ' + f.name + ' → Angebotsnummer: ' + f.name.replace(/\.pdf$/i,'') : 'Noch kein PDF hochgeladen';
