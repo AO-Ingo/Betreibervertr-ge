@@ -141,275 +141,659 @@
     .merge-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px; }
     @media (max-width: 600px) { .merge-grid { grid-template-columns: 1fr; } .btn-row { flex-direction: column; } }
 
-    .profile-wrap { margin-bottom:20px; }
-    .info-box { background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:10px 14px;font-size:12px;color:var(--text-muted);margin-bottom:16px; }
-    .info-box strong { color:var(--text); }
-    .info-warn { color:#B7791F; }
-    .le-row { display:grid;grid-template-columns:2fr 2fr auto;gap:10px;align-items:end;margin-bottom:10px; }
-  </style>
+    .artikel-card {
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      margin-bottom: 12px;
+    }
+    .artikel-header {
+      background: var(--text);
+      color: #F0EFEB;
+      padding: 14px 16px;
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+    }
+    .artikel-header.optional-artikel {
+      background: var(--surface2);
+      color: var(--text);
+      border-bottom: 1px solid var(--border);
+    }
+    .artikel-check {
+      width: 22px; height: 22px;
+      border-radius: 4px;
+      background: #4CAF50;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0; margin-top: 1px;
+      font-size: 13px;
+    }
+    .artikel-info { flex: 1; }
+    .artikel-name { font-size: 13px; font-weight: 600; line-height: 1.3; }
+    .artikel-id { font-size: 11px; opacity: 0.55; margin-top: 2px; font-family: 'DM Mono', monospace; }
+    .artikel-badge {
+      font-size: 10px; font-weight: 700; letter-spacing: 0.08em;
+      padding: 3px 8px; border-radius: 20px;
+      background: rgba(255,255,255,0.15); color: #F0EFEB;
+      text-transform: uppercase; white-space: nowrap; flex-shrink: 0;
+    }
+    .artikel-badge.pflicht { background: rgba(255,255,255,0.15); color: #F0EFEB; }
+    .artikel-badge.optional { background: var(--border); color: var(--text-muted); }
+    .artikel-menge {
+      padding: 12px 16px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: var(--surface);
+    }
+    .menge-label { font-size: 12px; color: var(--text-muted); font-weight: 500; }
+    .menge-ctrl {
+      display: flex; align-items: center; gap: 0;
+      border: 1px solid var(--border); border-radius: var(--radius);
+      overflow: hidden;
+    }
+    .menge-btn {
+      width: 32px; height: 32px;
+      background: var(--surface2); border: none;
+      cursor: pointer; font-size: 16px; color: var(--text);
+      display: flex; align-items: center; justify-content: center;
+      transition: background 0.1s;
+    }
+    .menge-btn:hover { background: var(--border); }
+    .menge-val {
+      width: 40px; text-align: center;
+      font-size: 13px; font-weight: 500;
+      border: none; outline: none;
+      background: var(--surface); color: var(--text);
+      padding: 0; height: 32px;
+    }
+    .einheit-select {
+      padding: 5px 8px; font-size: 12px;
+      border: 1px solid var(--border); border-radius: var(--radius);
+      background: var(--surface); color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+    }
+    .preis-text { font-size: 13px; color: var(--text-muted); margin-left: auto; }
+    .step-label {
+      font-size: 10px; font-weight: 700; letter-spacing: 0.12em;
+      text-transform: uppercase; color: var(--text-muted);
+      text-align: center; margin: 28px 0 16px;
+      display: flex; align-items: center; gap: 12px;
+    }
+    .step-label::before, .step-label::after { content:''; flex:1; border-top: 1px solid var(--border); }
+    textarea {
+      width: 100%; padding: 10px; border: 1px solid var(--border);
+      border-radius: var(--radius); font-family: 'DM Sans', sans-serif;
+      font-size: 13px; color: var(--text); resize: vertical; min-height: 80px;
+      outline: none; transition: border-color 0.15s;
+    }
+    textarea:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(26,25,22,0.07); }
+    .upload-area {
+      border: 1.5px dashed var(--border-strong); border-radius: var(--radius-lg);
+      padding: 28px; text-align: center; cursor: pointer;
+      transition: all 0.15s; color: var(--text-muted); font-size: 13px;
+    }
+    .upload-area:hover, .upload-area.drag {
+      border-color: var(--accent); color: var(--text); background: var(--surface2);
+    }
+    .upload-icon { font-size: 32px; margin-bottom: 8px; }
+    .upload-hint { font-size: 11px; margin-top: 4px; color: var(--text-muted); }
+    .info-banner {
+      background: #EFF6FF; border: 1px solid #BFDBFE;
+      border-radius: var(--radius); padding: 10px 14px;
+      font-size: 12px; color: #1E40AF; display: flex; gap: 8px;
+      align-items: flex-start; margin-bottom: 14px;
+    }
+    .spin { width:12px;height:12px;border:2px solid var(--border);border-top-color:var(--text);border-radius:50%;animation:spin .7s linear infinite;flex-shrink:0; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .sts { font-size:12px;min-height:18px;display:flex;align-items:center;gap:6px;margin-top:8px; }
+    .sts.ok { color: var(--success); }
+    .sts.err { color: var(--danger); }
+    .sts.proc { color: var(--text-muted); }
+    .progress-wrap { display:none;background:var(--surface2);border-radius:4px;height:4px;margin-top:8px; }
+    .progress-bar { height:100%;background:var(--text);border-radius:4px;width:0%;transition:width .3s; }
+    .required-star { color: var(--danger); }
+</style>
 </head>
 <body>
+
 <header class="site-header">
   <a class="back-link" href="index.html">← Übersicht</a>
   <span class="logo-amba">A M B A</span>
   <span class="logo-sub">Betreiberverträge B2C</span>
 </header>
+
 <div class="content">
   <div class="page-header">
     <div class="page-title">Betreiberverträge – B2C</div>
     <div class="page-subtitle">Kundenprofil auswählen — Felder werden automatisch befüllt</div>
   </div>
 
-  <div class="profile-wrap">
-    <select id="profileSelect" onchange="applyProfile()" style="width:100%;font-size:14px;padding:10px 14px;border-radius:var(--radius-lg);font-weight:500;">
-      <option value="">— Kundenprofil auswählen —</option>
+  <!-- Profil-Dropdown -->
+  <div style="margin-bottom:24px">
+    <select id="profileSelect" onchange="applyProfile()" style="width:100%;font-size:14px;padding:10px 14px;border-radius:var(--radius-lg);font-weight:500;border:1px solid var(--border);background:var(--surface);font-family:'DM Sans',sans-serif;color:var(--text);outline:none;cursor:pointer;">
+      <option value="" disabled selected>— Kundenprofil auswählen —</option>
       <option value="lerners">Lerner'sches Schloss</option>
       <option value="gwg">GWG Seepark</option>
       <option value="lbbw">LBBW Park Trio</option>
-      <option value="nio" disabled>Nio Project / Premium Immo (Vorlage ausstehend)</option>
       <option value="gsw">GSW Reutlingen</option>
+      <option value="nio" disabled>Nio Project / Premium Immo (Vorlage ausstehend)</option>
+      <option value="sonstiges">Sonstiges (manuelle Eingabe)</option>
     </select>
   </div>
-  <div class="info-box" id="infoBox" style="display:none"></div>
+  <div id="dlSection" style="margin-bottom:20px;display:none">
+    <div style="font-size:11px;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;color:var(--text-muted);margin-bottom:8px">Vertragsvorlage herunterladen</div>
+    <div id="dlLinks"></div>
+  </div>
 
+  <!-- Kunde -->
   <div class="card">
-    <div class="card-title">Auftraggeber</div>
+    <div class="card-title">Kunde</div>
     <div class="field-group">
-      <label>Vorname<input type="text" id="vorname" placeholder="Max"></label>
-      <label>Nachname<input type="text" id="nachname" placeholder="Mustermann"></label>
+      <label>Vorname <span class="required-star">*</span><input type="text" id="vorname" placeholder="Max"></label>
+      <label>Nachname <span class="required-star">*</span><input type="text" id="nachname" placeholder="Mustermann"></label>
     </div>
-    <div class="field-group single"><label>Straße &amp; Hausnummer<input type="text" id="strasse" placeholder="Musterstraße 1"></label></div>
-    <div class="field-group">
-      <label>PLZ<input type="text" id="plz" placeholder="12345"></label>
-      <label>Stadt<input type="text" id="stadt" placeholder="Musterstadt"></label>
+    <div class="field-group single">
+      <label>E-Mail <span class="required-star">*</span><input type="email" id="email" placeholder="m.mustermann@beispiel.de"></label>
     </div>
-    <hr class="divider">
-    <div class="field-group">
-      <label>Stellplatz / Einheit<input type="text" id="stellplatz" placeholder="z.B. TG B12"></label>
-      <label>Vertragsdatum<input type="date" id="datum"></label>
+    <div class="field-group single">
+      <label style="text-transform:none;letter-spacing:0">Telefon <span style="font-weight:400;color:var(--text-muted);font-size:11px">(optional)</span><input type="tel" id="telefon" placeholder="+49 170 1234567"></label>
     </div>
   </div>
 
+  <!-- Rechnungsadresse -->
   <div class="card">
-    <div class="card-title">Standort &amp; Ladeeinrichtung</div>
-    <div class="field-group single"><label>Standortbezeichnung<input type="text" id="standortName" readonly></label></div>
-    <div class="field-group single"><label>Standortadresse<input type="text" id="standortAdresse" readonly></label></div>
-    <hr class="divider">
-    <div id="leContainer"></div>
-    <button class="btn-add-le" onclick="addLadeeinrichtung()">+ Ladeeinrichtung hinzufügen</button>
-  </div>
-
-  <div class="card">
-    <div class="card-title">Vertragsdaten</div>
+    <div class="card-title">Rechnungsadresse</div>
+    <div class="field-group single">
+      <label>Straße &amp; Hausnummer <span class="required-star">*</span><input type="text" id="strasse" placeholder="Musterstraße 12"></label>
+    </div>
     <div class="field-group">
-      <label>Artikel (Zoho)<input type="text" id="zohoArtikelName" readonly></label>
-      <label>Artikel-ID<input type="text" id="zohoArtikelId" readonly></label>
-    </div>
-    <div id="zusatzArtikelWrap" style="display:none">
-      <hr class="divider">
-      <div class="field-group">
-        <label>Zusatzartikel<input type="text" id="zohoZusatzName" readonly></label>
-        <label>Zusatz-ID<input type="text" id="zohoZusatzId" readonly></label>
-      </div>
+      <label>PLZ <span class="required-star">*</span><input type="text" id="plz" placeholder="80331"></label>
+      <label>Stadt <span class="required-star">*</span><input type="text" id="stadt" placeholder="Frankfurt"></label>
     </div>
   </div>
 
-  <!-- Schritt 2: Angebot + Vertrag -->
-  <div class="step-divider">Angebot &amp; Vertrag</div>
-  <div class="btn-row">
-    <button class="btn-action btn-primary" onclick="b2cSendenAnMake()"><span>✉</span><span>Angebot erzeugen (über Make)</span></button>
-    <button class="btn-action btn-secondary" id="vbGenBtn" onclick="b2cGenDocx()" disabled><span>⬇</span><span>Vertrag erzeugen (.docx)</span></button>
+  <!-- Standort -->
+  <div class="card">
+    <div class="card-title">Standort</div>
+    <div class="field-group single" style="margin-bottom:14px">
+      <label>Standort auswählen <span class="required-star">*</span>
+        <select id="standortSelect" onchange="onStandortChange()" style="padding:8px 10px;border:1px solid var(--border);border-radius:var(--radius);background:var(--surface);font-family:'DM Sans',sans-serif;font-size:13px;color:var(--text);outline:none;">
+          <option value="" disabled selected>– bitte wählen –</option>
+        </select>
+      </label>
+    </div>
+    <div class="field-group single" style="margin-bottom:14px">
+      <label>Standort-Adresse<input type="text" id="standortAdresse" placeholder="wird automatisch befüllt oder manuell eingeben"></label>
+    </div>
+    <div class="field-group single">
+      <label>Art der Ladeeinrichtung<input type="text" id="geraet" placeholder="wird automatisch befüllt oder manuell eingeben"></label>
+    </div>
+  </div>
+
+  <!-- Stellplatz -->
+  <div class="card">
+    <div class="card-title">Stellplatz</div>
+    <div class="field-group single">
+      <label>Stellplatz-Nr. <span class="required-star">*</span><input type="text" id="stellplatz" placeholder="42"></label>
+    </div>
+    <div class="field-group single">
+      <label style="text-transform:none;letter-spacing:0">Anzahl Ladepunkte <span style="font-weight:400;color:var(--text-muted);font-size:11px">(optional)</span>
+        <input type="number" id="anzahlLadepunkte" value="1" min="1">
+      </label>
+    </div>
+    <div class="field-group single">
+      <label style="text-transform:none;letter-spacing:0">Inbetriebnahme-Datum <span style="font-weight:400;color:var(--text-muted);font-size:11px">(optional)</span>
+        <input type="date" id="inbetriebnahme">
+      </label>
+    </div>
+    <div class="field-group" style="align-items:center">
+      <label>Vertragslaufzeit in Jahren <span class="required-star">*</span>
+        <input type="number" id="laufzeit" value="2" min="1" max="10" style="width:80px">
+      </label>
+      <div style="padding-top:22px;font-size:13px;color:var(--text-muted)">Jahre</div>
+    </div>
+  </div>
+
+  <!-- Zoho Artikel -->
+  <div class="card" id="artikelCard">
+    <div class="card-title">Zoho Books · Artikel</div>
+    <div id="artikelContainer">
+      <div style="font-size:13px;color:var(--text-muted);text-align:center;padding:16px 0">Bitte Kundenprofil auswählen</div>
+    </div>
+  </div>
+
+  <!-- Anmerkungen -->
+  <div class="card">
+    <div class="card-title">Anmerkungen (erscheinen im Angebot)</div>
+    <textarea id="anmerkungen" placeholder="z.B. Abrechnung über Firma, USt. ausweisen..."></textarea>
+  </div>
+
+  <!-- Buttons -->
+  <div class="btn-row" style="margin-bottom:8px">
+    <button class="btn-action btn-primary" onclick="b2cSenden()"><span>✉</span><span>Angebot erzeugen (über Make)</span></button>
+    <button class="btn-action btn-secondary" id="btnVertrag" onclick="b2cVertrag()" disabled><span>⬇</span><span>Vertrag erzeugen (.docx)</span></button>
   </div>
   <div id="makeSts" class="sts" style="margin-bottom:4px"></div>
 
-  <div class="card" style="margin-top:4px">
+  <!-- Schritt 2 -->
+  <div class="step-label">Schritt 2 · Angebot hochladen &amp; Vertrag herunterladen</div>
+  <div class="card">
     <div class="card-title">Zoho-Angebot PDF</div>
-    <p style="font-size:12px;color:var(--text-muted);margin-bottom:12px">Angebot aus Zoho hochladen — Angebotsnummer wird aus Dateinamen ausgelesen.</p>
-    <label class="upload-area" for="vbAngebotPdf">
-      <div class="upload-icon">📎</div>
-      <div>Angebot-PDF hier ablegen oder klicken</div>
-      <div class="upload-hint">z.B. AN000-229.pdf</div>
-    </label>
-    <input type="file" id="vbAngebotPdf" accept=".pdf" style="display:none">
-    <div id="vbPdfHint" style="font-size:12px;margin-top:6px;color:var(--text-muted)">Noch kein PDF hochgeladen</div>
-    <div style="margin-top:14px">
-      <button class="btn-generate" id="vbGenBtnPdf" onclick="b2cGenDocx()" disabled>⬇ Vertrag mit Angebotsnummer herunterladen (.docx)</button>
-      <div id="genSts" class="sts"></div>
+    <div class="info-banner">
+      <span>ℹ</span>
+      <span>Lade das fertige Angebot aus Zoho Books hoch. Die Angebotsnummer wird automatisch aus dem Dateinamen erkannt.</span>
     </div>
+    <label class="upload-area" for="angebotPdf"
+      ondragover="event.preventDefault();this.classList.add('drag')"
+      ondragleave="this.classList.remove('drag')"
+      ondrop="event.preventDefault();this.classList.remove('drag');document.getElementById('angebotPdf').files=event.dataTransfer.files;document.getElementById('angebotPdf').dispatchEvent(new Event('change'))">
+      <div class="upload-icon">📄</div>
+      <div>Angebot-PDF hier ablegen oder klicken</div>
+      <div class="upload-hint">Dateiname enthält die Angebotsnummer (z.B. AN000-229.pdf)</div>
+    </label>
+    <input type="file" id="angebotPdf" accept=".pdf" style="display:none">
+    <div id="angebotHint" style="font-size:12px;margin-top:8px;color:var(--text-muted)">Noch kein PDF hochgeladen</div>
+    <button class="btn-generate" id="btnVertragMitNr" onclick="b2cVertragMitNr()" disabled style="margin-top:16px">
+      ⬇ Vertrag mit Angebotsnummer herunterladen (.docx)
+    </button>
+    <div id="genSts" class="sts"></div>
   </div>
 
-  <!-- Schritt 3: Merge -->
-  <div class="step-divider">PDFs zusammenführen</div>
+  <!-- Schritt 3 -->
+  <div class="step-label">Schritt 3 · PDFs zusammenfügen</div>
   <div class="card">
-    <div class="card-title">Zusammenführen</div>
-    <div class="merge-grid">
-      <div>
-        <div style="font-size:11px;font-weight:600;letter-spacing:0.05em;text-transform:uppercase;color:var(--text-muted);margin-bottom:8px">Vertrag als PDF</div>
-        <label class="upload-area" for="mergeFile1"><div class="upload-icon">📄</div><div>Vertrag-PDF hochladen</div></label>
-        <input type="file" id="mergeFile1" accept=".pdf" style="display:none">
-        <div id="mergeHint1" class="upload-hint">Noch kein PDF</div>
-      </div>
-      <div>
-        <div style="font-size:11px;font-weight:600;letter-spacing:0.05em;text-transform:uppercase;color:var(--text-muted);margin-bottom:8px">Angebot als PDF</div>
-        <div class="upload-area" style="cursor:default;opacity:0.7"><div class="upload-icon">📋</div><div>Vom Angebot-Upload oben</div></div>
-        <div id="mergeHint2Auto" class="upload-hint">Wird vom Angebot-Upload oben übernommen</div>
-      </div>
+    <div class="card-title">Vertrag als PDF hochladen</div>
+    <div class="info-banner">
+      <span>ℹ</span>
+      <span>Öffne den heruntergeladenen Vertrag in Word, trage die Angebotsnummer ein, speichere als PDF und lade ihn hier hoch.</span>
     </div>
-    <button class="btn-generate" id="mergeBtn" onclick="b2cMerge()" disabled>Zusammenführen &amp; herunterladen</button>
+    <label class="upload-area" for="vertragPdf"
+      ondragover="event.preventDefault();this.classList.add('drag')"
+      ondragleave="this.classList.remove('drag')"
+      ondrop="event.preventDefault();this.classList.remove('drag');document.getElementById('vertragPdf').files=event.dataTransfer.files;document.getElementById('vertragPdf').dispatchEvent(new Event('change'))">
+      <div class="upload-icon">📋</div>
+      <div>Vertrag-PDF hier ablegen oder klicken</div>
+      <div class="upload-hint">Der unterschriftsfertige Vertrag als PDF</div>
+    </label>
+    <input type="file" id="vertragPdf" accept=".pdf" style="display:none">
+    <div id="vertragHint" style="font-size:12px;margin-top:8px;color:var(--text-muted)">Noch kein PDF hochgeladen</div>
+    <button class="btn-generate" id="btnMerge" onclick="b2cMerge()" disabled style="margin-top:16px">
+      ⊞ Vertrag + Angebot zusammenfügen &amp; herunterladen
+    </button>
     <div class="progress-wrap" id="mergePW"><div class="progress-bar" id="mergePB"></div></div>
     <div id="mergeSts" class="sts"></div>
   </div>
+
 </div>
 
 <script>
 const PROFILES = {
-  lerners: { label:"Lerner'sches Schloss", standortName:'', standortAdresse:'', geraet:'', docxUrl:'', zohoArtikelId:'520234000000111321', zohoArtikelName:'Vollbetrieb - ganzheitlicher Betrieb der Ladestation', zusatzId:'520234000000488013', zusatzName:'Inbetriebnahme Backend', preis:'240 € / Jahr' },
-  gwg:     { label:'GWG Seepark', standortName:'', standortAdresse:'', geraet:'', docxUrl:'', zohoArtikelId:'520234000003573017', zohoArtikelName:'Vollbetrieb - ganzheitlicher Betrieb der Ladestation (AMBA/reev living)', zusatzId:null, zusatzName:null, preis:'13,87 € / Monat' },
-  lbbw:    { label:'LBBW Park Trio', standortName:'LBBW Park Trio', standortAdresse:'Felix Kracht Straße 24, 60486 Frankfurt am Main', geraet:'ABL eM4', docxUrl:'https://raw.githubusercontent.com/AO-Ingo/Autofill_LBBW-Park-Trio_Betriebervertrag/main/Betreibervertrag_LBBW_Park_Trio_Vorlage.docx', zohoArtikelId:'520234000003732039', zohoArtikelName:'Vollbetrieb - ganzheitlicher Betrieb der Ladestation LBBW Park Trio', zusatzId:null, zusatzName:null, preis:'' },
-  nio:     { label:'Nio Project / Premium Immo', standortName:'', standortAdresse:'', geraet:'', docxUrl:'', zohoArtikelId:'520234000003658062', zohoArtikelName:'Operative Betriebsführung (NIO)', zusatzId:null, zusatzName:null, preis:'10 € / Monat' },
-  gsw:     { label:'GSW Reutlingen', standortName:'GSW Reutlingen', standortAdresse:'Ludwigstrasse 17, 72766 Reutlingen', geraet:'Hager', docxUrl:'https://raw.githubusercontent.com/AO-Ingo/Autofill_GSW-Reutlingen/main/Betreibervertrag_AO_Strom_GSW_Reutlingen_Vorlage.docx', zohoArtikelId:'520234000003815062', zohoArtikelName:'Vollbetrieb - ganzheitlicher Betrieb der Ladestation GSW Reutlingen', zusatzId:null, zusatzName:null, preis:'262 € / Jahr' },
+  "lerners": {
+    "label": "Lerner'sches Schloss",
+    "standortName": "",
+    "standortAdresse": "",
+    "geraet": "",
+    "docxUrl": "",
+    "artikel": [
+      {
+        "id": "520234000000111321",
+        "name": "Vollbetrieb - ganzheitlicher Betrieb der Ladestation",
+        "preis": "240 € / Jahr",
+        "pflicht": true,
+        "menge": 1
+      },
+      {
+        "id": "520234000000488013",
+        "name": "Inbetriebnahme Backend",
+        "preis": "100 €",
+        "pflicht": true,
+        "menge": 1
+      }
+    ]
+  },
+  "gwg": {
+    "label": "GWG Seepark",
+    "standortName": "",
+    "standortAdresse": "",
+    "geraet": "",
+    "docxUrl": "",
+    "artikel": [
+      {
+        "id": "520234000003573017",
+        "name": "Vollbetrieb - ganzheitlicher Betrieb der Ladestation (AMBA/reev living)",
+        "preis": "13,87 € / Monat",
+        "pflicht": true,
+        "menge": 1
+      }
+    ]
+  },
+  "lbbw": {
+    "label": "LBBW Park Trio",
+    "standortName": "LBBW Park Trio",
+    "standortAdresse": "Felix Kracht Straße 24, 60486 Frankfurt am Main",
+    "geraet": "ABL eM4",
+    "docxUrl": "https://raw.githubusercontent.com/AO-Ingo/Vertragsgenerator/main/AMBA_Vollbetrieb_ohne_Strom_Vorlage.docx",
+    "artikel": [
+      {
+        "id": "520234000003732039",
+        "name": "Vollbetrieb - ganzheitlicher Betrieb der Ladestation LBBW Park Trio",
+        "preis": "300 € netto",
+        "pflicht": true,
+        "menge": 1
+      }
+    ]
+  },
+  "gsw": {
+    "label": "GSW Reutlingen",
+    "standortName": "GSW Reutlingen",
+    "standortAdresse": "Ludwigstrasse 17, 72766 Reutlingen",
+    "geraet": "Hager",
+    "docxUrl": "https://raw.githubusercontent.com/AO-Ingo/Vertragsgenerator/main/AMBA_Vollbetrieb_ohne_Strom_Vorlage.docx",
+    "artikel": [
+      {
+        "id": "520234000003815062",
+        "name": "Vollbetrieb - ganzheitlicher Betrieb der Ladestation GSW Reutlingen",
+        "preis": "262 € / Jahr",
+        "pflicht": true,
+        "menge": 1
+      }
+    ]
+  },
+  "nio": {
+    "label": "Nio Project / Premium Immo",
+    "standortName": "",
+    "standortAdresse": "",
+    "geraet": "",
+    "docxUrl": "",
+    "artikel": [
+      {
+        "id": "520234000003658062",
+        "name": "Operative Betriebsführung (NIO)",
+        "preis": "10 € / Monat",
+        "pflicht": true,
+        "menge": 1
+      }
+    ]
+  }
 };
 const MAKE_WEBHOOK = 'https://hook.eu2.make.com/bxt8ju15xwttjyphu3ubb1jdff6xlh4w';
+const GITHUB_BASE = 'https://raw.githubusercontent.com/AO-Ingo/Vertragsgenerator/main/';
+
 let currentProfile = null;
-let leCount = 0;
 
-document.addEventListener('DOMContentLoaded', () => {
-  document.getElementById('datum').value = new Date().toISOString().split('T')[0];
-  setupMergeB2C();
-  initVbPdfUploadB2C();
-});
-
+// ── PROFIL ANWENDEN ──
 function applyProfile() {
   const key = document.getElementById('profileSelect').value;
-  if (!key) { currentProfile=null; document.getElementById('infoBox').style.display='none'; document.getElementById('vbGenBtn').disabled=true; document.getElementById('vbGenBtnPdf').disabled=true; return; }
+
+  // Standort-Dropdown aufbauen
+  const sel = document.getElementById('standortSelect');
+  sel.innerHTML = '<option value="" disabled selected>– bitte wählen –</option>';
+
+  if (key === 'sonstiges') {
+    currentProfile = null;
+    sel.innerHTML += '<option value="sonstiges">Sonstiges (manuell)</option>';
+    sel.value = 'sonstiges';
+    document.getElementById('standortAdresse').value = '';
+    document.getElementById('geraet').value = '';
+    document.getElementById('standortAdresse').readOnly = false;
+    document.getElementById('geraet').readOnly = false;
+    renderArtikel([]);
+    document.getElementById('btnVertrag').disabled = true;
+    document.getElementById('dlSection').style.display = 'none';
+    return;
+  }
+
   const p = PROFILES[key];
+  if (!p) return;
   currentProfile = {key, ...p};
-  document.getElementById('standortName').value = p.standortName;
-  document.getElementById('standortAdresse').value = p.standortAdresse;
-  document.getElementById('zohoArtikelId').value = p.zohoArtikelId;
-  document.getElementById('zohoArtikelName').value = p.zohoArtikelName;
-  const zw = document.getElementById('zusatzArtikelWrap');
-  if (p.zusatzId) { document.getElementById('zohoZusatzId').value=p.zusatzId; document.getElementById('zohoZusatzName').value=p.zusatzName; zw.style.display=''; }
-  else zw.style.display='none';
-  document.getElementById('leContainer').innerHTML=''; leCount=0; addLadeeinrichtung(p.geraet);
-  const infoBox = document.getElementById('infoBox');
-  let info = `<strong>${p.label}</strong>`;
-  if (p.preis) info += ` &nbsp;·&nbsp; ${p.preis}`;
-  if (!p.docxUrl) info += ` &nbsp;·&nbsp; <span class="info-warn">⚠ DOCX-Vorlage noch nicht hinterlegt</span>`;
-  infoBox.innerHTML = info; infoBox.style.display='';
-  document.getElementById('vbGenBtn').disabled = !p.docxUrl;
+
+  // Standort-Optionen
+  if (p.standortName) {
+    const opt = document.createElement('option');
+    opt.value = p.standortName;
+    opt.textContent = p.standortName;
+    sel.appendChild(opt);
+  }
+  const optSonst = document.createElement('option');
+  optSonst.value = 'sonstiges';
+  optSonst.textContent = 'Sonstiges (manuell eingeben)';
+  sel.appendChild(optSonst);
+
+  if (p.standortName) {
+    sel.value = p.standortName;
+    document.getElementById('standortAdresse').value = p.standortAdresse;
+    document.getElementById('geraet').value = p.geraet;
+    document.getElementById('standortAdresse').readOnly = !!p.standortAdresse;
+    document.getElementById('geraet').readOnly = !!p.geraet;
+  }
+
+  // Artikel
+  renderArtikel(p.artikel || []);
+
+  // Vertrag-Button
+  document.getElementById('btnVertrag').disabled = !p.docxUrl;
+  document.getElementById('btnVertragMitNr').disabled = !p.docxUrl || !document.getElementById('angebotPdf').files[0];
+
+  // Download-Link
+  if (p.docxUrl) {
+    document.getElementById('dlSection').style.display = '';
+    document.getElementById('dlLinks').innerHTML = `
+      <a href="${p.docxUrl}" download style="display:inline-flex;align-items:center;gap:6px;padding:7px 12px;border:1px solid var(--border);border-radius:var(--radius);font-size:12px;font-weight:500;color:var(--text);text-decoration:none;background:var(--surface)"
+        onmouseover="this.style.borderColor='var(--border-strong)';this.style.background='var(--surface2)'"
+        onmouseout="this.style.borderColor='var(--border)';this.style.background='var(--surface)'">
+        <span>⬇</span> ${p.label} Vorlage
+      </a>`;
+  } else {
+    document.getElementById('dlSection').style.display = 'none';
+  }
 }
 
-function addLadeeinrichtung(defaultGeraet='') {
-  leCount++;
-  const id = leCount;
-  const row = document.createElement('div');
-  row.className='le-row'; row.id=`le-${id}`;
-  row.innerHTML=`<label>Gerät / Typ<input type="text" id="le-geraet-${id}" value="${defaultGeraet}" placeholder="z.B. ABL eM4"></label><label>Seriennummer<input type="text" id="le-serial-${id}" placeholder="SN-XXXXXX"></label><button class="btn-remove-le" onclick="document.getElementById('le-${id}').remove()">×</button>`;
-  document.getElementById('leContainer').appendChild(row);
+function onStandortChange() {
+  const val = document.getElementById('standortSelect').value;
+  if (val === 'sonstiges') {
+    document.getElementById('standortAdresse').value = '';
+    document.getElementById('standortAdresse').readOnly = false;
+    document.getElementById('geraet').value = '';
+    document.getElementById('geraet').readOnly = false;
+  } else if (currentProfile) {
+    document.getElementById('standortAdresse').value = currentProfile.standortAdresse || '';
+    document.getElementById('standortAdresse').readOnly = !!currentProfile.standortAdresse;
+    document.getElementById('geraet').value = currentProfile.geraet || '';
+    document.getElementById('geraet').readOnly = !!currentProfile.geraet;
+  }
 }
 
-function replaceTagB2C(xml, tag, value) {
-  const safe = String(value??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-  const ph = `{{${tag}}}`;
-  if (xml.includes(ph)) return xml.split(ph).join(safe);
+// ── ARTIKEL RENDERN ──
+function renderArtikel(artikel) {
+  const container = document.getElementById('artikelContainer');
+  if (!artikel.length) {
+    container.innerHTML = '<div style="font-size:13px;color:var(--text-muted);text-align:center;padding:16px 0">Bitte Kundenprofil auswählen</div>';
+    return;
+  }
+  container.innerHTML = artikel.map((a, i) => `
+    <div class="artikel-card">
+      <div class="artikel-header ${!a.pflicht ? 'optional-artikel' : ''}">
+        <div class="artikel-check">✓</div>
+        <div class="artikel-info">
+          <div class="artikel-name">${a.name}</div>
+          <div class="artikel-id">${a.id}</div>
+        </div>
+        <div class="artikel-badge ${a.pflicht ? 'pflicht' : 'optional'}">${a.pflicht ? 'Pflicht' : 'Optional'}</div>
+      </div>
+      <div class="artikel-menge">
+        <span class="menge-label">Menge</span>
+        <div class="menge-ctrl">
+          <button class="menge-btn" onclick="changeMenge(${i},-1)">−</button>
+          <input class="menge-val" type="number" id="menge-${i}" value="${a.menge}" min="1">
+          <button class="menge-btn" onclick="changeMenge(${i},1)">+</button>
+        </div>
+        <span style="font-size:12px;color:var(--text-muted)">Stk.</span>
+        <span class="preis-text">× ${a.preis}</span>
+      </div>
+    </div>`).join('');
+}
+
+function changeMenge(idx, delta) {
+  const inp = document.getElementById('menge-' + idx);
+  if (!inp) return;
+  const val = Math.max(1, parseInt(inp.value) + delta);
+  inp.value = val;
+}
+
+// ── MAKE WEBHOOK ──
+async function b2cSenden() {
+  setSts('makeSts','proc','Wird gesendet…');
+  const artikel = getArtikelPayload();
+  try {
+    const resp = await fetch(MAKE_WEBHOOK, {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({
+        profil: currentProfile?.key || 'sonstiges',
+        profil_label: currentProfile?.label || 'Sonstiges',
+        vorname: v('vorname'), nachname: v('nachname'),
+        email: v('email'), telefon: v('telefon'),
+        strasse: v('strasse'), plz: v('plz'), stadt: v('stadt'),
+        standort: v('standortSelect'), standort_adresse: v('standortAdresse'),
+        geraet: v('geraet'), stellplatz: v('stellplatz'),
+        anzahl_ladepunkte: v('anzahlLadepunkte'),
+        inbetriebnahme: v('inbetriebnahme'),
+        laufzeit: v('laufzeit'),
+        anmerkungen: v('anmerkungen'),
+        artikel,
+      }),
+    });
+    if (resp.ok) setSts('makeSts','ok','✓ Gesendet – Zoho-Angebot wird erstellt.');
+    else throw new Error('HTTP ' + resp.status);
+  } catch(err) { setSts('makeSts','err','✕ ' + err.message); }
+}
+
+function getArtikelPayload() {
+  if (!currentProfile?.artikel) return [];
+  return currentProfile.artikel.map((a, i) => ({
+    id: a.id, name: a.name,
+    menge: parseInt(document.getElementById('menge-'+i)?.value || 1),
+    preis: a.preis, pflicht: a.pflicht,
+  }));
+}
+
+// ── DOCX GENERIEREN ──
+function replaceTag(xml, tag, value) {
+  const val = (value||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  const ph = '{{'+tag+'}}';
+  if (xml.includes(ph)) return xml.split(ph).join(val);
   return xml;
 }
 
-function initVbPdfUploadB2C() {
-  const inp = document.getElementById('vbAngebotPdf');
-  inp.addEventListener('change', e => {
-    const file = e.target.files[0];
-    if (!file) { setHintB2C('vbPdfHint','Noch kein PDF hochgeladen',''); document.getElementById('vbGenBtnPdf').disabled=true; return; }
-    const name = file.name.replace(/\.pdf$/i,'').trim();
-    setHintB2C('vbPdfHint',`📄 ${file.name} → Angebotsnummer: ${name}`,'var(--success)');
-    document.getElementById('vbGenBtnPdf').disabled = !currentProfile?.docxUrl;
-    updateMergeB2C();
-  });
+async function genDocx(angebotsnr) {
+  if (!currentProfile?.docxUrl) return null;
+  const resp = await fetch(currentProfile.docxUrl);
+  if (!resp.ok) throw new Error('Vorlage nicht erreichbar (' + resp.status + ')');
+  const zip = await JSZip.loadAsync(await resp.arrayBuffer());
+  let xml = await zip.file('word/document.xml').async('string');
+
+  const inbetrieb = v('inbetriebnahme') ? new Date(v('inbetriebnahme')).toLocaleDateString('de-DE',{day:'2-digit',month:'2-digit',year:'numeric'}) : '';
+  const repl = {
+    'ANGEBOTSNR': angebotsnr || '',
+    'VORNAME': v('vorname'), 'NACHNAME': v('nachname'),
+    'NAME': v('vorname') + ' ' + v('nachname'),
+    'STRASSE': v('strasse'), 'PLZ': v('plz'), 'STADT': v('stadt'),
+    'PLZSTADT': (v('plz') + ' ' + v('stadt')).trim(),
+    'STELLPLATZ': v('stellplatz'),
+    'STANDORT': v('standortSelect') === 'sonstiges' ? v('standortAdresse') : v('standortSelect'),
+    'STANDORTADRESSE': v('standortAdresse'),
+    'GERAET': v('geraet'),
+    'INBETRIEBNAHME': inbetrieb,
+    'LAUFZEIT': v('laufzeit'),
+    'ART_1': v('geraet'),
+    'STANDORT_1': v('standortSelect') === 'sonstiges' ? v('standortAdresse') : v('standortSelect'),
+    'ANZAHL_1': v('anzahlLadepunkte'),
+  };
+  for (const [tag, val] of Object.entries(repl)) xml = replaceTag(xml, tag, val);
+  zip.file('word/document.xml', xml);
+  return zip.generateAsync({type:'blob', mimeType:'application/vnd.openxmlformats-officedocument.wordprocessingml.document'});
 }
 
-function setHintB2C(id, msg, color) { const el=document.getElementById(id); if(el){el.textContent=msg;el.style.color=color;} }
-
-async function b2cGenDocx() {
-  if (!currentProfile?.docxUrl) return;
-  const angebotsnr = document.getElementById('vbAngebotPdf').files[0]?.name.replace(/\.pdf$/i,'').trim() || 'Angebotsnummer';
-  const vorname=document.getElementById('vorname').value.trim();
-  const nachname=document.getElementById('nachname').value.trim();
-  const strasse=document.getElementById('strasse').value.trim();
-  const plz=document.getElementById('plz').value.trim();
-  const stadt=document.getElementById('stadt').value.trim();
-  const stellplatz=document.getElementById('stellplatz').value.trim();
-  const datum=document.getElementById('datum').value;
-  const datumFmt = datum ? new Date(datum).toLocaleDateString('de-DE',{day:'2-digit',month:'2-digit',year:'numeric'}) : '';
-  const leRows=document.querySelectorAll('[id^="le-geraet-"]');
-  const le1=leRows[0] ? {geraet:leRows[0].value, serial:document.getElementById('le-serial-'+leRows[0].id.replace('le-geraet-',''))?.value||''} : {};
-
-  setStsB2C('genSts','proc','Vorlage wird geladen…');
+async function b2cVertrag() {
+  setSts('genSts','proc','Vorlage wird geladen…');
   try {
-    const resp = await fetch(currentProfile.docxUrl);
-    if (!resp.ok) throw new Error(`Vorlage nicht erreichbar (${resp.status})`);
-    const zip = await JSZip.loadAsync(await resp.arrayBuffer());
-    let xml = await zip.file('word/document.xml').async('string');
-    const repl = {'ANGEBOTSNR':angebotsnr,'VORNAME':vorname,'NACHNAME':nachname,'NAME':`${vorname} ${nachname}`,'STRASSE':strasse,'PLZ':plz,'STADT':stadt,'PLZSTADT':`${plz} ${stadt}`.trim(),'STELLPLATZ':stellplatz,'DATUM':datumFmt,'STANDORT':currentProfile.standortName,'STANDORTADRESSE':currentProfile.standortAdresse,'GERAET':le1.geraet||'','SERIENNUMMER':le1.serial||'','ARTIKEL':currentProfile.zohoArtikelName};
-    for (const [tag,val] of Object.entries(repl)) xml=replaceTagB2C(xml,tag,val);
-    zip.file('word/document.xml',xml);
-    const blob=await zip.generateAsync({type:'blob',mimeType:'application/vnd.openxmlformats-officedocument.wordprocessingml.document'});
-    const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=`AMBA_Betreibervertrag_${nachname}_${angebotsnr}.docx`; a.click();
-    setStsB2C('genSts','ok','✓ Vertrag heruntergeladen.');
-  } catch(err) { setStsB2C('genSts','err','✕ '+err.message); }
+    const blob = await genDocx('');
+    download(blob, `AMBA_Betreibervertrag_${v('nachname')}_${currentProfile?.label?.replace(/[^a-zA-Z0-9]/g,'_')}.docx`);
+    setSts('genSts','ok','✓ Vertrag heruntergeladen.');
+  } catch(err) { setSts('genSts','err','✕ ' + err.message); }
 }
 
-async function b2cSendenAnMake() {
-  if (!currentProfile) return;
-  setStsB2C('makeSts','proc','Wird gesendet…');
+async function b2cVertragMitNr() {
+  const file = document.getElementById('angebotPdf').files[0];
+  if (!file) return;
+  const angebotsnr = file.name.replace(/\.pdf$/i,'').trim();
+  setSts('genSts','proc','Vorlage wird geladen…');
   try {
-    const resp = await fetch(MAKE_WEBHOOK, {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({profil:currentProfile.key,profil_label:currentProfile.label,vorname:document.getElementById('vorname').value,nachname:document.getElementById('nachname').value,zoho_artikel_id:currentProfile.zohoArtikelId,zoho_artikel_name:currentProfile.zohoArtikelName,zoho_zusatz_id:currentProfile.zusatzId||null})});
-    if (resp.ok) setStsB2C('makeSts','ok','✓ Gesendet – Zoho-Angebot wird erstellt.');
-    else throw new Error(`HTTP ${resp.status}`);
-  } catch(err) { setStsB2C('makeSts','err','✕ '+err.message); }
+    const blob = await genDocx(angebotsnr);
+    download(blob, `AMBA_Betreibervertrag_${v('nachname')}_${angebotsnr}.docx`);
+    setSts('genSts','ok','✓ Vertrag heruntergeladen.');
+  } catch(err) { setSts('genSts','err','✕ ' + err.message); }
 }
 
-function setStsB2C(id,cls,msg) { const el=document.getElementById(id); if(!el) return; el.className='sts '+cls; el.innerHTML=cls==='proc'?`<div class="spin"></div><span>${msg}</span>`:`<span>${msg}</span>`; }
-
-function setupMergeB2C() {
-  document.getElementById('mergeFile1').addEventListener('change', e => {
-    const f=e.target.files[0]; setHintB2C('mergeHint1',f?`📄 ${f.name}`:'Noch kein PDF',f?'var(--success)':''); updateMergeB2C();
-  });
-  document.getElementById('vbAngebotPdf').addEventListener('change', updateMergeB2C);
-}
-
-function updateMergeB2C() {
-  const f1=document.getElementById('mergeFile1').files[0];
-  const f2=document.getElementById('vbAngebotPdf').files[0];
-  document.getElementById('mergeBtn').disabled=!(f1&&f2);
-  const hint=document.getElementById('mergeHint2Auto');
-  if(hint){hint.textContent=f2?`📄 ${f2.name}`:'Wird vom Angebot-Upload oben übernommen';hint.style.color=f2?'var(--success)':'var(--text-muted)';}
-}
-
+// ── PDF MERGE ──
 async function b2cMerge() {
-  const f1=document.getElementById('mergeFile1').files[0];
-  const f2=document.getElementById('vbAngebotPdf').files[0];
-  if(!f1||!f2) return;
-  const btn=document.getElementById('mergeBtn'); btn.disabled=true;
-  const pw=document.getElementById('mergePW'); pw.style.display='block';
-  const pb=document.getElementById('mergePB'); pb.style.width='0%';
-  setStsB2C('mergeSts','proc','Zusammenführen…');
+  const fAngebot = document.getElementById('angebotPdf').files[0];
+  const fVertrag = document.getElementById('vertragPdf').files[0];
+  if (!fAngebot || !fVertrag) return;
+  const btn = document.getElementById('btnMerge'); btn.disabled = true;
+  const pw = document.getElementById('mergePW'); pw.style.display = 'block';
+  const pb = document.getElementById('mergePB'); pb.style.width = '0%';
+  setSts('mergeSts','proc','Zusammenführen…');
   try {
-    const {PDFDocument}=PDFLib;
-    const merged=await PDFDocument.create();
-    for (const [i,file] of [[0,f1],[1,f2]]) {
-      const doc=await PDFDocument.load(await file.arrayBuffer());
-      const pages=await merged.copyPages(doc,doc.getPageIndices());
-      pages.forEach(p=>merged.addPage(p));
-      pb.style.width=((i+1)/2*90)+'%';
+    const {PDFDocument} = PDFLib;
+    const merged = await PDFDocument.create();
+    for (const [i, file] of [[0,fAngebot],[1,fVertrag]]) {
+      const doc = await PDFDocument.load(await file.arrayBuffer());
+      const pages = await merged.copyPages(doc, doc.getPageIndices());
+      pages.forEach(p => merged.addPage(p));
+      pb.style.width = ((i+1)/2*90) + '%';
     }
-    pb.style.width='100%';
-    const blob=new Blob([await merged.save()],{type:'application/pdf'});
-    const fname=`AMBA_Vertrag_${document.getElementById('nachname').value||'Kunde'}_${f2.name.replace(/\.pdf$/i,'')}.pdf`;
-    const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=fname; a.click();
-    setStsB2C('mergeSts','ok','✓ Zusammengefügt und heruntergeladen.');
-  } catch(err) { setStsB2C('mergeSts','err','✕ '+err.message); }
-  btn.disabled=false; setTimeout(()=>{pw.style.display='none';},2500);
+    pb.style.width = '100%';
+    const blob = new Blob([await merged.save()], {type:'application/pdf'});
+    const angebotsnr = fAngebot.name.replace(/\.pdf$/i,'').replace(/\s+/g,'_');
+    download(blob, `AMBA_Vertrag_${v('nachname')||'Kunde'}_${angebotsnr}.pdf`);
+    setSts('mergeSts','ok','✓ Zusammengefügt und heruntergeladen.');
+  } catch(err) { setSts('mergeSts','err','✕ ' + err.message); }
+  btn.disabled = false;
+  setTimeout(() => { pw.style.display = 'none'; }, 2500);
+}
+
+// ── UPLOAD LISTENERS ──
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('angebotPdf').addEventListener('change', e => {
+    const f = e.target.files[0];
+    document.getElementById('angebotHint').textContent = f ? '📄 ' + f.name + ' → Angebotsnummer: ' + f.name.replace(/\.pdf$/i,'') : 'Noch kein PDF hochgeladen';
+    document.getElementById('angebotHint').style.color = f ? 'var(--success)' : 'var(--text-muted)';
+    document.getElementById('btnVertragMitNr').disabled = !f || !currentProfile?.docxUrl;
+    updateMergeBtn();
+  });
+  document.getElementById('vertragPdf').addEventListener('change', e => {
+    const f = e.target.files[0];
+    document.getElementById('vertragHint').textContent = f ? '📋 ' + f.name : 'Noch kein PDF hochgeladen';
+    document.getElementById('vertragHint').style.color = f ? 'var(--success)' : 'var(--text-muted)';
+    updateMergeBtn();
+  });
+});
+
+function updateMergeBtn() {
+  const f1 = document.getElementById('angebotPdf').files[0];
+  const f2 = document.getElementById('vertragPdf').files[0];
+  document.getElementById('btnMerge').disabled = !(f1 && f2);
+}
+
+// ── UTILS ──
+function v(id) { return (document.getElementById(id)||{}).value||''; }
+function download(blob, filename) { const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = filename; a.click(); }
+function setSts(id, cls, msg) {
+  const el = document.getElementById(id); if (!el) return;
+  el.className = 'sts ' + cls;
+  el.innerHTML = cls==='proc' ? `<div class="spin"></div><span>${msg}</span>` : `<span>${msg}</span>`;
 }
 </script>
 </body>
