@@ -428,7 +428,11 @@ document.addEventListener('DOMContentLoaded', () => {
   addRow();
   setupMergeListeners();
   const savedTyp = sessionStorage.getItem('b2b_ac_typ');
-  if (savedTyp) setTyp(savedTyp);
+  if (savedTyp) {
+    const sel = document.getElementById('vtSelect');
+    if (sel) sel.value = savedTyp;
+    setTyp(savedTyp);
+  }
 });
 
 // ===== TYP WECHSEL =====
