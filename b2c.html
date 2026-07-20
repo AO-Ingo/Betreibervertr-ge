@@ -767,6 +767,7 @@ async function b2cSenden() {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
       body: JSON.stringify({
+        quelle: 'b2c',
         profil: currentProfile?.key || 'sonstiges',
         profil_label: currentProfile?.label || 'Sonstiges',
         zoho_artikel_id: currentProfile?.artikel?.[0]?.id || '',
