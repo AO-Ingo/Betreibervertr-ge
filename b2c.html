@@ -325,11 +325,11 @@
   <div class="card" id="rechnungsadresseCard">
     <div class="card-title">Rechnungsadresse</div>
     <div class="field-group single">
-      <label>Straße &amp; Hausnummer <span class="required-star">*</span><input type="text" id="strasse" placeholder="Musterstraße 12"></label>
+      <label><div class="lbl">Straße &amp; Hausnummer <span class="req">*</span></div><input type="text" id="strasse" placeholder="Musterstraße 12"></label>
     </div>
     <div class="field-group">
-      <label>PLZ <span class="required-star">*</span><input type="text" id="plz" placeholder="80331"></label>
-      <label>Stadt <span class="required-star">*</span><input type="text" id="stadt" placeholder="Frankfurt"></label>
+      <label><div class="lbl">PLZ <span class="req">*</span></div><input type="text" id="plz" placeholder="80331"></label>
+      <label><div class="lbl">Stadt <span class="req">*</span></div><input type="text" id="stadt" placeholder="Frankfurt"></label>
     </div>
   </div>
 
@@ -337,8 +337,7 @@
   <div class="card">
     <div class="card-title">Standort &amp; Ladeeinrichtung</div>
     <div class="field-group single" style="margin-bottom:14px">
-      <label>Standort auswählen <span class="required-star">*</span>
-        <select id="standortSelect" onchange="onStandortChange()" style="padding:8px 10px;border:1px solid var(--border);border-radius:var(--radius);background:var(--surface);font-family:'DM Sans',sans-serif;font-size:13px;color:var(--text);outline:none;">
+      <label><div class="lbl">Standort auswählen <span class="req">*</span></div><select id="standortSelect" onchange="onStandortChange()" style="padding:8px 10px;border:1px solid var(--border);border-radius:var(--radius);background:var(--surface);font-family:'DM Sans',sans-serif;font-size:13px;color:var(--text);outline:none;">
           <option value="" disabled selected>– bitte wählen –</option>
         </select>
       </label>
@@ -353,8 +352,7 @@
     </div>
     <div class="field-group">
       <label><div class="lbl">Inbetriebnahme-Datum <span class="opt">(optional)</span></div><input type="date" id="inbetriebnahme"></label>
-      <label>Vertragslaufzeit in Jahren <span class="required-star">*</span>
-        <input type="number" id="laufzeit" value="2" min="1" max="10">
+      <label><div class="lbl">Vertragslaufzeit in Jahren <span class="req">*</span></div><input type="number" id="laufzeit" value="2" min="1" max="10">
       </label>
     </div>
   </div>
