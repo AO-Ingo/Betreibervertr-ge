@@ -570,8 +570,8 @@ const GITHUB_BASE = 'https://raw.githubusercontent.com/AO-Ingo/Vertragsgenerator
 let currentProfile = null;
 
 // ── PROFIL ANWENDEN ──
-function applyProfile() {
-  const key = document.getElementById('profileSelect').value;
+function applyProfile(forceKey) {
+  const key = forceKey || document.getElementById('profileSelect').value;
 
   // Standort-Dropdown aufbauen
   const sel = document.getElementById('standortSelect');
@@ -904,11 +904,8 @@ document.addEventListener('DOMContentLoaded', () => {
   const savedProfil = sessionStorage.getItem('b2c_profil');
   if (savedProfil) {
     const sel = document.getElementById('profileSelect');
-    if (sel) {
-      sel.value = savedProfil;
-      // Trigger applyProfile only if value was actually set
-      if (sel.value === savedProfil) applyProfile();
-    }
+    if (sel) sel.value = savedProfil;
+    applyProfile(savedProfil);
   }
   document.getElementById('angebotPdf').addEventListener('change', e => {
     const f = e.target.files[0];
