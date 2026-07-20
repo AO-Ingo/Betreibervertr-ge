@@ -298,10 +298,10 @@
       <label><div style="display:flex;align-items:center;gap:3px">Nachname <span class="required-star">*</span></div><input type="text" id="nachname" placeholder="Mustermann"></label>
     </div>
     <div class="field-group single">
-      <label><div style="display:flex;align-items:center;gap:3px">E-Mail <span class="required-star">*</span></div><input type="email" id="email" placeholder="m.mustermann@beispiel.de"></label>
+      <label><div style="display:flex;align-items:center;gap:3px">E-Mail <span class="required-star">*</span></div><input type="text" inputmode="email" id="email" placeholder="m.mustermann@beispiel.de"></label>
     </div>
     <div class="field-group single">
-      <label><div style="display:flex;align-items:center;gap:4px">Telefon <span style="font-weight:400;font-size:11px;text-transform:none;letter-spacing:0">(optional)</span></div><input type="tel" id="telefon" placeholder="+49 170 1234567"></label>
+      <label><div style="display:flex;align-items:center;gap:4px">Telefon <span style="font-weight:400;font-size:11px;text-transform:none;letter-spacing:0">(optional)</span></div><input type="text" inputmode="tel" id="telefon" placeholder="+49 170 1234567"></label>
     </div>
     <hr class="divider">
     <div class="field-group single">
@@ -336,7 +336,7 @@
     <hr class="divider">
     <div class="field-group">
       <label><div style="display:flex;align-items:center;gap:3px">Art der Ladeeinrichtung <span class="required-star">*</span></div><input type="text" id="geraet" placeholder="Hersteller, Modell"></label>
-      <label>Anzahl Ladepunkte<input type="number" id="anzahlLadepunkte" value="1" min="1" placeholder="1"></label>
+      <label><div style="display:flex;align-items:center;gap:3px">Anzahl Ladepunkte<span class="required-star">*</span></div><input type="number" id="anzahlLadepunkte" value="1" min="1" oninput="syncMenge(this.value)"></label>
     </div>
     <div class="field-group">
       <label>Inbetriebnahme-Datum<input type="date" id="inbetriebnahme"></label>
@@ -942,6 +942,14 @@ function resetFormB2C() {
   document.getElementById('leContainer').innerHTML = '';
   leCount = 0;
   if (currentProfile?.geraet !== undefined) addLadeeinrichtung(currentProfile.geraet || '');
+}
+
+function syncMenge(val) {
+  const n = parseInt(val) || 1;
+  // Update all menge inputs in artikel cards
+  document.querySelectorAll('[id^="menge-"]').forEach(el => {
+    el.value = n;
+  });
 }
 </script>
 </body>
