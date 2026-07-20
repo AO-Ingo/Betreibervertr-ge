@@ -797,45 +797,14 @@ function getArtikelPayload() {
 
 // ── DOCX GENERIEREN ──
 function replaceTag(xml, tag, value) {
-  const val = (value||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-  const ph = '{{' + tag + '}}';
-  // Direct replacement (placeholder in single run)
-  if (xml.includes(ph)) return xml.split(ph).join(val);
-  // Split-run repair: find the placeholder spread across w:t elements within w:r runs
-  // Strategy: replace all w:t content temporarily, find split placeholder, fix it
-  // Use a simpler approach: merge adjacent w:t text, find placeholder, restore
-  const wtPattern = /(<w:r[^>]*>(?:<w:rPr>[\s\S]*?<\/w:rPr>)?<w:t[^>]*>)([\s\S]*?)(<\/w:t><\/w:r>)/g;
-  let flat = '';
-  const parts = [];
-  let lastIndex = 0;
-  let m;
-  wtPattern.lastIndex = 0;
-  while ((m = wtPattern.exec(xml)) !== null) {
-    parts.push({start: m.index, end: wtPattern.lastIndex, open: m[1], text: m[2], close: m[3]});
-    flat += m[2];
-  }
-  // Check if flat text contains the placeholder
-  if (!flat.includes(ph)) return xml;
-  // Find which parts contain the placeholder
-  let charPos = 0;
-  const phStart = flat.indexOf(ph);
-  const phEnd = phStart + ph.length;
-  let firstPartIdx = -1, lastPartIdx = -1;
-  for (let i = 0; i < parts.length; i++) {
-    const p = parts[i];
-    const pEnd = charPos + p.text.length;
-    if (firstPartIdx === -1 && pEnd > phStart) firstPartIdx = i;
-    if (pEnd >= phEnd) { lastPartIdx = i; break; }
-    charPos += p.text.length;
-  }
-  if (firstPartIdx === -1 || lastPartIdx === -1) return xml;
-  // Replace: keep rPr from first part, put value in its w:t, remove other parts
-  const firstPart = parts[firstPartIdx];
-  const rPrMatch = firstPart.open.match(/<w:rPr>[\s\S]*?<\/w:rPr>/);
-  const rPr = rPrMatch ? rPrMatch[0] : '';
-  const replacement = '<w:r>' + rPr + '<w:t xml:space="preserve">' + val + '</w:t></w:r>';
-  // Build new XML: replace from firstPart.start to lastPart.end
-  return xml.slice(0, parts[firstPartIdx].start) + replacement + xml.slice(parts[lastPartIdx].end);
+  const val=(value||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  const ph='{{'+tag+'}}';
+  if(xml.includes(ph)) return xml.split(ph).join(val);
+  const esc=ph.split('').map(c=>c.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')).join('(?:<[^>]+>)*');
+  return xml.replace(new RegExp(esc,'g'),match=>{
+    const rPr=(match.match(/<w:rPr>[\s\S]*?<\/w:rPr>/)||[''])[0];
+    return '<w:r>'+rPr+'<w:t>'+val+'</w:t></w:r>';
+  });
 }
 
 async function genDocx(angebotsnr) {
