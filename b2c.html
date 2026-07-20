@@ -769,6 +769,9 @@ async function b2cSenden() {
       body: JSON.stringify({
         profil: currentProfile?.key || 'sonstiges',
         profil_label: currentProfile?.label || 'Sonstiges',
+        zoho_artikel_id: currentProfile?.artikel?.[0]?.id || '',
+        zoho_artikel_name: currentProfile?.artikel?.[0]?.name || '',
+        zoho_anzahl: parseInt(document.getElementById('anzahlLadepunkte')?.value || 1),
         vorname: v('vorname'), nachname: v('nachname'),
         email: v('email'), telefon: v('telefon'),
         strasse: v('strasse'), plz: v('plz'), stadt: v('stadt'),
