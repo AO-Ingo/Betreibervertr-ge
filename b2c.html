@@ -123,6 +123,9 @@
     .upload-area:hover, .upload-area.drag { border-color: var(--accent); color: var(--text); background: var(--surface2); }
     .upload-icon { font-size: 24px; margin-bottom: 6px; }
     .upload-hint { font-size: 11px; margin-top: 4px; color: var(--text-muted); }
+    .lbl { display:flex; align-items:center; gap:4px; font-size:11px; font-weight:600; letter-spacing:0.05em; text-transform:uppercase; color:var(--text-muted); margin-bottom:5px; }
+    .lbl .req { color:var(--danger); }
+    .lbl .opt { font-weight:400; font-size:11px; text-transform:none; letter-spacing:0; color:var(--text-muted); }
     .sts { font-size: 12px; min-height: 18px; display: flex; align-items: center; gap: 6px; margin-top: 8px; }
     .sts.ok { color: var(--success); }
     .sts.err { color: var(--danger); }
@@ -238,6 +241,9 @@
     }
     .upload-icon { font-size: 32px; margin-bottom: 8px; }
     .upload-hint { font-size: 11px; margin-top: 4px; color: var(--text-muted); }
+    .lbl { display:flex; align-items:center; gap:4px; font-size:11px; font-weight:600; letter-spacing:0.05em; text-transform:uppercase; color:var(--text-muted); margin-bottom:5px; }
+    .lbl .req { color:var(--danger); }
+    .lbl .opt { font-weight:400; font-size:11px; text-transform:none; letter-spacing:0; color:var(--text-muted); }
     .info-banner {
       background: #EFF6FF; border: 1px solid #BFDBFE;
       border-radius: var(--radius); padding: 10px 14px;
@@ -294,18 +300,18 @@
   <div class="card">
     <div class="card-title">Kunde</div>
     <div class="field-group">
-      <label style="text-transform:none;letter-spacing:0">Vorname <span style="font-weight:400;color:var(--text-muted);font-size:11px">(optional)</span><input type="text" id="vorname" placeholder="Max"></label>
-      <label>Nachname <span class="required-star">*</span><input type="text" id="nachname" placeholder="Mustermann"></label>
+      <label><div class="lbl">Vorname <span class="opt">(optional)</span></div><input type="text" id="vorname" placeholder="Max"></label>
+      <label><div class="lbl">Nachname <span class="req">*</span></div><input type="text" id="nachname" placeholder="Mustermann"></label>
     </div>
     <div class="field-group single">
-      <label>E-Mail <span class="required-star">*</span><input type="email" id="email" placeholder="m.mustermann@beispiel.de"></label>
+      <label><div class="lbl">E-Mail <span class="req">*</span></div><input type="text" inputmode="email" id="email" placeholder="m.mustermann@beispiel.de"></label>
     </div>
     <div class="field-group single">
-      <label style="text-transform:none;letter-spacing:0">Telefon <span style="font-weight:400;color:var(--text-muted);font-size:11px">(optional)</span><input type="tel" id="telefon" placeholder="+49 170 1234567"></label>
+      <label><div class="lbl">Telefon <span class="opt">(optional)</span></div><input type="text" inputmode="tel" id="telefon" placeholder="+49 170 1234567"></label>
     </div>
     <hr class="divider">
     <div class="field-group single">
-      <label style="text-transform:none;letter-spacing:0">Stellplatz-Nr. <span style="font-weight:400;color:var(--text-muted);font-size:11px">(optional)</span><input type="text" id="stellplatz" placeholder="z.B. TG B12"></label>
+      <label><div class="lbl">Stellplatz-Nr. <span class="req">*</span></div><input type="text" id="stellplatz" placeholder="z.B. TG B12"></label>
     </div>
   </div>
 
