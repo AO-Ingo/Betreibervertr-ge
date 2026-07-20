@@ -904,8 +904,11 @@ document.addEventListener('DOMContentLoaded', () => {
   const savedProfil = sessionStorage.getItem('b2c_profil');
   if (savedProfil) {
     const sel = document.getElementById('profileSelect');
-    if (sel) sel.value = savedProfil;
-    applyProfile();
+    if (sel) {
+      sel.value = savedProfil;
+      // Trigger applyProfile only if value was actually set
+      if (sel.value === savedProfil) applyProfile();
+    }
   }
   document.getElementById('angebotPdf').addEventListener('change', e => {
     const f = e.target.files[0];
@@ -938,6 +941,7 @@ function setSts(id, cls, msg) {
 }
 
 function resetFormB2C() {
+  sessionStorage.removeItem('b2c_profil');
   document.querySelectorAll('input[type=text], input[type=email], input[type=tel], input[type=number]').forEach(el => {
     if (!el.readOnly) el.value = el.defaultValue || '';
   });
