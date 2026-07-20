@@ -615,6 +615,7 @@ async function sendenAnMake() {
   const total = rows.reduce((s,r)=>s+(r.anzahl||1),0);
   try {
     const resp = await fetch(MAKE_WEBHOOK, {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({
+      quelle: 'b2b',
       vertragstyp: currentTyp, zoho_artikel_id: a.id, zoho_artikel_name: a.name, zoho_anzahl: total,
       ag_firma: v('ag_firma'), ag_strasse: v('ag_strasse'), ag_plz: v('ag_plz'), ag_stadt: v('ag_stadt'),
       stand_datum: v('stand_datum'),
