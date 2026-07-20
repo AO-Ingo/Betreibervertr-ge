@@ -252,7 +252,7 @@
     .sts.proc { color: var(--text-muted); }
     .progress-wrap { display:none;background:var(--surface2);border-radius:4px;height:4px;margin-top:8px; }
     .progress-bar { height:100%;background:var(--text);border-radius:4px;width:0%;transition:width .3s; }
-    .required-star { color: var(--danger); margin-left: 2px; }
+    .required-star { color: var(--danger); }
 </style>
 </head>
 <body>
@@ -294,18 +294,18 @@
   <div class="card">
     <div class="card-title">Kunde</div>
     <div class="field-group">
-      <label>Vorname<input type="text" id="vorname" placeholder="Max"></label>
-      <label><div style="display:flex;align-items:center;gap:3px">Nachname <span class="required-star">*</span></div><input type="text" id="nachname" placeholder="Mustermann"></label>
+      <label style="text-transform:none;letter-spacing:0">Vorname <span style="font-weight:400;color:var(--text-muted);font-size:11px">(optional)</span><input type="text" id="vorname" placeholder="Max"></label>
+      <label>Nachname <span class="required-star">*</span><input type="text" id="nachname" placeholder="Mustermann"></label>
     </div>
     <div class="field-group single">
-      <label><div style="display:flex;align-items:center;gap:3px">E-Mail <span class="required-star">*</span></div><input type="text" inputmode="email" id="email" placeholder="m.mustermann@beispiel.de"></label>
+      <label>E-Mail <span class="required-star">*</span><input type="email" id="email" placeholder="m.mustermann@beispiel.de"></label>
     </div>
     <div class="field-group single">
-      <label><div style="display:flex;align-items:center;gap:4px">Telefon <span style="font-weight:400;font-size:11px;text-transform:none;letter-spacing:0">(optional)</span></div><input type="text" inputmode="tel" id="telefon" placeholder="+49 170 1234567"></label>
+      <label style="text-transform:none;letter-spacing:0">Telefon <span style="font-weight:400;color:var(--text-muted);font-size:11px">(optional)</span><input type="tel" id="telefon" placeholder="+49 170 1234567"></label>
     </div>
     <hr class="divider">
     <div class="field-group single">
-      <label><div style="display:flex;align-items:center;gap:3px">Stellplatz-Nr. <span class="required-star">*</span></div><input type="text" id="stellplatz" placeholder="z.B. TG B12"></label>
+      <label style="text-transform:none;letter-spacing:0">Stellplatz-Nr. <span style="font-weight:400;color:var(--text-muted);font-size:11px">(optional)</span><input type="text" id="stellplatz" placeholder="z.B. TG B12"></label>
     </div>
   </div>
 
@@ -313,11 +313,11 @@
   <div class="card" id="rechnungsadresseCard">
     <div class="card-title">Rechnungsadresse</div>
     <div class="field-group single">
-      <label>Straße &amp;<div style="display:flex;align-items:center;gap:3px"> Hausnummer <span class="required-star">*</span></div><input type="text" id="strasse" placeholder="Musterstraße 12"></label>
+      <label>Straße &amp; Hausnummer <span class="required-star">*</span><input type="text" id="strasse" placeholder="Musterstraße 12"></label>
     </div>
     <div class="field-group">
-      <label><div style="display:flex;align-items:center;gap:3px">PLZ <span class="required-star">*</span></div><input type="text" id="plz" placeholder="80331"></label>
-      <label><div style="display:flex;align-items:center;gap:3px">Stadt <span class="required-star">*</span></div><input type="text" id="stadt" placeholder="Frankfurt"></label>
+      <label>PLZ <span class="required-star">*</span><input type="text" id="plz" placeholder="80331"></label>
+      <label>Stadt <span class="required-star">*</span><input type="text" id="stadt" placeholder="Frankfurt"></label>
     </div>
   </div>
 
@@ -325,7 +325,8 @@
   <div class="card">
     <div class="card-title">Standort &amp; Ladeeinrichtung</div>
     <div class="field-group single" style="margin-bottom:14px">
-      <label><div style="display:flex;align-items:center;gap:3px">Standort auswählen <span class="required-star">*</span></div><select id="standortSelect" onchange="onStandortChange()" style="padding:8px 10px;border:1px solid var(--border);border-radius:var(--radius);background:var(--surface);font-family:'DM Sans',sans-serif;font-size:13px;color:var(--text);outline:none;">
+      <label>Standort auswählen <span class="required-star">*</span>
+        <select id="standortSelect" onchange="onStandortChange()" style="padding:8px 10px;border:1px solid var(--border);border-radius:var(--radius);background:var(--surface);font-family:'DM Sans',sans-serif;font-size:13px;color:var(--text);outline:none;">
           <option value="" disabled selected>– bitte wählen –</option>
         </select>
       </label>
@@ -335,12 +336,18 @@
     </div>
     <hr class="divider">
     <div class="field-group">
-      <label><div style="display:flex;align-items:center;gap:3px">Art der Ladeeinrichtung <span class="required-star">*</span></div><input type="text" id="geraet" placeholder="Hersteller, Modell"></label>
-      <label><div style="display:flex;align-items:center;gap:3px">Anzahl Ladepunkte<span class="required-star">*</span></div><input type="number" id="anzahlLadepunkte" value="1" min="1" oninput="syncMenge(this.value)"></label>
+      <label>Art der Ladeeinrichtung<input type="text" id="geraet" placeholder="Hersteller, Modell"></label>
+      <label style="text-transform:none;letter-spacing:0">Anzahl Ladepunkte <span style="font-weight:400;color:var(--text-muted);font-size:11px">(optional)</span>
+        <input type="number" id="anzahlLadepunkte" value="1" min="1">
+      </label>
     </div>
     <div class="field-group">
-      <label>Inbetriebnahme-Datum<input type="date" id="inbetriebnahme"></label>
-      <label><div style="display:flex;align-items:center;gap:3px">Vertragslaufzeit in Jahren <span class="required-star">*</span></div><input type="number" id="laufzeit" value="2" min="1" max="10"></label>
+      <label style="text-transform:none;letter-spacing:0">Inbetriebnahme-Datum <span style="font-weight:400;color:var(--text-muted);font-size:11px">(optional)</span>
+        <input type="date" id="inbetriebnahme">
+      </label>
+      <label>Vertragslaufzeit in Jahren <span class="required-star">*</span>
+        <input type="number" id="laufzeit" value="2" min="1" max="10">
+      </label>
     </div>
   </div>
 
@@ -585,6 +592,8 @@ function applyProfile() {
   // Reset fields before applying new profile
   document.getElementById('standortAdresse').value = '';
   document.getElementById('geraet').value = '';
+  document.getElementById('standortSelect').innerHTML = '<option value="" disabled selected>– bitte wählen –</option>';
+  sessionStorage.setItem('b2c_profil', key);
 
   // Standort-Optionen
   if (p.standortName) {
@@ -788,7 +797,7 @@ function replaceTag(xml, tag, value) {
   return xml;
 }
 
-async async function b2cBuildDocx(angebotsnr) {
+async function genDocx(angebotsnr) {
   if (!currentProfile?.docxUrl) return null;
   const resp = await fetch(currentProfile.docxUrl);
   if (!resp.ok) throw new Error('Vorlage nicht erreichbar (' + resp.status + ')');
@@ -835,7 +844,7 @@ async async function b2cBuildDocx(angebotsnr) {
 async function b2cVertrag() {
   setSts('genSts','proc','Vorlage wird geladen…');
   try {
-    const blob = await b2cBuildDocx('');
+    const blob = await genDocx('');
     download(blob, `AMBA_Betreibervertrag_${v('nachname')}_${currentProfile?.label?.replace(/[^a-zA-Z0-9]/g,'_')}.docx`);
     setSts('genSts','ok','✓ Vertrag heruntergeladen.');
   } catch(err) { setSts('genSts','err','✕ ' + err.message); }
@@ -847,7 +856,7 @@ async function b2cVertragMitNr() {
   const angebotsnr = file.name.replace(/\.pdf$/i,'').trim();
   setSts('genSts','proc','Vorlage wird geladen…');
   try {
-    const blob = await b2cBuildDocx(angebotsnr);
+    const blob = await genDocx(angebotsnr);
     download(blob, `AMBA_Betreibervertrag_${v('nachname')}_${angebotsnr}.docx`);
     setSts('genSts','ok','✓ Vertrag heruntergeladen.');
   } catch(err) { setSts('genSts','err','✕ ' + err.message); }
@@ -940,14 +949,6 @@ function resetFormB2C() {
   document.getElementById('leContainer').innerHTML = '';
   leCount = 0;
   if (currentProfile?.geraet !== undefined) addLadeeinrichtung(currentProfile.geraet || '');
-}
-
-function syncMenge(val) {
-  const n = parseInt(val) || 1;
-  // Update all menge inputs in artikel cards
-  document.querySelectorAll('[id^="menge-"]').forEach(el => {
-    el.value = n;
-  });
 }
 </script>
 </body>
