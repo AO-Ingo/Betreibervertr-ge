@@ -585,8 +585,6 @@ function applyProfile() {
   // Reset fields before applying new profile
   document.getElementById('standortAdresse').value = '';
   document.getElementById('geraet').value = '';
-  document.getElementById('standortSelect').innerHTML = '<option value="" disabled selected>– bitte wählen –</option>';
-  sessionStorage.setItem('b2c_profil', key);
 
   // Standort-Optionen
   if (p.standortName) {
