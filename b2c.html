@@ -803,7 +803,7 @@ function replaceTag(xml, tag, value) {
   return xml;
 }
 
-async async function genDocx(angebotsnr) {
+async function genDocx(angebotsnr) {
   if (!currentProfile?.docxUrl) return null;
   const datum = document.getElementById('datum')?.value || '';
   const datumFmt = datum ? new Date(datum).toLocaleDateString('de-DE',{day:'2-digit',month:'2-digit',year:'numeric'}) : '';
