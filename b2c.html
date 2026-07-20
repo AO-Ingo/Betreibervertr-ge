@@ -295,17 +295,17 @@
     <div class="card-title">Kunde</div>
     <div class="field-group">
       <label>Vorname<input type="text" id="vorname" placeholder="Max"></label>
-      <label>Nachname <span class="required-star">*</span><input type="text" id="nachname" placeholder="Mustermann"></label>
+      <label><div style="display:flex;align-items:center;gap:3px">Nachname <span class="required-star">*</span></div><input type="text" id="nachname" placeholder="Mustermann"></label>
     </div>
     <div class="field-group single">
-      <label>E-Mail <span class="required-star">*</span><input type="email" id="email" placeholder="m.mustermann@beispiel.de"></label>
+      <label><div style="display:flex;align-items:center;gap:3px">E-Mail <span class="required-star">*</span></div><input type="email" id="email" placeholder="m.mustermann@beispiel.de"></label>
     </div>
     <div class="field-group single">
-      <label>Telefon <span style="font-weight:400;font-size:11px;text-transform:none;letter-spacing:0">(optional)</span><input type="tel" id="telefon" placeholder="+49 170 1234567"></label>
+      <label><div style="display:flex;align-items:center;gap:4px">Telefon <span style="font-weight:400;font-size:11px;text-transform:none;letter-spacing:0">(optional)</span></div><input type="tel" id="telefon" placeholder="+49 170 1234567"></label>
     </div>
     <hr class="divider">
     <div class="field-group single">
-      <label>Stellplatz-Nr. <span class="required-star">*</span><input type="text" id="stellplatz" placeholder="z.B. TG B12"></label>
+      <label><div style="display:flex;align-items:center;gap:3px">Stellplatz-Nr. <span class="required-star">*</span></div><input type="text" id="stellplatz" placeholder="z.B. TG B12"></label>
     </div>
   </div>
 
@@ -313,11 +313,11 @@
   <div class="card" id="rechnungsadresseCard">
     <div class="card-title">Rechnungsadresse</div>
     <div class="field-group single">
-      <label>Straße &amp; Hausnummer <span class="required-star">*</span><input type="text" id="strasse" placeholder="Musterstraße 12"></label>
+      <label>Straße &amp;<div style="display:flex;align-items:center;gap:3px"> Hausnummer <span class="required-star">*</span></div><input type="text" id="strasse" placeholder="Musterstraße 12"></label>
     </div>
     <div class="field-group">
-      <label>PLZ <span class="required-star">*</span><input type="text" id="plz" placeholder="80331"></label>
-      <label>Stadt <span class="required-star">*</span><input type="text" id="stadt" placeholder="Frankfurt"></label>
+      <label><div style="display:flex;align-items:center;gap:3px">PLZ <span class="required-star">*</span></div><input type="text" id="plz" placeholder="80331"></label>
+      <label><div style="display:flex;align-items:center;gap:3px">Stadt <span class="required-star">*</span></div><input type="text" id="stadt" placeholder="Frankfurt"></label>
     </div>
   </div>
 
@@ -325,7 +325,7 @@
   <div class="card">
     <div class="card-title">Standort &amp; Ladeeinrichtung</div>
     <div class="field-group single" style="margin-bottom:14px">
-      <label>Standort auswählen <span class="required-star">*</span><select id="standortSelect" onchange="onStandortChange()" style="padding:8px 10px;border:1px solid var(--border);border-radius:var(--radius);background:var(--surface);font-family:'DM Sans',sans-serif;font-size:13px;color:var(--text);outline:none;">
+      <label><div style="display:flex;align-items:center;gap:3px">Standort auswählen <span class="required-star">*</span></div><select id="standortSelect" onchange="onStandortChange()" style="padding:8px 10px;border:1px solid var(--border);border-radius:var(--radius);background:var(--surface);font-family:'DM Sans',sans-serif;font-size:13px;color:var(--text);outline:none;">
           <option value="" disabled selected>– bitte wählen –</option>
         </select>
       </label>
@@ -335,12 +335,12 @@
     </div>
     <hr class="divider">
     <div class="field-group">
-      <label>Art der Ladeeinrichtung <span class="required-star">*</span><input type="text" id="geraet" placeholder="Hersteller, Modell"></label>
+      <label><div style="display:flex;align-items:center;gap:3px">Art der Ladeeinrichtung <span class="required-star">*</span></div><input type="text" id="geraet" placeholder="Hersteller, Modell"></label>
       <label>Anzahl Ladepunkte<input type="number" id="anzahlLadepunkte" value="1" min="1" placeholder="1"></label>
     </div>
     <div class="field-group">
       <label>Inbetriebnahme-Datum<input type="date" id="inbetriebnahme"></label>
-      <label>Vertragslaufzeit in Jahren <span class="required-star">*</span><input type="number" id="laufzeit" value="2" min="1" max="10"></label>
+      <label><div style="display:flex;align-items:center;gap:3px">Vertragslaufzeit in Jahren <span class="required-star">*</span></div><input type="number" id="laufzeit" value="2" min="1" max="10"></label>
     </div>
   </div>
 
