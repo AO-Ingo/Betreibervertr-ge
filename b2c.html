@@ -252,7 +252,7 @@
     .sts.proc { color: var(--text-muted); }
     .progress-wrap { display:none;background:var(--surface2);border-radius:4px;height:4px;margin-top:8px; }
     .progress-bar { height:100%;background:var(--text);border-radius:4px;width:0%;transition:width .3s; }
-    .required-star { color: var(--danger); }
+    .required-star { color: var(--danger); margin-left: 2px; }
 </style>
 </head>
 <body>
@@ -295,10 +295,10 @@
     <div class="card-title">Kunde</div>
     <div class="field-group">
       <label style="text-transform:none;letter-spacing:0">Vorname <span style="font-weight:400;color:var(--text-muted);font-size:11px">(optional)</span><input type="text" id="vorname" placeholder="Max"></label>
-      <label>Nachname <span class="required-star">*</span><input type="text" id="nachname" placeholder="Mustermann"></label>
+      <label><span style="display:flex;align-items:center;gap:3px;margin-bottom:5px">Nachname<span class="required-star">*</span></span><input type="text" id="nachname" placeholder="Mustermann"></label>
     </div>
     <div class="field-group single">
-      <label>E-Mail <span class="required-star">*</span><input type="email" id="email" placeholder="m.mustermann@beispiel.de"></label>
+      <label>E-<span style="display:flex;align-items:center;gap:3px;margin-bottom:5px">Mail<span class="required-star">*</span></span><input type="email" id="email" placeholder="m.mustermann@beispiel.de"></label>
     </div>
     <div class="field-group single">
       <label style="text-transform:none;letter-spacing:0">Telefon <span style="font-weight:400;color:var(--text-muted);font-size:11px">(optional)</span><input type="tel" id="telefon" placeholder="+49 170 1234567"></label>
@@ -313,11 +313,11 @@
   <div class="card" id="rechnungsadresseCard">
     <div class="card-title">Rechnungsadresse</div>
     <div class="field-group single">
-      <label>Straße &amp; Hausnummer <span class="required-star">*</span><input type="text" id="strasse" placeholder="Musterstraße 12"></label>
+      <label><span style="display:flex;align-items:center;gap:3px;margin-bottom:5px">Straße &amp; Hausnummer<span class="required-star">*</span></span><input type="text" id="strasse" placeholder="Musterstraße 12"></label>
     </div>
     <div class="field-group">
-      <label>PLZ <span class="required-star">*</span><input type="text" id="plz" placeholder="80331"></label>
-      <label>Stadt <span class="required-star">*</span><input type="text" id="stadt" placeholder="Frankfurt"></label>
+      <label><span style="display:flex;align-items:center;gap:3px;margin-bottom:5px">PLZ<span class="required-star">*</span></span><input type="text" id="plz" placeholder="80331"></label>
+      <label><span style="display:flex;align-items:center;gap:3px;margin-bottom:5px">Stadt<span class="required-star">*</span></span><input type="text" id="stadt" placeholder="Frankfurt"></label>
     </div>
   </div>
 
@@ -325,8 +325,7 @@
   <div class="card">
     <div class="card-title">Standort &amp; Ladeeinrichtung</div>
     <div class="field-group single" style="margin-bottom:14px">
-      <label>Standort auswählen <span class="required-star">*</span>
-        <select id="standortSelect" onchange="onStandortChange()" style="padding:8px 10px;border:1px solid var(--border);border-radius:var(--radius);background:var(--surface);font-family:'DM Sans',sans-serif;font-size:13px;color:var(--text);outline:none;">
+      <label><span style="display:flex;align-items:center;gap:3px;margin-bottom:5px">Standort auswählen<span class="required-star">*</span></span><select id="standortSelect" onchange="onStandortChange()" style="padding:8px 10px;border:1px solid var(--border);border-radius:var(--radius);background:var(--surface);font-family:'DM Sans',sans-serif;font-size:13px;color:var(--text);outline:none;">
           <option value="" disabled selected>– bitte wählen –</option>
         </select>
       </label>
@@ -341,7 +340,7 @@
     </div>
     <div class="field-group">
       <label>Inbetriebnahme-Datum<input type="date" id="inbetriebnahme"></label>
-      <label>Vertragslaufzeit in Jahren<input type="number" id="laufzeit" value="2" min="1" max="10"></label>
+      <label><span style="display:flex;align-items:center;gap:3px;margin-bottom:5px">Vertragslaufzeit in Jahren<span class="required-star">*</span></span><input type="number" id="laufzeit" value="2" min="1" max="10"></label>
     </div>
   </div>
 
