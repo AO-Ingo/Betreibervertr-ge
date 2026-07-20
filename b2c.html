@@ -124,6 +124,9 @@
     .upload-icon { font-size: 24px; margin-bottom: 6px; }
     .upload-hint { font-size: 11px; margin-top: 4px; color: var(--text-muted); }
     .lbl { display:flex; align-items:center; gap:4px; font-size:11px; font-weight:600; letter-spacing:0.05em; text-transform:uppercase; color:var(--text-muted); margin-bottom:5px; }
+    .req { color:var(--danger); }
+    .opt { font-weight:400; font-size:11px; text-transform:none; letter-spacing:0; }
+    .lbl { display:flex; align-items:center; gap:4px; font-size:11px; font-weight:600; letter-spacing:0.05em; text-transform:uppercase; color:var(--text-muted); margin-bottom:5px; }
     .lbl .req { color:var(--danger); }
     .lbl .opt { font-weight:400; font-size:11px; text-transform:none; letter-spacing:0; color:var(--text-muted); }
     .sts { font-size: 12px; min-height: 18px; display: flex; align-items: center; gap: 6px; margin-top: 8px; }
@@ -242,6 +245,9 @@
     .upload-icon { font-size: 32px; margin-bottom: 8px; }
     .upload-hint { font-size: 11px; margin-top: 4px; color: var(--text-muted); }
     .lbl { display:flex; align-items:center; gap:4px; font-size:11px; font-weight:600; letter-spacing:0.05em; text-transform:uppercase; color:var(--text-muted); margin-bottom:5px; }
+    .req { color:var(--danger); }
+    .opt { font-weight:400; font-size:11px; text-transform:none; letter-spacing:0; }
+    .lbl { display:flex; align-items:center; gap:4px; font-size:11px; font-weight:600; letter-spacing:0.05em; text-transform:uppercase; color:var(--text-muted); margin-bottom:5px; }
     .lbl .req { color:var(--danger); }
     .lbl .opt { font-weight:400; font-size:11px; text-transform:none; letter-spacing:0; color:var(--text-muted); }
     .info-banner {
@@ -342,15 +348,11 @@
     </div>
     <hr class="divider">
     <div class="field-group">
-      <label>Art der Ladeeinrichtung<input type="text" id="geraet" placeholder="Hersteller, Modell"></label>
-      <label style="text-transform:none;letter-spacing:0">Anzahl Ladepunkte <span style="font-weight:400;color:var(--text-muted);font-size:11px">(optional)</span>
-        <input type="number" id="anzahlLadepunkte" value="1" min="1">
-      </label>
+      <label><div class="lbl">Art der Ladeeinrichtung <span class="req">*</span></div><input type="text" id="geraet" placeholder="Hersteller, Modell"></label>
+      <label><div class="lbl">Anzahl Ladepunkte <span class="req">*</span></div><input type="number" id="anzahlLadepunkte" value="1" min="1"></label>
     </div>
     <div class="field-group">
-      <label style="text-transform:none;letter-spacing:0">Inbetriebnahme-Datum <span style="font-weight:400;color:var(--text-muted);font-size:11px">(optional)</span>
-        <input type="date" id="inbetriebnahme">
-      </label>
+      <label><div class="lbl">Inbetriebnahme-Datum <span class="opt">(optional)</span></div><input type="date" id="inbetriebnahme"></label>
       <label>Vertragslaufzeit in Jahren <span class="required-star">*</span>
         <input type="number" id="laufzeit" value="2" min="1" max="10">
       </label>
@@ -803,8 +805,10 @@ function replaceTag(xml, tag, value) {
   return xml;
 }
 
-async function genDocx(angebotsnr) {
+async async function genDocx(angebotsnr) {
   if (!currentProfile?.docxUrl) return null;
+  const datum = document.getElementById('datum')?.value || '';
+  const datumFmt = datum ? new Date(datum).toLocaleDateString('de-DE',{day:'2-digit',month:'2-digit',year:'numeric'}) : '';
   const resp = await fetch(currentProfile.docxUrl);
   if (!resp.ok) throw new Error('Vorlage nicht erreichbar (' + resp.status + ')');
   const zip = await JSZip.loadAsync(await resp.arrayBuffer());
