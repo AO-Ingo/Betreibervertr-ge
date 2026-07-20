@@ -790,7 +790,7 @@ function replaceTag(xml, tag, value) {
   return xml;
 }
 
-async function genDocx(angebotsnr) {
+async async function b2cBuildDocx(angebotsnr) {
   if (!currentProfile?.docxUrl) return null;
   const resp = await fetch(currentProfile.docxUrl);
   if (!resp.ok) throw new Error('Vorlage nicht erreichbar (' + resp.status + ')');
