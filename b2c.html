@@ -809,8 +809,7 @@ function replaceTag(xml, tag, value) {
 
 async function genDocx(angebotsnr) {
   if (!currentProfile?.docxUrl) return null;
-  const datum = document.getElementById('datum')?.value || '';
-  const datumFmt = datum ? new Date(datum).toLocaleDateString('de-DE',{day:'2-digit',month:'2-digit',year:'numeric'}) : '';
+  const datumFmt = new Date().toLocaleDateString('de-DE',{day:'2-digit',month:'2-digit',year:'numeric'});
   const resp = await fetch(currentProfile.docxUrl);
   if (!resp.ok) throw new Error('Vorlage nicht erreichbar (' + resp.status + ')');
   const zip = await JSZip.loadAsync(await resp.arrayBuffer());
@@ -886,7 +885,7 @@ async function b2cMerge() {
   try {
     const {PDFDocument} = PDFLib;
     const merged = await PDFDocument.create();
-    for (const [i, file] of [[0,fAngebot],[1,fVertrag]]) {
+    for (const [i, file] of [[0,fVertrag],[1,fAngebot]]) {
       const doc = await PDFDocument.load(await file.arrayBuffer());
       const pages = await merged.copyPages(doc, doc.getPageIndices());
       pages.forEach(p => merged.addPage(p));
