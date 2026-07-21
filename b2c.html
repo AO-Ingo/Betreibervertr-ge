@@ -841,6 +841,7 @@ async function genDocx(angebotsnr) {
     // Standard (alle Profile)
     'ANGEBOTSNUMMER':    angebotsnr || '',
     'ANGEBOTSNR':        angebotsnr || '',
+    'FIRMA':             (v('vorname') + ' ' + v('nachname')).trim(),
     'KUNDE_NAME':        (v('vorname') + ' ' + v('nachname')).trim(),
     'KUNDE_VOLLNAME':    (v('vorname') + ' ' + v('nachname')).trim(),
     'KUNDE_ADRESSE':     [v('strasse'), (v('plz') + ' ' + v('stadt')).trim()].filter(Boolean).join(', '),
