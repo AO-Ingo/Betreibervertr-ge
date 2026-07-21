@@ -867,6 +867,10 @@ async function genDocx(angebotsnr) {
     'LAUFZEIT':          v('laufzeit'),
     'INBETRIEBNAHME':    inbetrieb,
     'STANDORT_1':        v('standortSelect') === 'sonstiges' ? v('standortAdresse') : v('standortSelect'),
+    // AP-Felder mit Kundendaten befüllen
+    'APKFMNAME':         (v('vorname') + ' ' + v('nachname')).trim(),
+    'APKFMTEL':          v('telefon'),
+    'APKFMMAIL':         v('email'),
   };
   for (const [tag, val] of Object.entries(repl)) xml = replaceTag(xml, tag, val);
   zip.file('word/document.xml', xml);
