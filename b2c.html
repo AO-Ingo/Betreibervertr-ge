@@ -882,7 +882,7 @@ async function b2cVertrag() {
   setSts('genSts','proc','Vorlage wird geladen…');
   try {
     const blob = await genDocx('');
-    download(blob, `AMBA_Betreibervertrag_${v('nachname')}_${currentProfile?.label?.replace(/[^a-zA-Z0-9]/g,'_')}.docx`);
+    download(blob, `AMBA_Betreibervertrag_${v('nachname')}_vorläufig.docx`);
     setSts('genSts','ok','✓ Vertrag heruntergeladen.');
   } catch(err) { setSts('genSts','err','✕ ' + err.message); }
 }
