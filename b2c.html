@@ -349,7 +349,7 @@
     <hr class="divider">
     <div class="field-group">
       <label><div class="lbl">Art der Ladeeinrichtung <span class="req">*</span></div><input type="text" id="geraet" placeholder="Hersteller, Modell"></label>
-      <label><div class="lbl">Anzahl Ladepunkte <span class="req">*</span></div><input type="number" id="anzahlLadepunkte" value="1" min="1"></label>
+      <label><div class="lbl">Anzahl Ladepunkte <span class="req">*</span></div><input type="number" id="anzahlLadepunkte" value="1" min="1" oninput="syncMenge(this.value)"></label>
     </div>
     <div class="field-group">
       <label><div class="lbl">Inbetriebnahme-Datum <span class="opt">(optional)</span></div><input type="date" id="inbetriebnahme"></label>
@@ -986,6 +986,11 @@ function resetFormB2C() {
   document.getElementById('leContainer').innerHTML = '';
   leCount = 0;
   if (currentProfile?.geraet !== undefined) addLadeeinrichtung(currentProfile.geraet || '');
+}
+
+function syncMenge(val) {
+  const n = Math.max(1, parseInt(val) || 1);
+  document.querySelectorAll('[id^="menge-"]').forEach(el => { el.value = n; });
 }
 </script>
 </body>
