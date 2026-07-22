@@ -743,6 +743,7 @@ function changeMenge(idx, delta) {
 
 // ── NIO VERTRAG ──
 async function b2cNioVertrag() {
+  if (!validatePflichtfelder()) return;
   setSts('makeSts','proc','Vorlage wird geladen…');
   try {
     const p = currentProfile;
@@ -777,6 +778,7 @@ async function b2cNioVertrag() {
 
 // ── MAKE WEBHOOK ──
 async function b2cSenden() {
+  if (!validatePflichtfelder()) return;
   setSts('makeSts','proc','Wird gesendet…');
   const artikel = getArtikelPayload();
   try {
@@ -879,6 +881,7 @@ async function genDocx(angebotsnr) {
 }
 
 async function b2cVertrag() {
+  if (!validatePflichtfelder()) return;
   setSts('genSts','proc','Vorlage wird geladen…');
   try {
     const blob = await genDocx('');
@@ -888,6 +891,7 @@ async function b2cVertrag() {
 }
 
 async function b2cVertragMitNr() {
+  if (!validatePflichtfelder()) return;
   const file = document.getElementById('angebotPdf').files[0];
   if (!file) return;
   const angebotsnr = file.name.replace(/\.pdf$/i,'').trim();
@@ -966,8 +970,37 @@ function setSts(id, cls, msg) {
   el.innerHTML = cls==='proc' ? `<div class="spin"></div><span>${msg}</span>` : `<span>${msg}</span>`;
 }
 
+// ===== PFLICHTFELD-VALIDIERUNG =====
+function clearInvalid(){
+  document.querySelectorAll('[data-invalid]').forEach(el=>{el.style.outline='';el.removeAttribute('data-invalid');});
+}
+function markInvalid(el){
+  if(!el) return;
+  el.style.outline='2px solid var(--danger)';
+  el.style.outlineOffset='1px';
+  el.setAttribute('data-invalid','1');
+}
+function validatePflichtfelder(){
+  clearInvalid();
+  const ids = ['nachname','email','stellplatz','strasse','plz','stadt','standortSelect','geraet','anzahlLadepunkte','laufzeit'];
+  const missing = [];
+  ids.forEach(id=>{
+    const el=document.getElementById(id);
+    if(el && el.offsetParent!==null && !String(el.value||'').trim()) missing.push(el);
+  });
+  if(missing.length){
+    missing.forEach(markInvalid);
+    missing[0].scrollIntoView({behavior:'smooth',block:'center'});
+    missing[0].focus();
+    setSts('makeSts','err','✕ Bitte alle Pflichtfelder ausfüllen.');
+    return false;
+  }
+  return true;
+}
+
 function resetFormB2C() {
   sessionStorage.removeItem('b2c_profil');
+  clearInvalid();
   document.querySelectorAll('input[type=text], input[type=email], input[type=tel], input[type=number]').forEach(el => {
     if (!el.readOnly) el.value = el.defaultValue || '';
   });
