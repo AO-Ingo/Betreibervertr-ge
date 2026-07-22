@@ -319,7 +319,7 @@
       <div class="card-icon">📋</div>
       <div class="card-header-text">
         <div class="card-header-title">Vertragsdaten</div>
-        <div class="card-header-sub">Laufzeit</div>
+        <div class="card-header-sub">Laufzeit &amp; Inbetriebnahme</div>
       </div>
     </div>
     <div class="field-group">
@@ -608,15 +608,8 @@ async function genDocx() {
       'INBETRIEBNAHME': fmtDate(v('inbetriebnahme')),
       'APKFMNAME': v('ap_tech_name'), 'APKFMTEL': v('ap_tech_tel'), 'APKFMMAIL': v('ap_tech_email'),
       'APTECHNAME': v('ap_name'), 'APTECHTEL': v('ap_tel'), 'APTECHMAIL': v('ap_email'),
-      // Rückwärtskompatibel für noch nicht migrierte Vorlagen (z.B. TechBF DC):
-      'AP_KFM_NAME': v('ap_tech_name'), 'AP_KFM_TEL': v('ap_tech_tel'), 'AP_KFM_MAIL': v('ap_tech_email'),
-      'AP_TECH_NAME': v('ap_name'), 'AP_TECH_TEL': v('ap_tel'), 'AP_TECH_MAIL': v('ap_email'),
-      'AP_NAME': v('ap_name'), 'AP_TEL': v('ap_tel'), 'AP_MAIL': v('ap_email'),
     };
-    if(rows[0]){
-      repl['STANDORT']=rows[0].standort; repl['LADEEINRICHTUNG']=rows[0].art; repl['LADEPUNKTE']=String(rows[0].anzahl);
-      repl['STANDORT_1']=rows[0].standort; repl['ART_1']=rows[0].art; repl['ANZAHL_1']=String(rows[0].anzahl);
-    }
+    if(rows[0]){ repl['STANDORT']=rows[0].standort; repl['LADEEINRICHTUNG']=rows[0].art; repl['LADEPUNKTE']=String(rows[0].anzahl); }
     for(const [tag,val] of Object.entries(repl)) xml=replaceTag(xml,tag,val);
     zip.file('word/document.xml',xml);
     const blob=await zip.generateAsync({type:'blob',mimeType:'application/vnd.openxmlformats-officedocument.wordprocessingml.document'});
