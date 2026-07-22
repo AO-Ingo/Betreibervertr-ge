@@ -45,6 +45,8 @@
     .field-group.triple { grid-template-columns: 1fr 1fr 1fr; }
     .field-group:last-child { margin-bottom: 0; }
     label { display: flex; flex-direction: column; font-size: 11px; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; color: var(--text-muted); gap: 5px; }
+    .lbl { display:flex; align-items:center; gap:4px; }
+    .lbl .req { color:var(--danger); text-transform:none; }
     input[type="text"], input[type="date"], input[type="number"], select, textarea { width: 100%; padding: 8px 10px; border: 1px solid var(--border); border-radius: var(--radius); background: var(--surface); color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 13px; transition: border-color 0.15s, box-shadow 0.15s; outline: none; }
     input:focus, select:focus, textarea:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(26,25,22,0.07); }
     input[readonly] { background: var(--surface2); color: var(--text-muted); }
@@ -283,11 +285,11 @@
         <div class="card-header-sub">Firmendaten des Kunden</div>
       </div>
     </div>
-    <div class="field-group single"><label>Firma / Name <span style="color:var(--danger)">*</span><input type="text" id="ag_firma" placeholder="Musterfirma GmbH"></label></div>
-    <div class="field-group single"><label>Straße &amp; Hausnummer <span style="color:var(--danger)">*</span><input type="text" id="ag_strasse" placeholder="Musterstraße 1"></label></div>
+    <div class="field-group single"><label><div class="lbl">Firma / Name <span class="req">*</span></div><input type="text" id="ag_firma" placeholder="Musterfirma GmbH"></label></div>
+    <div class="field-group single"><label><div class="lbl">Straße &amp; Hausnummer <span class="req">*</span></div><input type="text" id="ag_strasse" placeholder="Musterstraße 1"></label></div>
     <div class="field-group">
-      <label>PLZ <span style="color:var(--danger)">*</span><input type="text" id="ag_plz" placeholder="12345"></label>
-      <label>Stadt <span style="color:var(--danger)">*</span><input type="text" id="ag_stadt" placeholder="Musterstadt"></label>
+      <label><div class="lbl">PLZ <span class="req">*</span></div><input type="text" id="ag_plz" placeholder="12345"></label>
+      <label><div class="lbl">Stadt <span class="req">*</span></div><input type="text" id="ag_stadt" placeholder="Musterstadt"></label>
     </div>
   </div>
 
@@ -300,11 +302,15 @@
         <div class="card-header-sub">Kaufmännisch &amp; technisch</div>
       </div>
     </div>
-    <div class="field-group"><label>Kfm. AP Name<input type="text" id="ap_tech_name" placeholder="Max Mustermann"></label><label>Kfm. AP Telefon<input type="text" id="ap_tech_tel" placeholder="+49 ..."></label></div>
-    <div class="field-group single"><label>Kfm. AP E-Mail<input type="text" id="ap_tech_email" placeholder="max@musterfirma.de"></label></div>
-    <hr class="divider">
-    <div class="field-group"><label>Tech. AP Name<input type="text" id="ap_name" placeholder="Max Mustermann"></label><label>Tech. AP Telefon<input type="text" id="ap_tel" placeholder="+49 ..."></label></div>
-    <div class="field-group single"><label>Tech. AP E-Mail<input type="text" id="ap_email" placeholder="tech@musterfirma.de"></label></div>
+    <div id="apKfmBlock">
+      <div class="field-group"><label>Kfm. AP Name<input type="text" id="ap_tech_name" placeholder="Max Mustermann"></label><label>Kfm. AP Telefon<input type="text" id="ap_tech_tel" placeholder="+49 ..."></label></div>
+      <div class="field-group single"><label>Kfm. AP E-Mail<input type="text" id="ap_tech_email" placeholder="max@musterfirma.de"></label></div>
+    </div>
+    <hr class="divider" id="apDivider">
+    <div id="apTechBlock">
+      <div class="field-group"><label>Tech. AP Name<input type="text" id="ap_name" placeholder="Max Mustermann"></label><label>Tech. AP Telefon<input type="text" id="ap_tel" placeholder="+49 ..."></label></div>
+      <div class="field-group single"><label>Tech. AP E-Mail<input type="text" id="ap_email" placeholder="tech@musterfirma.de"></label></div>
+    </div>
   </div>
 
   <!-- Vertragsdaten -->
@@ -313,11 +319,12 @@
       <div class="card-icon">📋</div>
       <div class="card-header-text">
         <div class="card-header-title">Vertragsdaten</div>
-        <div class="card-header-sub">Laufzeit &amp; Datum</div>
+        <div class="card-header-sub">Laufzeit</div>
       </div>
     </div>
     <div class="field-group">
-      <div id="laufzeitWrap"><label>Laufzeit <span style="color:var(--danger)">*</span><input type="number" id="vb_laufzeit" min="1" max="10" placeholder="3"></label></div>
+      <div id="laufzeitWrap"><label><div class="lbl">Laufzeit <span class="req">*</span></div><input type="number" id="vb_laufzeit" min="1" max="10" placeholder="3"></label></div>
+      <div id="inbetriebnahmeWrap"><label>Inbetriebnahme-Datum<input type="date" id="inbetriebnahme"></label></div>
     </div>
     <input type="hidden" id="vb_angebotsnr">
   </div>
@@ -457,6 +464,17 @@ function setTyp(typ) {
   const lw = document.getElementById('laufzeitWrap');
   if (lw) lw.style.display = '';
 
+  // Ansprechpartner + Inbetriebnahme je Vertragstyp ausgrauen
+  const isTechBF = typ === 'betrieb' || typ === 'betrieb-dc';
+  const isWartung = typ === 'wartung' || typ === 'wartung-dc';
+  const apKfm = document.getElementById('apKfmBlock');
+  const apTech = document.getElementById('apTechBlock');
+  const inbWrap = document.getElementById('inbetriebnahmeWrap');
+  const grey = (el, on) => { if (!el) return; el.style.opacity = on ? '0.35' : '1'; el.style.pointerEvents = on ? 'none' : ''; };
+  grey(apKfm, isWartung);
+  grey(apTech, isTechBF || isWartung);
+  grey(inbWrap, isTechBF || isWartung);
+
   // Merge-Spalte 2
   const m2label = document.getElementById('mergeAngebotLabel');
   const m2input = document.getElementById('mergeFile2');
@@ -586,11 +604,19 @@ async function genDocx() {
       'FIRMA': v('ag_firma'), 'STRASSE': v('ag_strasse'), 'PLZ': v('ag_plz'), 'STADT': v('ag_stadt'),
       'PLZSTADT': (v('ag_plz')+' '+v('ag_stadt')).trim(),
       'DATUM': fmtDate(new Date().toISOString().split('T')[0]),
-      'LAUFZEIT IN JAHREN': getLaufzeit(), 'Laufzeit in Jahren': getLaufzeit(), 'LAUFZEIT': getLaufzeit(),
+      'LAUFZEIT': getLaufzeit(),
+      'INBETRIEBNAHME': fmtDate(v('inbetriebnahme')),
+      'APKFMNAME': v('ap_tech_name'), 'APKFMTEL': v('ap_tech_tel'), 'APKFMMAIL': v('ap_tech_email'),
+      'APTECHNAME': v('ap_name'), 'APTECHTEL': v('ap_tel'), 'APTECHMAIL': v('ap_email'),
+      // Rückwärtskompatibel für noch nicht migrierte Vorlagen (z.B. TechBF DC):
       'AP_KFM_NAME': v('ap_tech_name'), 'AP_KFM_TEL': v('ap_tech_tel'), 'AP_KFM_MAIL': v('ap_tech_email'),
       'AP_TECH_NAME': v('ap_name'), 'AP_TECH_TEL': v('ap_tel'), 'AP_TECH_MAIL': v('ap_email'),
+      'AP_NAME': v('ap_name'), 'AP_TEL': v('ap_tel'), 'AP_MAIL': v('ap_email'),
     };
-    if(rows[0]){ repl['STANDORT_1']=rows[0].standort; repl['ART_1']=rows[0].art; repl['ANZAHL_1']=String(rows[0].anzahl); }
+    if(rows[0]){
+      repl['STANDORT']=rows[0].standort; repl['LADEEINRICHTUNG']=rows[0].art; repl['LADEPUNKTE']=String(rows[0].anzahl);
+      repl['STANDORT_1']=rows[0].standort; repl['ART_1']=rows[0].art; repl['ANZAHL_1']=String(rows[0].anzahl);
+    }
     for(const [tag,val] of Object.entries(repl)) xml=replaceTag(xml,tag,val);
     zip.file('word/document.xml',xml);
     const blob=await zip.generateAsync({type:'blob',mimeType:'application/vnd.openxmlformats-officedocument.wordprocessingml.document'});
@@ -615,6 +641,7 @@ async function sendenAnMake() {
       vertragstyp: currentTyp, zoho_artikel_id: a.id, zoho_artikel_name: a.name, zoho_anzahl: total,
       ag_firma: v('ag_firma'), ag_strasse: v('ag_strasse'), ag_plz: v('ag_plz'), ag_stadt: v('ag_stadt'),
       stand_datum: new Date().toISOString().split('T')[0],
+      inbetriebnahme: v('inbetriebnahme'),
       ap_name: v('ap_name'), ap_email: v('ap_email'), ap_tel: v('ap_tel'),
       ap_tech_name: v('ap_tech_name'), ap_tech_email: v('ap_tech_email'), ap_tech_tel: v('ap_tech_tel'),
       ladeeinrichtungen: rows,
@@ -737,6 +764,7 @@ function resetForm() {
     if (el.id !== 'vb_angebotsnr') el.value = el.defaultValue || '';
   });
   document.getElementById('vb_angebotsnr').value = '';
+  const inb = document.getElementById('inbetriebnahme'); if (inb) inb.value = '';
   clearInvalid();
   // Reset table
   document.getElementById('ladeBody').innerHTML = '';
