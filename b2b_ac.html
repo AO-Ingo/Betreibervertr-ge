@@ -317,7 +317,7 @@
       </div>
     </div>
     <div class="field-group">
-      <div id="laufzeitWrap"><label>Laufzeit in Jahren <span style="color:var(--danger)">*</span><input type="number" id="vb_laufzeit" min="1" max="10" placeholder="3"></label></div>
+      <div id="laufzeitWrap"><label>Laufzeit <span style="color:var(--danger)">*</span><input type="number" id="vb_laufzeit" min="1" max="10" placeholder="3"></label></div>
     </div>
     <input type="hidden" id="vb_angebotsnr">
   </div>
@@ -453,9 +453,9 @@ function setTyp(typ) {
   const sa = document.getElementById('sectionAngebot');
   if (sa) sa.style.display = isVollbetrieb ? '' : 'none';
 
-  // Laufzeit
+  // Laufzeit (für alle Vertragstypen)
   const lw = document.getElementById('laufzeitWrap');
-  if (lw) lw.style.display = isVollbetrieb ? 'none' : '';
+  if (lw) lw.style.display = '';
 
   // Merge-Spalte 2
   const m2label = document.getElementById('mergeAngebotLabel');
@@ -708,9 +708,7 @@ function markInvalid(el){
 }
 function validatePflichtfelder(){
   clearInvalid();
-  const isVollbetrieb = currentTyp==='vollbetrieb'||currentTyp==='vollbetrieb-mit-strom'||currentTyp==='vollbetrieb-dc';
-  const ids = ['ag_firma','ag_strasse','ag_plz','ag_stadt'];
-  if(!isVollbetrieb) ids.push('vb_laufzeit');
+  const ids = ['ag_firma','ag_strasse','ag_plz','ag_stadt','vb_laufzeit'];
   const missing = [];
   ids.forEach(id=>{
     const el=document.getElementById(id);
