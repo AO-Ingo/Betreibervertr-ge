@@ -283,11 +283,11 @@
         <div class="card-header-sub">Firmendaten des Kunden</div>
       </div>
     </div>
-    <div class="field-group single"><label>Firma / Name<input type="text" id="ag_firma" placeholder="Musterfirma GmbH"></label></div>
-    <div class="field-group single"><label>Straße &amp; Hausnummer<input type="text" id="ag_strasse" placeholder="Musterstraße 1"></label></div>
+    <div class="field-group single"><label>Firma / Name <span style="color:var(--danger)">*</span><input type="text" id="ag_firma" placeholder="Musterfirma GmbH"></label></div>
+    <div class="field-group single"><label>Straße &amp; Hausnummer <span style="color:var(--danger)">*</span><input type="text" id="ag_strasse" placeholder="Musterstraße 1"></label></div>
     <div class="field-group">
-      <label>PLZ<input type="text" id="ag_plz" placeholder="12345"></label>
-      <label>Stadt<input type="text" id="ag_stadt" placeholder="Musterstadt"></label>
+      <label>PLZ <span style="color:var(--danger)">*</span><input type="text" id="ag_plz" placeholder="12345"></label>
+      <label>Stadt <span style="color:var(--danger)">*</span><input type="text" id="ag_stadt" placeholder="Musterstadt"></label>
     </div>
   </div>
 
@@ -317,8 +317,7 @@
       </div>
     </div>
     <div class="field-group">
-      <label>Vertragsdatum<input type="date" id="stand_datum"></label>
-      <div id="laufzeitWrap"><label>Laufzeit in Jahren<input type="number" id="vb_laufzeit" min="1" max="10" placeholder="3"></label></div>
+      <div id="laufzeitWrap"><label>Laufzeit in Jahren <span style="color:var(--danger)">*</span><input type="number" id="vb_laufzeit" min="1" max="10" placeholder="3"></label></div>
     </div>
     <input type="hidden" id="vb_angebotsnr">
   </div>
@@ -332,14 +331,11 @@
         <div class="card-header-sub">Standorte &amp; technische Spezifikationen</div>
       </div>
     </div>
-    <div class="field-group single" style="margin-bottom:16px">
-      <label>Stand (Datum)<input type="date" id="anlage_datum"></label>
-    </div>
     <div style="overflow-x:auto">
       <table class="anlage-table">
         <thead><tr>
           <th style="width:28px">#</th>
-          <th>Standort (Name, Anschrift)</th>
+          <th>Standort (Name, Anschrift) <span style="color:var(--danger)">*</span></th>
           <th>Art der Ladeeinrichtung</th>
           <th style="width:90px">Anzahl Ladepunkte</th>
           <th style="width:32px"></th>
@@ -423,8 +419,6 @@ let rowCount = 0;
 let vbInitDone = false;
 
 document.addEventListener('DOMContentLoaded', () => {
-  document.getElementById('stand_datum').value = new Date().toISOString().split('T')[0];
-  document.getElementById('anlage_datum').value = new Date().toISOString().split('T')[0];
   addRow();
   setupMergeListeners();
   const savedTyp = sessionStorage.getItem('b2b_dc_typ');
@@ -578,6 +572,7 @@ async function fetchTemplate(typ) {
 
 // ===== DOCX =====
 async function genDocx() {
+  if (!validatePflichtfelder()) return;
   setSts('genSts','proc','Vorlage wird geladen…');
   try {
     const buf = await fetchTemplate(currentTyp);
@@ -590,7 +585,7 @@ async function genDocx() {
       'ANGEBOTSNR': angebotsnr,
       'FIRMA': v('ag_firma'), 'STRASSE': v('ag_strasse'), 'PLZ': v('ag_plz'), 'STADT': v('ag_stadt'),
       'PLZSTADT': (v('ag_plz')+' '+v('ag_stadt')).trim(),
-      'DATUM': fmtDate(v('stand_datum')),
+      'DATUM': fmtDate(new Date().toISOString().split('T')[0]),
       'LAUFZEIT IN JAHREN': getLaufzeit(), 'Laufzeit in Jahren': getLaufzeit(), 'LAUFZEIT': getLaufzeit(),
       'AP_KFM_NAME': v('ap_tech_name'), 'AP_KFM_TEL': v('ap_tech_tel'), 'AP_KFM_MAIL': v('ap_tech_email'),
       'AP_TECH_NAME': v('ap_name'), 'AP_TECH_TEL': v('ap_tel'), 'AP_TECH_MAIL': v('ap_email'),
@@ -608,6 +603,7 @@ async function genDocx() {
 
 // ===== MAKE =====
 async function sendenAnMake() {
+  if (!validatePflichtfelder()) return;
   const a = ZOHO_MAP[currentTyp];
   if (!a) { setSts('makeSts','err','✕ Vertragstyp nicht erkannt.'); return; }
   setSts('makeSts','proc','Wird gesendet…');
@@ -618,7 +614,7 @@ async function sendenAnMake() {
       quelle: 'b2b',
       vertragstyp: currentTyp, zoho_artikel_id: a.id, zoho_artikel_name: a.name, zoho_anzahl: total,
       ag_firma: v('ag_firma'), ag_strasse: v('ag_strasse'), ag_plz: v('ag_plz'), ag_stadt: v('ag_stadt'),
-      stand_datum: v('stand_datum'),
+      stand_datum: new Date().toISOString().split('T')[0],
       ap_name: v('ap_name'), ap_email: v('ap_email'), ap_tel: v('ap_tel'),
       ap_tech_name: v('ap_tech_name'), ap_tech_email: v('ap_tech_email'), ap_tech_tel: v('ap_tech_tel'),
       ladeeinrichtungen: rows,
@@ -700,15 +696,50 @@ function dl(blob,filename){const a=document.createElement('a');a.href=URL.create
 function setSts(id,cls,msg){const el=document.getElementById(id);if(!el)return;el.className='sts '+cls;el.innerHTML=cls==='proc'?`<div class="spin"></div><span>${msg}</span>`:`<span>${msg}</span>`;}
 function setHint(id,msg,color){const el=document.getElementById(id);if(!el)return;el.textContent=msg;el.style.color=color;}
 
+// ===== PFLICHTFELD-VALIDIERUNG =====
+function clearInvalid(){
+  document.querySelectorAll('[data-invalid]').forEach(el=>{el.style.outline='';el.removeAttribute('data-invalid');});
+}
+function markInvalid(el){
+  if(!el) return;
+  el.style.outline='2px solid var(--danger)';
+  el.style.outlineOffset='1px';
+  el.setAttribute('data-invalid','1');
+}
+function validatePflichtfelder(){
+  clearInvalid();
+  const isVollbetrieb = currentTyp==='vollbetrieb'||currentTyp==='vollbetrieb-mit-strom'||currentTyp==='vollbetrieb-dc';
+  const ids = ['ag_firma','ag_strasse','ag_plz','ag_stadt'];
+  if(!isVollbetrieb) ids.push('vb_laufzeit');
+  const missing = [];
+  ids.forEach(id=>{
+    const el=document.getElementById(id);
+    if(el && el.offsetParent!==null && !el.value.trim()) missing.push(el);
+  });
+  const standortInputs = Array.from(document.querySelectorAll('#ladeBody input[id^="standort-"]'));
+  if(standortInputs.length===0){
+    setSts('makeSts','err','✕ Bitte mindestens einen Standort anlegen.');
+    return false;
+  }
+  standortInputs.forEach(el=>{ if(!el.value.trim()) missing.push(el); });
+  if(missing.length){
+    missing.forEach(markInvalid);
+    missing[0].scrollIntoView({behavior:'smooth',block:'center'});
+    missing[0].focus();
+    setSts('makeSts','err','✕ Bitte alle Pflichtfelder ausfüllen (Auftraggeber, Laufzeit, Standort).');
+    return false;
+  }
+  return true;
+}
+
 
 function resetForm() {
   // Clear text inputs
   document.querySelectorAll('input[type=text], input[type=email], input[type=tel], input[type=number]').forEach(el => {
     if (el.id !== 'vb_angebotsnr') el.value = el.defaultValue || '';
   });
-  document.getElementById('stand_datum').value = new Date().toISOString().split('T')[0];
-  document.getElementById('anlage_datum').value = new Date().toISOString().split('T')[0];
   document.getElementById('vb_angebotsnr').value = '';
+  clearInvalid();
   // Reset table
   document.getElementById('ladeBody').innerHTML = '';
   rowCount = 0;
