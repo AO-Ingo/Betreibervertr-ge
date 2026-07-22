@@ -858,7 +858,7 @@ async function genDocx(angebotsnr) {
     'PLZSTADT':          (v('plz') + ' ' + v('stadt')).trim(),
     'STELLPLATZ':        v('stellplatz'),
     'DATUM':             datumFmt,
-    'STANDORT':          v('standortSelect') === 'sonstiges' ? v('standortAdresse') : v('standortSelect'),
+    'STANDORT':          v('standortAdresse'),
     'STANDORTADRESSE':   v('standortAdresse'),
     'LADEEINRICHTUNG':   v('geraet'),
     'GERAET':            v('geraet'),
@@ -869,7 +869,7 @@ async function genDocx(angebotsnr) {
     'LAUFZEIT_JAHRE':    v('laufzeit'),
     'LAUFZEIT':          v('laufzeit'),
     'INBETRIEBNAHME':    inbetrieb,
-    'STANDORT_1':        v('standortSelect') === 'sonstiges' ? v('standortAdresse') : v('standortSelect'),
+    'STANDORT_1':        v('standortAdresse'),
     // AP-Felder mit Kundendaten befüllen
     'APKFMNAME':         (v('vorname') + ' ' + v('nachname')).trim(),
     'APKFMTEL':          v('telefon'),
