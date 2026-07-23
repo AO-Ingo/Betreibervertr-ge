@@ -286,7 +286,8 @@
     <select id="profileSelect" onchange="applyProfile()" style="width:100%;font-size:14px;padding:10px 14px;border-radius:var(--radius-lg);font-weight:500;border:1px solid var(--border);background:var(--surface);font-family:'DM Sans',sans-serif;color:var(--text);outline:none;cursor:pointer;">
       <option value="" disabled selected>— Kundenprofil auswählen —</option>
       <option value="lerners">Lerner'sches Schloss</option>
-      <option value="gwg">GWG Seepark</option>
+      <option value="gwg-98b">GWG Seepark (Vaihinger Str. 98B)</option>
+      <option value="gwg-122">GWG Seepark (Vaihinger Str. 122)</option>
       <option value="lbbw">LBBW Park Trio</option>
       <option value="gsw">GSW Reutlingen</option>
       <option value="nio">Nio Project / Premium Immo – Operative Betriebsführung</option>
@@ -467,10 +468,26 @@ const PROFILES = {
       }
     ]
   },
-  "gwg": {
-    "label": "GWG Seepark",
-    "standortName": "",
-    "standortAdresse": "",
+  "gwg-98b": {
+    "label": "GWG Seepark (Vaihinger Str. 98B)",
+    "standortName": "GWG Seepark",
+    "standortAdresse": "Vaihinger Straße 98B, 70567 Stuttgart",
+    "geraet": "",
+    "docxUrl": "",
+    "artikel": [
+      {
+        "id": "520234000003573017",
+        "name": "Vollbetrieb - ganzheitlicher Betrieb der Ladestation (AMBA/reev living)",
+        "preis": "13,87 € / Monat",
+        "pflicht": true,
+        "menge": 1
+      }
+    ]
+  },
+  "gwg-122": {
+    "label": "GWG Seepark (Vaihinger Str. 122)",
+    "standortName": "GWG Seepark",
+    "standortAdresse": "Vaihinger Straße 122, 70567 Stuttgart",
     "geraet": "",
     "docxUrl": "",
     "artikel": [
@@ -502,7 +519,7 @@ const PROFILES = {
   "gsw": {
     "label": "GSW Reutlingen",
     "standortName": "GSW Reutlingen",
-    "standortAdresse": "Ludwigstrasse 17, 72766 Reutlingen",
+    "standortAdresse": "Ludwigstraße 17, 72766 Reutlingen",
     "geraet": "Hager",
     "docxUrl": "https://raw.githubusercontent.com/AO-Ingo/Vertragsgenerator/main/Betreibervertrag_AO_Strom_GSW_Reutlingen_Vorlage.docx",
     "artikel": [
