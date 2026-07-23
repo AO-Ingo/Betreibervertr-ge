@@ -472,7 +472,7 @@ const PROFILES = {
     "label": "GWG Seepark (Vaihinger Str. 98B)",
     "standortName": "GWG Seepark",
     "standortAdresse": "Vaihinger Straße 98B, 70567 Stuttgart",
-    "geraet": "",
+    "geraet": "Mennekes Amtron Professional AC",
     "docxUrl": "",
     "artikel": [
       {
@@ -488,7 +488,7 @@ const PROFILES = {
     "label": "GWG Seepark (Vaihinger Str. 122)",
     "standortName": "GWG Seepark",
     "standortAdresse": "Vaihinger Straße 122, 70567 Stuttgart",
-    "geraet": "",
+    "geraet": "Mennekes Amtron Professional AC",
     "docxUrl": "",
     "artikel": [
       {
@@ -568,23 +568,7 @@ const PROFILES = {
     "label": "Nio Project / Premium Immo",
     "standortName": "Bornholmer Str. 67, 10439 Berlin",
     "standortAdresse": "Bornholmer Str. 67, 10439 Berlin",
-    "geraet": "",
-    "docxUrl": "",
-    "artikel": [
-      {
-        "id": "520234000003658062",
-        "name": "Operative Betriebsführung (NIO)",
-        "preis": "10 € / Monat",
-        "pflicht": true,
-        "menge": 1
-      }
-    ]
-  },
-  "nio": {
-    "label": "Nio Project / Premium Immo",
-    "standortName": "Bornholmer Str. 67, 10439 Berlin",
-    "standortAdresse": "Bornholmer Str. 67, 10439 Berlin",
-    "geraet": "",
+    "geraet": "ABL eMH3",
     "docxUrl": "https://raw.githubusercontent.com/AO-Ingo/Vertragsgenerator/main/AMBA_Betreibervertrag_NIO_Vorlage.docx",
     "nioMode": true,
     "artikel": [
@@ -763,31 +747,7 @@ async function b2cNioVertrag() {
   if (!validatePflichtfelder()) return;
   setSts('makeSts','proc','Vorlage wird geladen…');
   try {
-    const p = currentProfile;
-    const resp = await fetch(p.docxUrl);
-    if (!resp.ok) throw new Error('Vorlage nicht erreichbar (' + resp.status + ')');
-    const zip = await JSZip.loadAsync(await resp.arrayBuffer());
-    let xml = await zip.file('word/document.xml').async('string');
-
-    const inbetrieb = v('inbetriebnahme') ? new Date(v('inbetriebnahme')).toLocaleDateString('de-DE',{day:'2-digit',month:'2-digit',year:'numeric'}) : '';
-    const heute = new Date().toLocaleDateString('de-DE',{day:'2-digit',month:'2-digit',year:'numeric'});
-
-    const repl = {
-      'KUNDE_VOLLNAME':     (v('vorname') + ' ' + v('nachname')).trim(),
-      'KUNDE_EMAIL':        v('email'),
-      'KUNDE_TELEFON':      v('telefon'),
-      'STELLPLATZ':  v('stellplatz'),
-      'LADEPUNKTE_ANZAHL':  v('anzahlLadepunkte') || '1',
-      'INBETRIEBNAHME_DATUM': inbetrieb,
-      'DATUM_HEUTE':        heute,
-      'ANSPRECHPARTNER_NAME': (v('vorname') + ' ' + v('nachname')).trim(),
-    };
-    for (const [tag, val] of Object.entries(repl)) {
-      const ph = '{{' + tag + '}}';
-      if (xml.includes(ph)) xml = xml.split(ph).join((val||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'));
-    }
-    zip.file('word/document.xml', xml);
-    const blob = await zip.generateAsync({type:'blob', mimeType:'application/vnd.openxmlformats-officedocument.wordprocessingml.document'});
+    const blob = await genDocx('');
     download(blob, `AMBA_Betreibervertrag_NIO_${v('nachname') || 'Kunde'}_Stellplatz_${v('stellplatz') || 'X'}.docx`);
     setSts('makeSts','ok','✓ Vertrag heruntergeladen.');
   } catch(err) { setSts('makeSts','err','✕ ' + err.message); }
