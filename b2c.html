@@ -389,6 +389,9 @@
   <div id="nioLock" style="display:none;background:#FFF7ED;border:1px solid #FED7AA;border-radius:var(--radius);padding:10px 14px;font-size:12px;color:#9A3412;margin-bottom:12px;text-align:center">
     🔒 Schritt 2 &amp; 3 nicht erforderlich — Angebot ist bereits im Vertrag enthalten
   </div>
+  <div id="kawhaLock" style="display:none;background:#FFF7ED;border:1px solid #FED7AA;border-radius:var(--radius);padding:10px 14px;font-size:12px;color:#9A3412;margin-bottom:12px;text-align:center">
+    🔒 Schritt 2 nicht erforderlich — Vertrag und Angebot werden einfach in Schritt 3 zusammengefügt
+  </div>
   <div id="sectionSchritt2">
   <!-- Schritt 2 -->
   <div class="step-label">Schritt 2 · Angebot hochladen &amp; Vertrag herunterladen</div>
@@ -571,6 +574,7 @@ const PROFILES = {
     "standortAdresse": "Adams-Lehmann-Str. 3-69, 80797 München",
     "geraet": "",
     "docxUrl": "https://raw.githubusercontent.com/AO-Ingo/Vertragsgenerator/main/AMBA_Betreibervertrag_KaWeHa_Vorlage.docx",
+    "skipSchritt2": true,
     "artikel": [
       {
         "id": "520234000004141024",
@@ -692,6 +696,11 @@ function applyProfile(forceKey) {
   if (s3) { s3.style.opacity = nioMode ? '0.35' : '1'; s3.style.pointerEvents = nioMode ? 'none' : ''; }
   document.getElementById('nioLock').style.display = nioMode ? '' : 'none';
   document.getElementById('rechnungsadresseCard').style.display = nioMode ? 'none' : '';
+
+  // KaWeHa: nur Schritt 2 (Angebotsnummer-Erkennung) ausgegraut, Schritt 3 (Zusammenfügen) bleibt aktiv
+  const skipSchritt2 = !!p.skipSchritt2;
+  if (!nioMode && s2) { s2.style.opacity = skipSchritt2 ? '0.35' : '1'; s2.style.pointerEvents = skipSchritt2 ? 'none' : ''; }
+  document.getElementById('kawhaLock').style.display = (skipSchritt2 && !nioMode) ? '' : 'none';
 
   // Download-Link
   if (p.docxUrl) {
