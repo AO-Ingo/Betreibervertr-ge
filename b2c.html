@@ -821,6 +821,8 @@ function getArtikelPayload() {
     id: a.id, name: a.name,
     menge: parseInt(document.getElementById('menge-'+i)?.value || 1),
     preis: a.preis, pflicht: a.pflicht,
+    // Zoho-Line-Item-taugliche Aliasfelder für die Array-Zuordnung in Make:
+    item_id: a.id, quantity: parseInt(document.getElementById('menge-'+i)?.value || 1),
   }));
 }
 
