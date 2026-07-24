@@ -808,6 +808,7 @@ async function b2cSenden() {
         laufzeit: v('laufzeit'),
         anmerkungen: v('anmerkungen'),
         artikel,
+        line_items: artikel,
       }),
     });
     if (resp.ok) setSts('makeSts','ok','✓ Gesendet – Zoho-Angebot wird erstellt.');
