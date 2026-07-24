@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📄</text></svg>">
   <title>AMBA Vertragsgenerator</title>
+  <script src="https://alcdn.msauth.net/browser/2.38.0/js/msal-browser.min.js"></script>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&display=swap');
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -12,9 +13,42 @@
       font-family: 'DM Sans', sans-serif;
       background: #232C2B;
       min-height: 100vh;
-      display: flex;
+    }
+    #app {
+      display: none;
       flex-direction: column;
       align-items: center;
+      min-height: 100vh;
+    }
+    #login-page {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: #232C2B;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 20px;
+      z-index: 9999;
+      color: #fff;
+      text-align: center;
+      padding: 24px;
+    }
+    #login-page button {
+      background: #fff;
+      color: #232C2B;
+      border: none;
+      border-radius: 10px;
+      padding: 12px 28px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: inherit;
+    }
+    #login-error {
+      color: #FCA5A5;
+      font-size: 13px;
+      max-width: 320px;
     }
     header {
       width: 100%;
@@ -98,6 +132,13 @@
   </style>
 </head>
 <body>
+  <div id="login-page">
+    <div style="font-size:40px">🔒</div>
+    <div style="font-size:20px;font-weight:500;letter-spacing:0.05em">AMBA Vertragsgenerator</div>
+    <button onclick="msalLogin()">Mit Microsoft anmelden</button>
+    <div id="login-error"></div>
+  </div>
+  <div id="app">
   <header>
     <span class="logo-amba">A M B A</span>
     <span class="logo-sub">Vertragsgenerator</span>
@@ -125,5 +166,61 @@
     </div>
   </div>
   <footer>AMBA Vertragsgenerator</footer>
+  </div>
+
+  <script>
+    const msalConfig = {
+      auth: {
+        clientId: 'd674e066-1050-43d4-a081-c17883921466',
+        authority: 'https://login.microsoftonline.com/a3652b20-644b-4163-8ea8-f0d7f7b76b10',
+        redirectUri: window.location.origin + window.location.pathname,
+      },
+      cache: { cacheLocation: 'sessionStorage', storeAuthStateInCookie: false }
+    };
+
+    async function initAuth() {
+      const msalInst = new msal.PublicClientApplication(msalConfig);
+      await msalInst.initialize();
+      window._msalInstance = msalInst;
+      try {
+        const response = await msalInst.handleRedirectPromise();
+        if (response) { showApp(); return; }
+      } catch(e) {
+        document.getElementById('login-page').style.display = 'flex';
+        document.getElementById('login-error').textContent = 'Fehler: ' + e.message;
+        return;
+      }
+      const accounts = msalInst.getAllAccounts();
+      if (accounts.length > 0) {
+        showApp();
+      } else {
+        document.getElementById('login-page').style.display = 'flex';
+        document.getElementById('app').style.display = 'none';
+      }
+    }
+
+    window.msalLogin = async function() {
+      let w = 0;
+      while (!window._msalInstance && w < 50) {
+        await new Promise(r => setTimeout(r, 100)); w++;
+      }
+      if (!window._msalInstance) {
+        document.getElementById('login-error').textContent = 'Fehler: Authentifizierung nicht bereit.';
+        return;
+      }
+      try {
+        await window._msalInstance.loginRedirect({ scopes: ['User.Read'], prompt: 'select_account' });
+      } catch(e) {
+        document.getElementById('login-error').textContent = 'Fehler: ' + e.message;
+      }
+    };
+
+    function showApp() {
+      document.getElementById('login-page').style.display = 'none';
+      document.getElementById('app').style.display = 'flex';
+    }
+
+    initAuth();
+  </script>
 </body>
 </html>
