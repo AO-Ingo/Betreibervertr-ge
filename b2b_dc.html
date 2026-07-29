@@ -634,7 +634,8 @@ async function genDocx() {
     zip.file('word/document.xml',xml);
     const blob=await zip.generateAsync({type:'blob',mimeType:'application/vnd.openxmlformats-officedocument.wordprocessingml.document'});
     const slug=(v('ag_firma')||'Vertrag').replace(/\s+/g,'_').replace(/[^a-zA-Z0-9_-]/g,'');
-    const fname = isVb ? `AMBA_Vertrag_${slug}_${angebotsnr}.docx` : `AMBA_Vertrag_${slug}.docx`;
+    const fname = currentTyp==='wartung-dc' ? `DC_Rahmenwartungsvertrag_AO_${slug}_vorläufig.docx`
+      : isVb ? `AMBA_Vertrag_${slug}_${angebotsnr}.docx` : `AMBA_Vertrag_${slug}.docx`;
     dl(blob, fname);
     setSts('genSts','ok','✓ Vertrag heruntergeladen.');
   } catch(err){ setSts('genSts','err','✕ '+err.message); }
@@ -726,7 +727,9 @@ async function mergePDFs() {
     const blob=new Blob([await merged.save()],{type:'application/pdf'});
     const slug=(v('ag_firma')||'Dokument').replace(/\s+/g,'_').replace(/[^a-zA-Z0-9_-]/g,'');
     const angebotName=f2?.name?.replace(/\.pdf$/i,'').replace(/\s+/g,'_')||'';
-    dl(blob,angebotName?`AMBA_Vertrag_${slug}_${angebotName}.pdf`:`AMBA_Vertrag_${slug}.pdf`);
+    const mergedName = currentTyp==='wartung-dc' ? `DC_Rahmenwartungsvertrag_AO_${slug}_final.pdf`
+      : (angebotName?`AMBA_Vertrag_${slug}_${angebotName}.pdf`:`AMBA_Vertrag_${slug}.pdf`);
+    dl(blob,mergedName);
     setSts('mergeSts','ok','✓ Zusammengefügt und heruntergeladen.');
   } catch(err){setSts('mergeSts','err','✕ '+err.message);}
   btn.disabled=false; setTimeout(()=>{pw.style.display='none';},2500);
