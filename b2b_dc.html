@@ -284,7 +284,7 @@
       <option value="betrieb-dc">Technische Betriebsführung DC</option>
       <option value="vollbetrieb-dc" disabled>Vollbetrieb ohne Strom DC (demnächst)</option>
       <option value="vollbetrieb-strom-dc" disabled>Vollbetrieb mit Strom DC (demnächst)</option>
-      <option value="wartung-dc" disabled>Rahmenwartungsvertrag DC (demnächst)</option>
+      <option value="wartung-dc">Rahmenwartungsvertrag DC</option>
     </select>
   </div>
   <div style="display:flex;justify-content:flex-end;margin-top:-8px;margin-bottom:12px">
@@ -437,8 +437,8 @@
 
 // ===== CONFIG =====
 const GITHUB_BASE = 'https://raw.githubusercontent.com/AO-Ingo/Vertragsgenerator/main/';
-const TEMPLATE_URLS = {"betrieb": "https://raw.githubusercontent.com/AO-Ingo/Vertragsgenerator/main/AMBA_VertragTechBetriebsfuehrung%20Vorlage.docx", "betrieb-dc": "https://raw.githubusercontent.com/AO-Ingo/Vertragsgenerator/main/AMBA_VertragTechBetriebsfuehrung_DC%20-%20Vorlage.docx", "vollbetrieb": "https://raw.githubusercontent.com/AO-Ingo/Vertragsgenerator/main/AMBA_Vollbetrieb_ohne_Strom_Vorlage.docx", "vollbetrieb-mit-strom": "https://raw.githubusercontent.com/AO-Ingo/Vertragsgenerator/main/AMBA_Vollbetrieb_mit_Strom_Vorlage.docx", "wartung": "https://raw.githubusercontent.com/AO-Ingo/Vertragsgenerator/main/AMBA_Wartungsvertrag%20Vorlage.docx"};
-const ZOHO_MAP = {"betrieb": {"id": "520234000000111332", "name": "technische Betriebsführung"}, "betrieb-dc": {"id": "520234000003960018", "name": "technische Betriebsführung DC"}, "vollbetrieb": {"id": "520234000003540041", "name": "Vollbetrieb - ganzheitlicher Betrieb der Ladestation ohne Strom"}, "vollbetrieb-mit-strom": {"id": "", "name": "Vollbetrieb mit Strom AC"}, "wartung": {"id": "520234000000056504", "name": "Wartung AC-LP bis 22kW nach DGUV-3"}};
+const TEMPLATE_URLS = {"betrieb": "https://raw.githubusercontent.com/AO-Ingo/Vertragsgenerator/main/AMBA_VertragTechBetriebsfuehrung%20Vorlage.docx", "betrieb-dc": "https://raw.githubusercontent.com/AO-Ingo/Vertragsgenerator/main/AMBA_VertragTechBetriebsfuehrung_DC%20-%20Vorlage.docx", "vollbetrieb": "https://raw.githubusercontent.com/AO-Ingo/Vertragsgenerator/main/AMBA_Vollbetrieb_ohne_Strom_Vorlage.docx", "vollbetrieb-mit-strom": "https://raw.githubusercontent.com/AO-Ingo/Vertragsgenerator/main/AMBA_Vollbetrieb_mit_Strom_Vorlage.docx", "wartung": "https://raw.githubusercontent.com/AO-Ingo/Vertragsgenerator/main/AMBA_Wartungsvertrag%20Vorlage.docx", "wartung-dc": "https://raw.githubusercontent.com/AO-Ingo/Vertragsgenerator/main/DC_Rahmenwartungsvertrag_AO_Vorlage.docx"};
+const ZOHO_MAP = {"betrieb": {"id": "520234000000111332", "name": "technische Betriebsführung"}, "betrieb-dc": {"id": "520234000003960018", "name": "technische Betriebsführung DC"}, "vollbetrieb": {"id": "520234000003540041", "name": "Vollbetrieb - ganzheitlicher Betrieb der Ladestation ohne Strom"}, "vollbetrieb-mit-strom": {"id": "", "name": "Vollbetrieb mit Strom AC"}, "wartung": {"id": "520234000000056504", "name": "Wartung AC-LP bis 22kW nach DGUV-3"}, "wartung-dc": {"id": "520234000000323030", "name": "Wartung DC-LP bis 400kW nach DGUV-3"}};
 const MAKE_WEBHOOK = 'https://hook.eu2.make.com/bxt8ju15xwttjyphu3ubb1jdff6xlh4w';
 
 let currentTyp = '';
