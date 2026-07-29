@@ -652,6 +652,7 @@ async function sendenAnMake() {
     const resp = await fetch(MAKE_WEBHOOK, {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({
       quelle: 'b2b',
       vertragstyp: currentTyp, zoho_artikel_id: a.id, zoho_artikel_name: a.name, zoho_anzahl: total,
+      line_items: [{ item_id: a.id, name: a.name, quantity: total }],
       ag_firma: v('ag_firma'), ag_strasse: v('ag_strasse'), ag_plz: v('ag_plz'), ag_stadt: v('ag_stadt'),
       stand_datum: new Date().toISOString().split('T')[0],
       inbetriebnahme: v('inbetriebnahme'),
