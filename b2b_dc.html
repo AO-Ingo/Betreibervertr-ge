@@ -633,9 +633,15 @@ async function genDocx() {
     for(const [tag,val] of Object.entries(repl)) xml=replaceTag(xml,tag,val);
     zip.file('word/document.xml',xml);
     const blob=await zip.generateAsync({type:'blob',mimeType:'application/vnd.openxmlformats-officedocument.wordprocessingml.document'});
+    const PREFIX = {
+      'betrieb-dc': 'AMBA_Betriebsfuehrung_DC',
+      'vollbetrieb-dc': 'AMBA_Vollbetrieb_ohne_Strom_DC',
+      'vollbetrieb-strom-dc': 'AMBA_Vollbetrieb_mit_Strom_DC',
+      'wartung-dc': 'DC_Rahmenwartungsvertrag_AO',
+    };
+    const prefix = PREFIX[currentTyp] || 'AMBA_Vertrag';
     const slug=(v('ag_firma')||'Vertrag').replace(/\s+/g,'_').replace(/[^a-zA-Z0-9_-]/g,'');
-    const fname = currentTyp==='wartung-dc' ? `DC_Rahmenwartungsvertrag_AO_${slug}_vorläufig.docx`
-      : isVb ? `AMBA_Vertrag_${slug}_${angebotsnr}.docx` : `AMBA_Vertrag_${slug}.docx`;
+    const fname = isVb ? `${prefix}_${slug}_${angebotsnr}_vorläufig.docx` : `${prefix}_${slug}_vorläufig.docx`;
     dl(blob, fname);
     setSts('genSts','ok','✓ Vertrag heruntergeladen.');
   } catch(err){ setSts('genSts','err','✕ '+err.message); }
@@ -725,10 +731,15 @@ async function mergePDFs() {
     }
     pb.style.width='100%';
     const blob=new Blob([await merged.save()],{type:'application/pdf'});
+    const PREFIX = {
+      'betrieb-dc': 'AMBA_Betriebsfuehrung_DC',
+      'vollbetrieb-dc': 'AMBA_Vollbetrieb_ohne_Strom_DC',
+      'vollbetrieb-strom-dc': 'AMBA_Vollbetrieb_mit_Strom_DC',
+      'wartung-dc': 'DC_Rahmenwartungsvertrag_AO',
+    };
+    const prefix = PREFIX[currentTyp] || 'AMBA_Vertrag';
     const slug=(v('ag_firma')||'Dokument').replace(/\s+/g,'_').replace(/[^a-zA-Z0-9_-]/g,'');
-    const angebotName=f2?.name?.replace(/\.pdf$/i,'').replace(/\s+/g,'_')||'';
-    const mergedName = currentTyp==='wartung-dc' ? `DC_Rahmenwartungsvertrag_AO_${slug}_final.pdf`
-      : (angebotName?`AMBA_Vertrag_${slug}_${angebotName}.pdf`:`AMBA_Vertrag_${slug}.pdf`);
+    const mergedName = `${prefix}_${slug}_final.pdf`;
     dl(blob,mergedName);
     setSts('mergeSts','ok','✓ Zusammengefügt und heruntergeladen.');
   } catch(err){setSts('mergeSts','err','✕ '+err.message);}
