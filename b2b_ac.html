@@ -600,6 +600,24 @@ function replaceTag(xml, tag, value) {
   });
 }
 
+// Vervielfältigt die Tabellenzeile mit {{STANDORT}}/{{LADEEINRICHTUNG}}/{{LADEPUNKTE}}
+// einmal pro erfasstem Standort, statt nur die erste Zeile zu befüllen.
+function expandLadeTable(xml, rows) {
+  const idx = xml.indexOf('{{STANDORT}}');
+  if (idx === -1 || !rows.length) return xml;
+  let start = xml.lastIndexOf('<w:tr ', idx);
+  if (start === -1 || start === undefined) start = xml.lastIndexOf('<w:tr>', idx);
+  const end = xml.indexOf('</w:tr>', idx) + '</w:tr>'.length;
+  const rowXml = xml.slice(start, end);
+  const esc = s => (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  const rowsXml = rows.map(r => rowXml
+    .replace('{{STANDORT}}', esc(r.standort))
+    .replace('{{LADEEINRICHTUNG}}', esc(r.art))
+    .replace('{{LADEPUNKTE}}', esc(String(r.anzahl)))
+  ).join('');
+  return xml.slice(0, start) + rowsXml + xml.slice(end);
+}
+
 async function fetchTemplate(typ) {
   const url = TEMPLATE_URLS[typ];
   if (!url) throw new Error('Keine Vorlage für diesen Vertragstyp.');
@@ -629,7 +647,7 @@ async function genDocx() {
       'APKFMNAME': v('ap_tech_name'), 'APKFMTEL': v('ap_tech_tel'), 'APKFMMAIL': v('ap_tech_email'),
       'APTECHNAME': v('ap_name'), 'APTECHTEL': v('ap_tel'), 'APTECHMAIL': v('ap_email'),
     };
-    if(rows[0]){ repl['STANDORT']=rows[0].standort; repl['LADEEINRICHTUNG']=rows[0].art; repl['LADEPUNKTE']=String(rows[0].anzahl); }
+    xml = expandLadeTable(xml, rows);
     for(const [tag,val] of Object.entries(repl)) xml=replaceTag(xml,tag,val);
     zip.file('word/document.xml',xml);
     const blob=await zip.generateAsync({type:'blob',mimeType:'application/vnd.openxmlformats-officedocument.wordprocessingml.document'});
