@@ -585,7 +585,7 @@ function updateArtikelAnzahl() {
 }
 
 // ===== HELPERS =====
-function v(id) { return (document.getElementById(id)||{}).value||''; }
+function v(id) { const el=document.getElementById(id); const val=(el||{}).value||''; return typeof val==='string' ? val.trim().replace(/\s+/g,' ') : val; }
 function fmtDate(iso) { if(!iso)return''; const[y,m,d]=iso.split('-'); return d+'.'+m+'.'+y; }
 function getLaufzeit() { return document.getElementById('vb_laufzeit')?.value||''; }
 
