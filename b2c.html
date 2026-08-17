@@ -991,7 +991,7 @@ function updateMergeBtn() {
 }
 
 // ── UTILS ──
-function v(id) { return (document.getElementById(id)||{}).value||''; }
+function v(id) { const el=document.getElementById(id); const val=(el||{}).value||''; return typeof val==='string' ? val.trim().replace(/\s+/g,' ') : val; }
 function download(blob, filename) { const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = filename; a.click(); }
 function setSts(id, cls, msg) {
   const el = document.getElementById(id); if (!el) return;
