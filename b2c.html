@@ -951,7 +951,7 @@ async function b2cVertragMitNr() {
   setSts('genSts','proc','Vorlage wird geladen…');
   try {
     const blob = await genDocx(angebotsnr);
-    download(blob, `AMBA_Betreibervertrag_${v('nachname')}_${angebotsnr}.docx`);
+    download(blob, `AMBA_Betreibervertrag_${v('nachname')}_${angebotsnr}_vorläufig.docx`);
     setSts('genSts','ok','✓ Vertrag heruntergeladen.');
   } catch(err) { setSts('genSts','err','✕ ' + err.message); }
 }
@@ -977,7 +977,7 @@ async function b2cMerge() {
     pb.style.width = '100%';
     const blob = new Blob([await merged.save()], {type:'application/pdf'});
     const angebotsnr = fAngebot.name.replace(/\.pdf$/i,'').replace(/\s+/g,'_');
-    download(blob, `AMBA_Vertrag_${v('nachname')||'Kunde'}_${angebotsnr}.pdf`);
+    download(blob, `AMBA_Vertrag_${v('nachname')||'Kunde'}_${angebotsnr}_final.pdf`);
     setSts('mergeSts','ok','✓ Zusammengefügt und heruntergeladen.');
   } catch(err) { setSts('mergeSts','err','✕ ' + err.message); }
   btn.disabled = false;
